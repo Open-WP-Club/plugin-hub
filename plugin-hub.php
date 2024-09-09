@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Plugin Name: Plugin Hub
  * Description: Manages WordPress plugins from GitHub repositories, focusing on Open-WP-Club
- * Version: 1.2
+ * Version: 1.3
  * Author: Your Name
  * Author URI: http://yourwebsite.com/
  * License: GPL2
@@ -13,11 +14,13 @@ if (!defined('WPINC')) {
     die;
 }
 
-class Plugin_Hub {
+class Plugin_Hub
+{
     private $github_plugins = [];
     private $organization = 'Open-WP-Club';
 
-    public function __construct() {
+    public function __construct()
+    {
         add_action('admin_menu', array($this, 'add_admin_menu'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
         add_filter('pre_set_site_transient_update_plugins', array($this, 'check_for_plugin_updates'));
@@ -25,10 +28,12 @@ class Plugin_Hub {
         add_action('wp_ajax_activate_github_plugin', array($this, 'ajax_activate_github_plugin'));
         add_action('wp_ajax_deactivate_github_plugin', array($this, 'ajax_deactivate_github_plugin'));
         add_action('wp_ajax_update_github_plugin', array($this, 'ajax_update_github_plugin'));
+        add_action('wp_ajax_toggle_beta_plugins', array($this, 'ajax_toggle_beta_plugins'));
         $this->load_github_plugins();
     }
 
-    public function add_admin_menu() {
+    public function add_admin_menu()
+    {
         add_plugins_page(
             'Plugin Hub',
             'Plugin Hub',
@@ -38,7 +43,8 @@ class Plugin_Hub {
         );
     }
 
-    public function enqueue_admin_scripts($hook) {
+    public function enqueue_admin_scripts($hook)
+    {
         if ('plugins_page_plugin-hub' !== $hook) {
             return;
         }
@@ -50,19 +56,21 @@ class Plugin_Hub {
         ));
     }
 
-    public function admin_page() {
+    public function admin_page()
+    {
         if (!current_user_can('manage_options')) {
             return;
         }
 
         $repos = $this->get_org_repos();
         $filter = isset($_GET['filter']) ? sanitize_text_field($_GET['filter']) : 'all';
+        // $show_beta = get_option('plugin_hub_show_beta', false);  // Commented out beta feature
 
-        $counts = $this->get_plugin_counts($repos);
-        ?>
+        $counts = $this->get_plugin_counts($repos, true);  // Always include all plugins for now
+?>
         <div class="wrap">
             <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
-            
+
             <ul class="subsubsub">
                 <li><a href="?page=plugin-hub&filter=all" <?php echo $filter === 'all' ? 'class="current"' : ''; ?>>All <span class="count">(<?php echo $counts['all']; ?>)</span></a> |</li>
                 <li><a href="?page=plugin-hub&filter=active" <?php echo $filter === 'active' ? 'class="current"' : ''; ?>>Active <span class="count">(<?php echo $counts['active']; ?>)</span></a> |</li>
@@ -84,6 +92,7 @@ class Plugin_Hub {
                         </select>
                         <input type="submit" id="doaction" class="button action" value="Apply">
                     </div>
+                    <!-- Removed beta plugins toggle -->
                 </div>
                 <table class="wp-list-table widefat plugins">
                     <thead>
@@ -93,21 +102,22 @@ class Plugin_Hub {
                             </td>
                             <th scope="col" class="manage-column column-name column-primary">Plugin</th>
                             <th scope="col" class="manage-column column-description">Description</th>
-                            <th scope="col" class="manage-column column-version">Version</th>
-                            <th scope="col" class="manage-column column-status">Status</th>
+                            <th scope="col" class="manage-column column-last-update">Last Update</th>
                         </tr>
                     </thead>
                     <tbody id="the-list">
                         <?php foreach ($repos as $repo): ?>
-                            <?php 
+                            <?php
                             $latest_release = $this->get_latest_release($repo->name);
                             $is_installed = $this->is_plugin_installed($repo->name);
                             $is_active = $this->is_plugin_active($repo->name);
                             $update_available = $this->is_update_available($repo->name, $latest_release);
+                            // $is_beta = $latest_release && version_compare(ltrim($latest_release->tag_name, 'v'), '1.0.0', '<');  // Commented out beta check
 
                             if (($filter === 'active' && !$is_active) ||
                                 ($filter === 'inactive' && $is_active) ||
-                                ($filter === 'update' && !$update_available)) {
+                                ($filter === 'update' && !$update_available)
+                            ) {
                                 continue;
                             }
                             ?>
@@ -118,46 +128,43 @@ class Plugin_Hub {
                                 <td class="plugin-title column-primary">
                                     <strong><?php echo esc_html($repo->name); ?></strong>
                                     <div class="row-actions visible">
-                                        <span class="install">
-                                            <?php if (!$is_installed): ?>
-                                                <a href="#" class="install-now" data-repo="<?php echo esc_attr($repo->name); ?>" data-url="<?php echo esc_url($latest_release ? $latest_release->zipball_url : ''); ?>">
-                                                    Install Now
-                                                </a>
-                                            <?php elseif ($update_available): ?>
-                                                <a href="#" class="update-now" data-repo="<?php echo esc_attr($repo->name); ?>" data-url="<?php echo esc_url($latest_release ? $latest_release->zipball_url : ''); ?>">
-                                                    Update Now
-                                                </a>
-                                            <?php elseif ($is_active): ?>
-                                                <a href="#" class="deactivate-now" data-repo="<?php echo esc_attr($repo->name); ?>">
-                                                    Deactivate
-                                                </a>
-                                            <?php else: ?>
-                                                <a href="#" class="activate-now" data-repo="<?php echo esc_attr($repo->name); ?>">
-                                                    Activate
-                                                </a>
-                                            <?php endif; ?>
-                                        </span>
+                                        <?php if (!$is_installed): ?>
+                                            <a href="#" class="install-now button" data-repo="<?php echo esc_attr($repo->name); ?>" data-url="<?php echo esc_url($latest_release ? $latest_release->zipball_url : ''); ?>">
+                                                Install Now
+                                            </a>
+                                        <?php elseif ($update_available): ?>
+                                            <a href="#" class="update-now button" data-repo="<?php echo esc_attr($repo->name); ?>" data-url="<?php echo esc_url($latest_release ? $latest_release->zipball_url : ''); ?>">
+                                                Update Now
+                                            </a>
+                                        <?php elseif ($is_active): ?>
+                                            <a href="#" class="deactivate-now button" data-repo="<?php echo esc_attr($repo->name); ?>">
+                                                Deactivate
+                                            </a>
+                                        <?php else: ?>
+                                            <a href="#" class="activate-now button" data-repo="<?php echo esc_attr($repo->name); ?>">
+                                                Activate
+                                            </a>
+                                        <?php endif; ?>
                                     </div>
                                 </td>
                                 <td class="column-description desc">
                                     <div class="plugin-description">
                                         <p><?php echo esc_html($repo->description); ?></p>
+                                        <p>
+                                            Version: <?php echo esc_html($this->get_installed_plugin_version($repo->name)); ?> |
+                                            <a href="<?php echo esc_url("https://github.com/{$this->organization}/{$repo->name}"); ?>" target="_blank">View details</a>
+                                        </p>
                                     </div>
                                 </td>
-                                <td class="column-version">
-                                    <?php echo esc_html($latest_release ? ltrim($latest_release->tag_name, 'v') : 'N/A'); ?>
-                                </td>
-                                <td class="column-status">
-                                    <?php if ($is_active): ?>
-                                        <span class="active">Active</span>
-                                    <?php elseif ($is_installed): ?>
-                                        <span class="inactive">Inactive</span>
-                                    <?php else: ?>
-                                        <span class="not-installed">Not Installed</span>
-                                    <?php endif; ?>
-                                    <?php if ($update_available): ?>
-                                        <span class="update">Update Available</span>
-                                    <?php endif; ?>
+                                <td class="column-last-update">
+                                    <?php
+                                    if ($latest_release) {
+                                        $last_update = human_time_diff(strtotime($latest_release->published_at), current_time('timestamp'));
+                                        echo esc_html($last_update . ' ago');
+                                    } else {
+                                        echo 'N/A';
+                                    }
+                                    ?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -165,10 +172,11 @@ class Plugin_Hub {
                 </table>
             </form>
         </div>
-        <?php
+<?php
     }
 
-    private function get_org_repos() {
+    private function get_org_repos()
+    {
         $url = "https://api.github.com/orgs/{$this->organization}/repos";
         $response = wp_remote_get($url);
         if (is_wp_error($response)) {
@@ -177,7 +185,8 @@ class Plugin_Hub {
         return json_decode(wp_remote_retrieve_body($response));
     }
 
-    private function get_latest_release($repo) {
+    private function get_latest_release($repo)
+    {
         $url = "https://api.github.com/repos/{$this->organization}/{$repo}/releases/latest";
         $response = wp_remote_get($url);
         if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) {
@@ -186,7 +195,8 @@ class Plugin_Hub {
         return json_decode(wp_remote_retrieve_body($response));
     }
 
-    private function is_plugin_installed($plugin_name) {
+    private function is_plugin_installed($plugin_name)
+    {
         if (!function_exists('get_plugins')) {
             require_once ABSPATH . 'wp-admin/includes/plugin.php';
         }
@@ -199,7 +209,8 @@ class Plugin_Hub {
         return false;
     }
 
-    private function is_plugin_active($plugin_name) {
+    private function is_plugin_active($plugin_name)
+    {
         if (!function_exists('is_plugin_active')) {
             include_once ABSPATH . 'wp-admin/includes/plugin.php';
         }
@@ -207,7 +218,8 @@ class Plugin_Hub {
         return $plugin_file && is_plugin_active($plugin_file);
     }
 
-    private function get_plugin_file($plugin_name) {
+    private function get_plugin_file($plugin_name)
+    {
         if (!function_exists('get_plugins')) {
             require_once ABSPATH . 'wp-admin/includes/plugin.php';
         }
@@ -220,7 +232,8 @@ class Plugin_Hub {
         return false;
     }
 
-    private function is_update_available($plugin_name, $latest_release) {
+    private function is_update_available($plugin_name, $latest_release)
+    {
         $plugin_file = $this->get_plugin_file($plugin_name);
         if (!$plugin_file || !$latest_release) {
             return false;
@@ -231,9 +244,20 @@ class Plugin_Hub {
         return version_compare($latest_version, $installed_version, '>');
     }
 
-    private function get_plugin_counts($repos) {
+    private function get_installed_plugin_version($plugin_name)
+    {
+        $plugin_file = $this->get_plugin_file($plugin_name);
+        if ($plugin_file) {
+            $plugin_data = get_plugin_data(WP_PLUGIN_DIR . '/' . $plugin_file);
+            return $plugin_data['Version'];
+        }
+        return 'Not Installed';
+    }
+
+    private function get_plugin_counts($repos, $show_beta)
+    {
         $counts = array(
-            'all' => count($repos),
+            'all' => 0,
             'active' => 0,
             'inactive' => 0,
             'update' => 0
@@ -244,6 +268,13 @@ class Plugin_Hub {
             $is_installed = $this->is_plugin_installed($repo->name);
             $is_active = $this->is_plugin_active($repo->name);
             $update_available = $this->is_update_available($repo->name, $latest_release);
+            $is_beta = $latest_release && version_compare(ltrim($latest_release->tag_name, 'v'), '1.0.0', '<');
+
+            if (!$show_beta && $is_beta) {
+                continue;
+            }
+
+            $counts['all']++;
 
             if ($is_active) {
                 $counts['active']++;
@@ -259,7 +290,8 @@ class Plugin_Hub {
         return $counts;
     }
 
-    public function check_for_plugin_updates($transient) {
+    public function check_for_plugin_updates($transient)
+    {
         if (empty($transient->checked)) {
             return $transient;
         }
@@ -284,11 +316,13 @@ class Plugin_Hub {
         return $transient;
     }
 
-    private function load_github_plugins() {
+    private function load_github_plugins()
+    {
         $this->github_plugins = get_option('plugin_hub_github_plugins', array());
     }
 
-    public function ajax_install_github_plugin() {
+    public function ajax_install_github_plugin()
+    {
         check_ajax_referer('plugin-hub-nonce', 'nonce');
 
         if (!current_user_can('install_plugins')) {
@@ -309,107 +343,121 @@ class Plugin_Hub {
         $upgrader = new Plugin_Upgrader($skin);
         $installed = $upgrader->install($download_url);
 
-    if (is_wp_error($installed)) {
-      wp_send_json_error($installed->get_error_message());
-    } else {
-      $this->github_plugins[$repo_name] = array(
-        'repo' => $repo_name,
-        'file' => $upgrader->plugin_info()
-      );
-      update_option('plugin_hub_github_plugins', $this->github_plugins);
+        if (is_wp_error($installed)) {
+            wp_send_json_error($installed->get_error_message());
+        } else {
+            $this->github_plugins[$repo_name] = array(
+                'repo' => $repo_name,
+                'file' => $upgrader->plugin_info()
+            );
+            update_option('plugin_hub_github_plugins', $this->github_plugins);
 
-      wp_send_json_success('Plugin installed successfully.');
-    }
-  }
-
-  public function ajax_activate_github_plugin()
-  {
-    check_ajax_referer('plugin-hub-nonce', 'nonce');
-
-    if (!current_user_can('activate_plugins')) {
-      wp_send_json_error('You do not have permission to activate plugins.');
+            wp_send_json_success('Plugin installed successfully.');
+        }
     }
 
-    $repo_name = isset($_POST['repo']) ? sanitize_text_field($_POST['repo']) : '';
+    public function ajax_activate_github_plugin()
+    {
+        check_ajax_referer('plugin-hub-nonce', 'nonce');
 
-    if (empty($repo_name)) {
-      wp_send_json_error('Invalid plugin information.');
+        if (!current_user_can('activate_plugins')) {
+            wp_send_json_error('You do not have permission to activate plugins.');
+        }
+
+        $repo_name = isset($_POST['repo']) ? sanitize_text_field($_POST['repo']) : '';
+
+        if (empty($repo_name)) {
+            wp_send_json_error('Invalid plugin information.');
+        }
+
+        $plugin_file = $this->get_plugin_file($repo_name);
+
+        if (!$plugin_file) {
+            wp_send_json_error('Plugin not found.');
+        }
+
+        $result = activate_plugin($plugin_file);
+
+        if (is_wp_error($result)) {
+            wp_send_json_error($result->get_error_message());
+        } else {
+            wp_send_json_success('Plugin activated successfully.');
+        }
     }
 
-    $plugin_file = $this->get_plugin_file($repo_name);
+    public function ajax_deactivate_github_plugin()
+    {
+        check_ajax_referer('plugin-hub-nonce', 'nonce');
 
-    if (!$plugin_file) {
-      wp_send_json_error('Plugin not found.');
+        if (!current_user_can('deactivate_plugins')) {
+            wp_send_json_error('You do not have permission to deactivate plugins.');
+        }
+
+        $repo_name = isset($_POST['repo']) ? sanitize_text_field($_POST['repo']) : '';
+
+        if (empty($repo_name)) {
+            wp_send_json_error('Invalid plugin information.');
+        }
+
+        $plugin_file = $this->get_plugin_file($repo_name);
+
+        if (!$plugin_file) {
+            wp_send_json_error('Plugin not found.');
+        }
+
+        deactivate_plugins($plugin_file);
+
+        wp_send_json_success('Plugin deactivated successfully.');
     }
 
-    $result = activate_plugin($plugin_file);
+    public function ajax_update_github_plugin()
+    {
+        check_ajax_referer('plugin-hub-nonce', 'nonce');
 
-    if (is_wp_error($result)) {
-      wp_send_json_error($result->get_error_message());
-    } else {
-      wp_send_json_success('Plugin activated successfully.');
-    }
-  }
+        if (!current_user_can('update_plugins')) {
+            wp_send_json_error('You do not have permission to update plugins.');
+        }
 
-  public function ajax_deactivate_github_plugin()
-  {
-    check_ajax_referer('plugin-hub-nonce', 'nonce');
+        $repo_name = isset($_POST['repo']) ? sanitize_text_field($_POST['repo']) : '';
+        $download_url = isset($_POST['url']) ? esc_url_raw($_POST['url']) : '';
 
-    if (!current_user_can('deactivate_plugins')) {
-      wp_send_json_error('You do not have permission to deactivate plugins.');
-    }
+        if (empty($repo_name) || empty($download_url)) {
+            wp_send_json_error('Invalid plugin information.');
+        }
 
-    $repo_name = isset($_POST['repo']) ? sanitize_text_field($_POST['repo']) : '';
+        require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+        include_once ABSPATH . 'wp-admin/includes/plugin-install.php';
 
-    if (empty($repo_name)) {
-      wp_send_json_error('Invalid plugin information.');
-    }
+        $plugin_file = $this->get_plugin_file($repo_name);
 
-    $plugin_file = $this->get_plugin_file($repo_name);
+        if (!$plugin_file) {
+            wp_send_json_error('Plugin not found.');
+        }
 
-    if (!$plugin_file) {
-      wp_send_json_error('Plugin not found.');
-    }
+        $skin = new WP_Ajax_Upgrader_Skin();
+        $upgrader = new Plugin_Upgrader($skin);
+        $result = $upgrader->upgrade($plugin_file);
 
-    deactivate_plugins($plugin_file);
-
-    wp_send_json_success('Plugin deactivated successfully.');
-  }
-
-  public function ajax_update_github_plugin()
-  {
-    check_ajax_referer('plugin-hub-nonce', 'nonce');
-
-    if (!current_user_can('update_plugins')) {
-      wp_send_json_error('You do not have permission to update plugins.');
+        if (is_wp_error($result)) {
+            wp_send_json_error($result->get_error_message());
+        } else {
+            wp_send_json_success('Plugin updated successfully.');
+        }
     }
 
-    $repo_name = isset($_POST['repo']) ? sanitize_text_field($_POST['repo']) : '';
-    $download_url = isset($_POST['url']) ? esc_url_raw($_POST['url']) : '';
+    public function ajax_toggle_beta_plugins()
+    {
+        check_ajax_referer('plugin-hub-nonce', 'nonce');
 
-    if (empty($repo_name) || empty($download_url)) {
-      wp_send_json_error('Invalid plugin information.');
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('You do not have permission to change this setting.');
+        }
+
+        $show_beta = isset($_POST['show_beta']) ? (bool)$_POST['show_beta'] : false;
+        update_option('plugin_hub_show_beta', $show_beta);
+
+        wp_send_json_success('Setting updated successfully.');
     }
-
-    require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
-    include_once ABSPATH . 'wp-admin/includes/plugin-install.php';
-
-    $plugin_file = $this->get_plugin_file($repo_name);
-
-    if (!$plugin_file) {
-      wp_send_json_error('Plugin not found.');
-    }
-
-    $skin = new WP_Ajax_Upgrader_Skin();
-    $upgrader = new Plugin_Upgrader($skin);
-    $result = $upgrader->upgrade($plugin_file);
-
-    if (is_wp_error($result)) {
-      wp_send_json_error($result->get_error_message());
-    } else {
-      wp_send_json_success('Plugin updated successfully.');
-    }
-  }
 }
 
 $plugin_hub = new Plugin_Hub();

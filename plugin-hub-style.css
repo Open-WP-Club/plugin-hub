@@ -1,6 +1,14 @@
 /* plugin-hub-style.css */
 
-.plugins .plugin-title .install-now {
+.plugins .plugin-title .button {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.plugins .plugin-title .install-now,
+.plugins .plugin-title .update-now,
+.plugins .plugin-title .activate-now,
+.plugins .plugin-title .deactivate-now {
   background: #2271b1;
   border-color: #2271b1;
   color: #fff;
@@ -9,32 +17,35 @@
   padding: 5px 10px;
   border-radius: 3px;
   display: inline-block;
-  margin-top: 5px;
 }
 
-.plugins .plugin-title .install-now:hover {
+.plugins .plugin-title .install-now:hover,
+.plugins .plugin-title .update-now:hover,
+.plugins .plugin-title .activate-now:hover,
+.plugins .plugin-title .deactivate-now:hover {
   background: #135e96;
   border-color: #135e96;
 }
 
-.plugins .column-status .installed {
-  color: #46b450;
+.plugins .column-description {
+  width: 50%;
 }
 
-.plugins .column-status .not-installed {
-  color: #dc3232;
+.plugins .column-last-update {
+  width: 15%;
 }
 
 .plugins .plugin-description {
   margin: 5px 0;
 }
 
-.plugins .column-version {
-  width: 10%;
+.plugins .plugin-description p {
+  margin: 0 0 8px;
 }
 
-.plugins .column-status {
-  width: 15%;
+.plugins .active td,
+.plugins .active th {
+  background-color: #f0f6fc;
 }
 
 #plugin-hub-messages {
@@ -48,4 +59,21 @@
 
 #plugin-hub-messages.error {
   border-left-color: #dc3232;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 782px) {
+  .plugins .column-last-update {
+    display: none;
+  }
+
+  .plugins .column-description {
+    width: auto;
+  }
+
+  .plugins .plugin-title .button {
+    margin-top: 10px;
+    display: block;
+    text-align: center;
+  }
 }

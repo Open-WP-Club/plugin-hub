@@ -110,6 +110,29 @@ jQuery(document).ready(function ($) {
     );
   }
 
+  $("#show-beta-plugins").on("change", function () {
+    var showBeta = $(this).is(":checked");
+    $.ajax({
+      url: pluginHubAjax.ajax_url,
+      type: "POST",
+      data: {
+        action: "toggle_beta_plugins",
+        nonce: pluginHubAjax.nonce,
+        show_beta: showBeta,
+      },
+      success: function (response) {
+        if (response.success) {
+          location.reload();
+        } else {
+          alert("Failed to update setting: " + response.data);
+        }
+      },
+      error: function () {
+        alert("An error occurred. Please try again.");
+      },
+    });
+  });
+
   function performAction(
     action,
     data,
