@@ -1,0 +1,51 @@
+/* plugin-hub-style.css */
+
+.plugins .plugin-title .install-now {
+  background: #2271b1;
+  border-color: #2271b1;
+  color: #fff;
+  text-decoration: none;
+  text-shadow: none;
+  padding: 5px 10px;
+  border-radius: 3px;
+  display: inline-block;
+  margin-top: 5px;
+}
+
+.plugins .plugin-title .install-now:hover {
+  background: #135e96;
+  border-color: #135e96;
+}
+
+.plugins .column-status .installed {
+  color: #46b450;
+}
+
+.plugins .column-status .not-installed {
+  color: #dc3232;
+}
+
+.plugins .plugin-description {
+  margin: 5px 0;
+}
+
+.plugins .column-version {
+  width: 10%;
+}
+
+.plugins .column-status {
+  width: 15%;
+}
+
+#plugin-hub-messages {
+  margin-top: 10px;
+  padding: 10px;
+  border-left: 4px solid #46b450;
+  background: #fff;
+  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .1);
+  display: none;
+}
+
+#plugin-hub-messages.error {
+  border-left-color: #dc3232;
+}
