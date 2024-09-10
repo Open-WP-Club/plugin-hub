@@ -3,6 +3,7 @@
 class Plugin_Hub_API
 {
   private $organization = 'Open-WP-Club';
+  private $csv_url = 'https://raw.githubusercontent.com/Open-WP-Club/.github/main/plugins.csv';
   private $github_plugins = [];
 
   public function __construct()
@@ -17,42 +18,38 @@ class Plugin_Hub_API
 
   public function get_org_repos()
   {
-    $url = "https://api.github.com/orgs/{$this->organization}/repos";
-    $response = wp_remote_get($url);
+    $response = wp_remote_get($this->csv_url);
     if (is_wp_error($response)) {
+      error_log('Plugin Hub: Error fetching CSV file: ' . $response->get_error_message());
       return array();
     }
-    $repos = json_decode(wp_remote_retrieve_body($response));
 
-    // Handle case where only one repo is returned (as an object, not an array)
-    if (is_object($repos) && isset($repos->name)) {
-      return array($repos->name);
+    $csv_content = wp_remote_retrieve_body($response);
+    $lines = explode("\n", trim($csv_content));
+    $repos = array();
+
+    // Remove the header row
+    array_shift($lines);
+
+    foreach ($lines as $line) {
+      $data = str_getcsv($line);
+      if (count($data) >= 5) {
+        $repos[] = array(
+          'name' => trim($data[0]),
+          'display_name' => trim($data[1]),
+          'description' => trim($data[2]),
+          'version' => trim($data[3]),
+          'repo_url' => trim($data[4])
+        );
+      }
     }
 
-    // Handle case where multiple repos are returned (as an array of objects)
-    if (is_array($repos)) {
-      return array_map(function ($repo) {
-        return $repo->name;
-      }, $repos);
-    }
-
-    // If we get here, something unexpected happened, so return an empty array
-    return array();
-  }
-  public function get_repo_description($repo_name)
-  {
-    $url = "https://api.github.com/repos/{$this->organization}/{$repo_name}";
-    $response = wp_remote_get($url);
-    if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) {
-      return '';
-    }
-    $repo_data = json_decode(wp_remote_retrieve_body($response));
-    return $repo_data->description ?? '';
+    return $repos;
   }
 
-  public function get_latest_release($repo)
+  public function get_latest_release($repo_url)
   {
-    $url = "https://api.github.com/repos/{$this->organization}/{$repo}/releases/latest";
+    $url = $repo_url . "/releases/latest";
     $response = wp_remote_get($url);
     if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) {
       return null;
@@ -102,16 +99,15 @@ class Plugin_Hub_API
     return false;
   }
 
-  public function is_update_available($plugin_name, $latest_release)
+  public function is_update_available($repo, $latest_release)
   {
-    $plugin_file = $this->get_plugin_file($plugin_name);
+    $plugin_file = $this->get_plugin_file($repo['name']);
     if (!$plugin_file || !$latest_release) {
       return false;
     }
-    $installed_plugin = get_plugin_data(WP_PLUGIN_DIR . '/' . $plugin_file);
-    $installed_version = $installed_plugin['Version'];
+    $csv_version = $repo['version'];
     $latest_version = ltrim($latest_release->tag_name, 'v');
-    return version_compare($latest_version, $installed_version, '>');
+    return version_compare($latest_version, $csv_version, '>');
   }
 
   public function get_installed_plugin_version($plugin_name)
@@ -130,8 +126,13 @@ class Plugin_Hub_API
       return $transient;
     }
 
-    foreach ($this->github_plugins as $plugin_file => $github_data) {
-      $latest_release = $this->get_latest_release($github_data['repo']);
+    $repos = $this->get_org_repos();
+
+    foreach ($repos as $repo) {
+      $plugin_file = $this->get_plugin_file($repo['name']);
+      if (!$plugin_file) continue;
+
+      $latest_release = $this->get_latest_release($repo['repo_url']);
       if (!$latest_release) continue;
 
       $github_version = ltrim($latest_release->tag_name, 'v');
@@ -141,7 +142,7 @@ class Plugin_Hub_API
         $obj = new stdClass();
         $obj->slug = $plugin_file;
         $obj->new_version = $github_version;
-        $obj->url = $github_data['repo'];
+        $obj->url = $repo['repo_url'];
         $obj->package = $latest_release->zipball_url;
         $transient->response[$plugin_file] = $obj;
       }

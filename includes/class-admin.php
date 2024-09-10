@@ -69,12 +69,12 @@ class Plugin_Hub_Admin
 
     $api = new Plugin_Hub_API();
 
-    foreach ($repos as $repo_name) {
-      $latest_release = $api->get_latest_release($repo_name);
-      $is_installed = $api->is_plugin_installed($repo_name);
-      $is_active = $api->is_plugin_active($repo_name);
-      $is_disabled = $api->is_plugin_disabled($repo_name);
-      $update_available = $api->is_update_available($repo_name, $latest_release);
+    foreach ($repos as $repo) {
+      $latest_release = $api->get_latest_release($repo['repo_url']);
+      $is_installed = $api->is_plugin_installed($repo['name']);
+      $is_active = $api->is_plugin_active($repo['name']);
+      $is_disabled = $api->is_plugin_disabled($repo['name']);
+      $update_available = $api->is_update_available($repo, $latest_release);
       $is_beta = $latest_release && version_compare(ltrim($latest_release->tag_name, 'v'), '1.0.0', '<');
 
       if (!$show_beta && $is_beta) {

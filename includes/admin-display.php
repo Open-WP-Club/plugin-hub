@@ -35,17 +35,18 @@
               </td>
               <th scope="col" class="manage-column column-name column-primary">Plugin</th>
               <th scope="col" class="manage-column column-description">Description</th>
+              <th scope="col" class="manage-column column-version">Version</th>
               <th scope="col" class="manage-column column-last-update">Last Update</th>
             </tr>
           </thead>
           <tbody id="the-list">
-            <?php foreach ($repos as $repo_name): ?>
+            <?php foreach ($repos as $repo): ?>
               <?php
-              $latest_release = $api->get_latest_release($repo_name);
-              $is_installed = $api->is_plugin_installed($repo_name);
-              $is_active = $api->is_plugin_active($repo_name);
-              $is_disabled = $api->is_plugin_disabled($repo_name);
-              $update_available = $api->is_update_available($repo_name, $latest_release);
+              $latest_release = $api->get_latest_release($repo['repo_url']);
+              $is_installed = $api->is_plugin_installed($repo['name']);
+              $is_active = $api->is_plugin_active($repo['name']);
+              $is_disabled = $api->is_plugin_disabled($repo['name']);
+              $update_available = $api->is_update_available($repo, $latest_release);
 
               if (($filter === 'active' && !$is_active) ||
                 ($filter === 'inactive' && ($is_active || $is_disabled)) ||
@@ -57,52 +58,52 @@
               ?>
               <tr class="<?php echo $is_active ? 'active' : ($is_disabled ? 'disabled' : 'inactive'); ?>">
                 <th scope="row" class="check-column">
-                  <input type="checkbox" name="checked[]" value="<?php echo esc_attr($repo_name); ?>">
+                  <input type="checkbox" name="checked[]" value="<?php echo esc_attr($repo['name']); ?>">
                 </th>
                 <td class="plugin-title column-primary">
                   <strong>
-                    <a href="<?php echo esc_url("https://github.com/{$this->organization}/{$repo_name}"); ?>" target="_blank">
-                      <?php echo esc_html($repo_name); ?>
+                    <a href="<?php echo esc_url($repo['repo_url']); ?>" target="_blank">
+                      <?php echo esc_html($repo['display_name']); ?>
                     </a>
                   </strong>
                   <div class="row-actions visible">
                     <?php if (!$is_installed): ?>
                       <span class="install">
-                        <a href="#" class="install-now plugin-action-link" data-repo="<?php echo esc_attr($repo_name); ?>" data-url="<?php echo esc_url($latest_release ? $latest_release->zipball_url : ''); ?>">
+                        <a href="#" class="install-now plugin-action-link" data-repo="<?php echo esc_attr($repo['name']); ?>" data-url="<?php echo esc_url($latest_release ? $latest_release->zipball_url : ''); ?>">
                           Install Now
                         </a>
                       </span>
                     <?php elseif ($update_available): ?>
                       <span class="update">
-                        <a href="#" class="update-now plugin-action-link" data-repo="<?php echo esc_attr($repo_name); ?>" data-url="<?php echo esc_url($latest_release ? $latest_release->zipball_url : ''); ?>">
+                        <a href="#" class="update-now plugin-action-link" data-repo="<?php echo esc_attr($repo['name']); ?>" data-url="<?php echo esc_url($latest_release ? $latest_release->zipball_url : ''); ?>">
                           Update Now
                         </a>
                       </span>
                     <?php elseif ($is_active): ?>
                       <span class="deactivate">
-                        <a href="#" class="deactivate-now plugin-action-link" data-repo="<?php echo esc_attr($repo_name); ?>">
+                        <a href="#" class="deactivate-now plugin-action-link" data-repo="<?php echo esc_attr($repo['name']); ?>">
                           Deactivate
                         </a>
                       </span>
                       <span class="disable">
-                        <a href="#" class="disable-now plugin-action-link" data-repo="<?php echo esc_attr($repo_name); ?>">
+                        <a href="#" class="disable-now plugin-action-link" data-repo="<?php echo esc_attr($repo['name']); ?>">
                           Disable
                         </a>
                       </span>
                     <?php elseif ($is_disabled): ?>
                       <span class="enable">
-                        <a href="#" class="activate-now plugin-action-link" data-repo="<?php echo esc_attr($repo_name); ?>">
+                        <a href="#" class="activate-now plugin-action-link" data-repo="<?php echo esc_attr($repo['name']); ?>">
                           Enable
                         </a>
                       </span>
                     <?php else: ?>
                       <span class="activate">
-                        <a href="#" class="activate-now plugin-action-link" data-repo="<?php echo esc_attr($repo_name); ?>">
+                        <a href="#" class="activate-now plugin-action-link" data-repo="<?php echo esc_attr($repo['name']); ?>">
                           Activate
                         </a>
                       </span>
                       <span class="disable">
-                        <a href="#" class="disable-now plugin-action-link" data-repo="<?php echo esc_attr($repo_name); ?>">
+                        <a href="#" class="disable-now plugin-action-link" data-repo="<?php echo esc_attr($repo['name']); ?>">
                           Disable
                         </a>
                       </span>
@@ -111,11 +112,14 @@
                 </td>
                 <td class="column-description desc">
                   <div class="plugin-description">
-                    <p><?php echo esc_html($api->get_repo_description($repo_name)); ?></p>
+                    <p><?php echo esc_html($repo['description']); ?></p>
                   </div>
-                  <div class="active second plugin-version-author-uri">
-                    Version <?php echo esc_html($api->get_installed_plugin_version($repo_name)); ?>
-                  </div>
+                </td>
+                <td class="column-version">
+                  <?php echo esc_html($repo['version']); ?>
+                  <?php if ($update_available): ?>
+                    <br><span class="update-available">Update available</span>
+                  <?php endif; ?>
                 </td>
                 <td class="column-last-update">
                   <?php
