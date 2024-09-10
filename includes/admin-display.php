@@ -8,7 +8,7 @@
         <li><a href="?page=plugin-hub&filter=active" <?php echo $filter === 'active' ? 'class="current"' : ''; ?>>Active <span class="count">(<?php echo $counts['active']; ?>)</span></a> |</li>
         <li><a href="?page=plugin-hub&filter=inactive" <?php echo $filter === 'inactive' ? 'class="current"' : ''; ?>>Inactive <span class="count">(<?php echo $counts['inactive']; ?>)</span></a> |</li>
         <li><a href="?page=plugin-hub&filter=update" <?php echo $filter === 'update' ? 'class="current"' : ''; ?>>Update Available <span class="count">(<?php echo $counts['update']; ?>)</span></a> |</li>
-        <li><a href="?page=plugin-hub&filter=disabled" <?php echo $filter === 'disabled' ? 'class="current"' : ''; ?>>Disabled <span class="count">(<?php echo $counts['disabled']; ?>)</span></a></li>
+        <li><a href="?page=plugin-hub&filter=beta" <?php echo $filter === 'beta' ? 'class="current"' : ''; ?>>Beta <span class="count">(<?php echo $counts['beta']; ?>)</span></a></li>
       </ul>
 
       <form id="plugin-hub-form" method="post">
@@ -22,7 +22,7 @@
               <option value="activate">Activate</option>
               <option value="deactivate">Deactivate</option>
               <option value="update">Update</option>
-              <option value="disable">Disable</option>
+              <option value="delete">Delete</option>
             </select>
             <input type="submit" id="doaction" class="button action" value="Apply">
           </div>
@@ -37,6 +37,7 @@
               <th scope="col" class="manage-column column-description">Description</th>
               <th scope="col" class="manage-column column-version">Version</th>
               <th scope="col" class="manage-column column-last-update">Last Update</th>
+              <th scope="col" class="manage-column column-actions">Actions</th>
             </tr>
           </thead>
           <tbody id="the-list">
@@ -45,69 +46,26 @@
               $latest_release = $api->get_latest_release($repo['repo_url']);
               $is_installed = $api->is_plugin_installed($repo['name']);
               $is_active = $api->is_plugin_active($repo['name']);
-              $is_disabled = $api->is_plugin_disabled($repo['name']);
               $update_available = $api->is_update_available($repo, $latest_release);
+              $is_beta = $latest_release && version_compare(ltrim($latest_release->tag_name, 'v'), '1.0.0', '<');
 
               if (($filter === 'active' && !$is_active) ||
-                ($filter === 'inactive' && ($is_active || $is_disabled)) ||
+                ($filter === 'inactive' && $is_active) ||
                 ($filter === 'update' && !$update_available) ||
-                ($filter === 'disabled' && !$is_disabled)
+                ($filter === 'beta' && !$is_beta) ||
+                (!get_option('plugin_hub_show_beta', false) && $is_beta)
               ) {
                 continue;
               }
               ?>
-              <tr class="<?php echo $is_active ? 'active' : ($is_disabled ? 'disabled' : 'inactive'); ?>">
+              <tr class="<?php echo $is_active ? 'active' : 'inactive'; ?>">
                 <th scope="row" class="check-column">
                   <input type="checkbox" name="checked[]" value="<?php echo esc_attr($repo['name']); ?>">
                 </th>
                 <td class="plugin-title column-primary">
-                  <strong>
-                    <a href="<?php echo esc_url($repo['repo_url']); ?>" target="_blank">
-                      <?php echo esc_html($repo['display_name']); ?>
-                    </a>
-                  </strong>
+                  <strong><?php echo esc_html($repo['display_name']); ?></strong>
                   <div class="row-actions visible">
-                    <?php if (!$is_installed): ?>
-                      <span class="install">
-                        <a href="#" class="install-now plugin-action-link" data-repo="<?php echo esc_attr($repo['name']); ?>" data-url="<?php echo esc_url($latest_release ? $latest_release->zipball_url : ''); ?>">
-                          Install Now
-                        </a>
-                      </span>
-                    <?php elseif ($update_available): ?>
-                      <span class="update">
-                        <a href="#" class="update-now plugin-action-link" data-repo="<?php echo esc_attr($repo['name']); ?>" data-url="<?php echo esc_url($latest_release ? $latest_release->zipball_url : ''); ?>">
-                          Update Now
-                        </a>
-                      </span>
-                    <?php elseif ($is_active): ?>
-                      <span class="deactivate">
-                        <a href="#" class="deactivate-now plugin-action-link" data-repo="<?php echo esc_attr($repo['name']); ?>">
-                          Deactivate
-                        </a>
-                      </span>
-                      <span class="disable">
-                        <a href="#" class="disable-now plugin-action-link" data-repo="<?php echo esc_attr($repo['name']); ?>">
-                          Disable
-                        </a>
-                      </span>
-                    <?php elseif ($is_disabled): ?>
-                      <span class="enable">
-                        <a href="#" class="activate-now plugin-action-link" data-repo="<?php echo esc_attr($repo['name']); ?>">
-                          Enable
-                        </a>
-                      </span>
-                    <?php else: ?>
-                      <span class="activate">
-                        <a href="#" class="activate-now plugin-action-link" data-repo="<?php echo esc_attr($repo['name']); ?>">
-                          Activate
-                        </a>
-                      </span>
-                      <span class="disable">
-                        <a href="#" class="disable-now plugin-action-link" data-repo="<?php echo esc_attr($repo['name']); ?>">
-                          Disable
-                        </a>
-                      </span>
-                    <?php endif; ?>
+                    <span class="repo"><a href="<?php echo esc_url($repo['repo_url']); ?>" target="_blank">View on GitHub</a></span>
                   </div>
                 </td>
                 <td class="column-description desc">
@@ -131,6 +89,22 @@
                   }
                   ?>
                 </td>
+                <td class="column-actions">
+                  <div class="plugin-actions">
+                    <?php if (!$is_installed): ?>
+                      <a href="#" class="button install-now" data-repo="<?php echo esc_attr($repo['name']); ?>" data-url="<?php echo esc_url($latest_release ? $latest_release->zipball_url : ''); ?>">Install Now</a>
+                    <?php elseif ($update_available): ?>
+                      <a href="#" class="button update-now" data-repo="<?php echo esc_attr($repo['name']); ?>" data-url="<?php echo esc_url($latest_release ? $latest_release->zipball_url : ''); ?>">Update Now</a>
+                    <?php elseif ($is_active): ?>
+                      <a href="#" class="button deactivate-now" data-repo="<?php echo esc_attr($repo['name']); ?>">Deactivate</a>
+                    <?php else: ?>
+                      <a href="#" class="button activate-now" data-repo="<?php echo esc_attr($repo['name']); ?>">Activate</a>
+                    <?php endif; ?>
+                    <?php if ($is_installed): ?>
+                      <a href="#" class="button delete-now" data-repo="<?php echo esc_attr($repo['name']); ?>">Delete</a>
+                    <?php endif; ?>
+                  </div>
+                </td>
               </tr>
             <?php endforeach; ?>
           </tbody>
@@ -145,6 +119,12 @@
         <li><a href="https://example.com/support" target="_blank">Support</a></li>
         <li><a href="https://example.com/blog" target="_blank">Blog</a></li>
       </ul>
+
+      <h3>Beta Plugins</h3>
+      <label for="show-beta-plugins">
+        <input type="checkbox" id="show-beta-plugins" name="show_beta_plugins" <?php checked(get_option('plugin_hub_show_beta', false)); ?>>
+        Show Beta Plugins (< 1.0.0)
+          </label>
     </div>
   </div>
 </div>

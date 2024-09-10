@@ -35,7 +35,22 @@ class Plugin_Hub_Main
     add_action('wp_ajax_activate_github_plugin', array($this->api, 'ajax_activate_github_plugin'));
     add_action('wp_ajax_deactivate_github_plugin', array($this->api, 'ajax_deactivate_github_plugin'));
     add_action('wp_ajax_update_github_plugin', array($this->api, 'ajax_update_github_plugin'));
-    add_action('wp_ajax_disable_github_plugin', array($this->api, 'ajax_disable_github_plugin'));
+    add_action('wp_ajax_delete_github_plugin', array($this->api, 'ajax_delete_github_plugin'));
+    add_action('wp_ajax_toggle_beta_plugins', array($this, 'ajax_toggle_beta_plugins'));
+  }
+
+  public function ajax_toggle_beta_plugins()
+  {
+    check_ajax_referer('plugin-hub-nonce', 'nonce');
+
+    if (!current_user_can('manage_options')) {
+      wp_send_json_error('You do not have permission to change this setting.');
+    }
+
+    $show_beta = isset($_POST['show_beta']) ? (bool)$_POST['show_beta'] : false;
+    update_option('plugin_hub_show_beta', $show_beta);
+
+    wp_send_json_success('Setting updated successfully.');
   }
 
   public function run()

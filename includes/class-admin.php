@@ -57,45 +57,47 @@ class Plugin_Hub_Admin
     include PLUGIN_HUB_PLUGIN_DIR . 'includes/admin-display.php';
   }
 
-  private function get_plugin_counts($repos, $show_beta)
-  {
-    $counts = array(
-      'all' => 0,
-      'active' => 0,
-      'inactive' => 0,
-      'update' => 0,
-      'disabled' => 0
-    );
+private function get_plugin_counts($repos, $show_beta)
+    {
+        $counts = array(
+            'all' => 0,
+            'active' => 0,
+            'inactive' => 0,
+            'update' => 0,
+            'beta' => 0  // Add the 'beta' key here
+        );
 
-    $api = new Plugin_Hub_API();
+        $api = new Plugin_Hub_API();
 
-    foreach ($repos as $repo) {
-      $latest_release = $api->get_latest_release($repo['repo_url']);
-      $is_installed = $api->is_plugin_installed($repo['name']);
-      $is_active = $api->is_plugin_active($repo['name']);
-      $is_disabled = $api->is_plugin_disabled($repo['name']);
-      $update_available = $api->is_update_available($repo, $latest_release);
-      $is_beta = $latest_release && version_compare(ltrim($latest_release->tag_name, 'v'), '1.0.0', '<');
+        foreach ($repos as $repo) {
+            $latest_release = $api->get_latest_release($repo['repo_url']);
+            $is_installed = $api->is_plugin_installed($repo['name']);
+            $is_active = $api->is_plugin_active($repo['name']);
+            $update_available = $api->is_update_available($repo, $latest_release);
+            $is_beta = $latest_release && version_compare(ltrim($latest_release->tag_name, 'v'), '1.0.0', '<');
 
-      if (!$show_beta && $is_beta) {
-        continue;
-      }
+            if (!$show_beta && $is_beta) {
+                continue;
+            }
 
-      $counts['all']++;
+            $counts['all']++;
 
-      if ($is_active) {
-        $counts['active']++;
-      } elseif ($is_installed && !$is_disabled) {
-        $counts['inactive']++;
-      } elseif ($is_disabled) {
-        $counts['disabled']++;
-      }
+            if ($is_active) {
+                $counts['active']++;
+            } elseif ($is_installed) {
+                $counts['inactive']++;
+            }
 
-      if ($update_available) {
-        $counts['update']++;
-      }
+            if ($update_available) {
+                $counts['update']++;
+            }
+
+            if ($is_beta) {
+                $counts['beta']++;
+            }
+        }
+
+        return $counts;
     }
 
-    return $counts;
-  }
 }

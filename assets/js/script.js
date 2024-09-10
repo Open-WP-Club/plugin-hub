@@ -201,6 +201,44 @@ jQuery(document).ready(function ($) {
     processNextPlugin();
   }
 
+  // Delete plugin
+  $(".delete-now").on("click", function (e) {
+    e.preventDefault();
+    var button = $(this);
+    if (confirm("Are you sure you want to delete this plugin?")) {
+      performAction(
+        "delete_github_plugin",
+        button,
+        "Deleting...",
+        "Deleted",
+        "Delete Failed"
+      );
+    }
+  });
+
+  // Beta plugin toggle
+  $("#show-beta-plugins").on("change", function () {
+    $.ajax({
+      url: pluginHubAjax.ajax_url,
+      type: "POST",
+      data: {
+        action: "toggle_beta_plugins",
+        nonce: pluginHubAjax.nonce,
+        show_beta: this.checked,
+      },
+      success: function (response) {
+        if (response.success) {
+          location.reload();
+        } else {
+          showMessage(response.data, "error");
+        }
+      },
+      error: function () {
+        showMessage("An error occurred. Please try again.", "error");
+      },
+    });
+  });
+
   function showMessage(message, type) {
     var messageDiv = $("#plugin-hub-messages");
     if (!messageDiv.length) {

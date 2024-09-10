@@ -3,11 +3,12 @@
 class Plugin_Hub_API
 {
   private $organization = 'Open-WP-Club';
-  private $csv_url = 'https://raw.githubusercontent.com/Open-WP-Club/.github/main/plugins.csv';
-  private $github_plugins = [];
+  private $csv_url = 'https://raw.githubusercontent.com/Open-WP-Club/.github/main/plugins.csv?token=';
+  private $github_plugins = array();  // Declare the property here
 
   public function __construct()
   {
+    $this->csv_url .= time();
     $this->load_github_plugins();
   }
 
@@ -149,6 +150,39 @@ class Plugin_Hub_API
     }
 
     return $transient;
+  }
+
+  public function ajax_delete_github_plugin()
+  {
+    check_ajax_referer('plugin-hub-nonce', 'nonce');
+
+    if (!current_user_can('delete_plugins')) {
+      wp_send_json_error('You do not have permission to delete plugins.');
+    }
+
+    $repo_name = isset($_POST['repo']) ? sanitize_text_field($_POST['repo']) : '';
+
+    if (empty($repo_name)) {
+      wp_send_json_error('Invalid plugin information.');
+    }
+
+    $plugin_file = $this->get_plugin_file($repo_name);
+
+    if (!$plugin_file) {
+      wp_send_json_error('Plugin not found.');
+    }
+
+    if (is_plugin_active($plugin_file)) {
+      wp_send_json_error('Please deactivate the plugin before deleting.');
+    }
+
+    $deleted = delete_plugins(array($plugin_file));
+
+    if ($deleted) {
+      wp_send_json_success('Plugin deleted successfully.');
+    } else {
+      wp_send_json_error('Failed to delete the plugin.');
+    }
   }
 
   public function ajax_install_github_plugin()
