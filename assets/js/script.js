@@ -1,5 +1,3 @@
-// assets/js/script.js
-
 jQuery(document).ready(function ($) {
   // Install plugin
   $(".install-now").on("click", function (e) {
@@ -53,17 +51,43 @@ jQuery(document).ready(function ($) {
     );
   });
 
-  // Disable plugin
-  $(".disable-now").on("click", function (e) {
+  // Delete plugin
+  $(".delete-now").on("click", function (e) {
     e.preventDefault();
     var button = $(this);
-    performAction(
-      "disable_github_plugin",
-      button,
-      "Disabling...",
-      "Disabled",
-      "Disable Failed"
-    );
+    if (confirm("Are you sure you want to delete this plugin?")) {
+      performAction(
+        "delete_github_plugin",
+        button,
+        "Deleting...",
+        "Deleted",
+        "Delete Failed"
+      );
+    }
+  });
+
+  // Beta plugin toggle
+  $("#show-beta-plugins").on("change", function () {
+    var showBeta = $(this).is(":checked");
+    $.ajax({
+      url: pluginHubAjax.ajax_url,
+      type: "POST",
+      data: {
+        action: "toggle_beta_plugins",
+        nonce: pluginHubAjax.nonce,
+        show_beta: showBeta,
+      },
+      success: function (response) {
+        if (response.success) {
+          location.reload();
+        } else {
+          showMessage(response.data, "error");
+        }
+      },
+      error: function () {
+        showMessage("An error occurred. Please try again.", "error");
+      },
+    });
   });
 
   // Bulk actions
@@ -94,8 +118,26 @@ jQuery(document).ready(function ($) {
       case "update":
         bulkAction("update_github_plugin", selectedPlugins);
         break;
-      case "disable":
-        bulkAction("disable_github_plugin", selectedPlugins);
+      case "delete":
+        // Filter out active plugins
+        var inactivePlugins = selectedPlugins.filter(function (plugin) {
+          return !$('input[name="checked[]"][value="' + plugin + '"]')
+            .closest("tr")
+            .find(".deactivate-now").length;
+        });
+        if (inactivePlugins.length === 0) {
+          alert(
+            "No inactive plugins selected for deletion. Active plugins cannot be deleted."
+          );
+          return;
+        }
+        if (
+          confirm(
+            "Are you sure you want to delete the selected inactive plugins?"
+          )
+        ) {
+          bulkAction("delete_github_plugin", inactivePlugins);
+        }
         break;
     }
   });
@@ -149,7 +191,7 @@ jQuery(document).ready(function ($) {
         var plugin = plugins[processedPlugins];
         var button = $('input[name="checked[]"][value="' + plugin + '"]')
           .closest("tr")
-          .find(".row-actions span a");
+          .find(".plugin-actions a:first");
         var url = button.data("url");
 
         $.ajax({
@@ -200,44 +242,6 @@ jQuery(document).ready(function ($) {
     $('<div id="bulk-action-status"></div>').insertAfter("#plugin-hub-form");
     processNextPlugin();
   }
-
-  // Delete plugin
-  $(".delete-now").on("click", function (e) {
-    e.preventDefault();
-    var button = $(this);
-    if (confirm("Are you sure you want to delete this plugin?")) {
-      performAction(
-        "delete_github_plugin",
-        button,
-        "Deleting...",
-        "Deleted",
-        "Delete Failed"
-      );
-    }
-  });
-
-  // Beta plugin toggle
-  $("#show-beta-plugins").on("change", function () {
-    $.ajax({
-      url: pluginHubAjax.ajax_url,
-      type: "POST",
-      data: {
-        action: "toggle_beta_plugins",
-        nonce: pluginHubAjax.nonce,
-        show_beta: this.checked,
-      },
-      success: function (response) {
-        if (response.success) {
-          location.reload();
-        } else {
-          showMessage(response.data, "error");
-        }
-      },
-      error: function () {
-        showMessage("An error occurred. Please try again.", "error");
-      },
-    });
-  });
 
   function showMessage(message, type) {
     var messageDiv = $("#plugin-hub-messages");

@@ -47,7 +47,7 @@ class Plugin_Hub_Main
       wp_send_json_error('You do not have permission to change this setting.');
     }
 
-    $show_beta = isset($_POST['show_beta']) ? (bool)$_POST['show_beta'] : false;
+    $show_beta = isset($_POST['show_beta']) ? filter_var($_POST['show_beta'], FILTER_VALIDATE_BOOLEAN) : false;
     update_option('plugin_hub_show_beta', $show_beta);
 
     wp_send_json_success('Setting updated successfully.');
