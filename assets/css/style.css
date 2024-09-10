@@ -1,4 +1,4 @@
-/* plugin-hub-style.css */
+/* assets/css/style.css */
 
 .plugin-hub-container {
   display: flex;
@@ -30,12 +30,12 @@
   margin-bottom: 10px;
 }
 
-.plugins .plugin-title .row-actions {
-  color: #666;
+.plugins .column-name {
+  width: 25%;
 }
 
 .plugins .column-description {
-  width: 50%;
+  width: 45%;
 }
 
 .plugins .column-last-update {
@@ -55,6 +55,11 @@
   background-color: #f0f6fc;
 }
 
+.plugins .disabled td,
+.plugins .disabled th {
+  background-color: #f9f9f9;
+}
+
 #plugin-hub-messages {
   margin-top: 10px;
   padding: 10px;
@@ -66,6 +71,22 @@
 
 #plugin-hub-messages.error {
   border-left-color: #dc3232;
+}
+
+.plugin-action-link {
+  color: #0073aa;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 2px 5px;
+  border-radius: 3px;
+  background-color: #f1f1f1;
+  transition: all 0.3s ease;
+}
+
+.plugin-action-link:hover {
+  color: #00a0d2;
+  background-color: #e5e5e5;
+  text-decoration: none;
 }
 
 /* Responsive adjustments */
