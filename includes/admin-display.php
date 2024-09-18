@@ -1,8 +1,21 @@
+<?php
+// Check if this file is being accessed directly
+if (!defined('ABSPATH')) {
+  exit;
+}
+?>
+
 <div class="wrap">
   <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
 
   <div class="plugin-hub-container">
     <div class="plugin-hub-main">
+      <div class="tablenav top">
+        <div class="alignleft actions">
+          <a href="<?php echo wp_nonce_url(admin_url('plugins.php?page=plugin-hub&action=refresh_cache'), 'plugin_hub_refresh_cache'); ?>" class="button">Refresh Plugin List</a>
+        </div>
+      </div>
+
       <ul class="subsubsub">
         <li><a href="?page=plugin-hub&filter=all" <?php echo $filter === 'all' ? 'class="current"' : ''; ?>>All <span class="count">(<?php echo $counts['all']; ?>)</span></a> |</li>
         <li><a href="?page=plugin-hub&filter=active" <?php echo $filter === 'active' ? 'class="current"' : ''; ?>>Active <span class="count">(<?php echo $counts['active']; ?>)</span></a> |</li>

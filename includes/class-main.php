@@ -26,6 +26,7 @@ class Plugin_Hub_Main
     add_action('admin_menu', array($this->admin, 'add_admin_menu'));
     add_action('admin_enqueue_scripts', array($this->admin, 'enqueue_styles'));
     add_action('admin_enqueue_scripts', array($this->admin, 'enqueue_scripts'));
+    add_action('admin_init', array($this->admin, 'handle_refresh_cache'));
   }
 
   private function define_api_hooks()
@@ -36,7 +37,7 @@ class Plugin_Hub_Main
     add_action('wp_ajax_deactivate_github_plugin', array($this->api, 'ajax_deactivate_github_plugin'));
     add_action('wp_ajax_update_github_plugin', array($this->api, 'ajax_update_github_plugin'));
     add_action('wp_ajax_delete_github_plugin', array($this->api, 'ajax_delete_github_plugin'));
-    add_action('wp_ajax_toggle_beta_plugins', array($this, 'ajax_toggle_beta_plugins'));
+    add_action('wp_ajax_toggle_beta_plugins', array($this->admin, 'ajax_toggle_beta_plugins'));
   }
 
   public function ajax_toggle_beta_plugins()

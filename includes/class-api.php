@@ -4,7 +4,9 @@ class Plugin_Hub_API
 {
   private $organization = 'Open-WP-Club';
   private $csv_url = 'https://raw.githubusercontent.com/Open-WP-Club/.github/main/plugins.csv?token=';
-  private $github_plugins = array();  // Declare the property here
+  private $github_plugins = array();
+  private $cache_key = 'plugin_hub_csv_cache';
+  private $cache_expiration = 86400; // 24 hours
 
   public function __construct()
   {
@@ -19,6 +21,11 @@ class Plugin_Hub_API
 
   public function get_org_repos()
   {
+    $cached_data = get_transient($this->cache_key);
+    if ($cached_data !== false) {
+      return $cached_data;
+    }
+
     $response = wp_remote_get($this->csv_url);
     if (is_wp_error($response)) {
       error_log('Plugin Hub: Error fetching CSV file: ' . $response->get_error_message());
@@ -26,6 +33,15 @@ class Plugin_Hub_API
     }
 
     $csv_content = wp_remote_retrieve_body($response);
+    $repos = $this->parse_csv_content($csv_content);
+
+    set_transient($this->cache_key, $repos, $this->cache_expiration);
+
+    return $repos;
+  }
+
+  private function parse_csv_content($csv_content)
+  {
     $lines = explode("\n", trim($csv_content));
     $repos = array();
 
@@ -46,6 +62,12 @@ class Plugin_Hub_API
     }
 
     return $repos;
+  }
+
+  public function refresh_csv_cache()
+  {
+    delete_transient($this->cache_key);
+    return $this->get_org_repos();
   }
 
   public function get_latest_release($repo_url)

@@ -35,10 +35,25 @@ class Plugin_Hub_Admin
     ));
   }
 
+  public function handle_refresh_cache()
+  {
+    if (isset($_GET['action']) && $_GET['action'] === 'refresh_cache') {
+      check_admin_referer('plugin_hub_refresh_cache');
+      $api = new Plugin_Hub_API();
+      $api->refresh_csv_cache();
+      wp_redirect(admin_url('plugins.php?page=plugin-hub&cache_refreshed=1'));
+      exit;
+    }
+  }
+
   public function display_admin_page()
   {
     if (!current_user_can('manage_options')) {
       return;
+    }
+
+    if (isset($_GET['cache_refreshed']) && $_GET['cache_refreshed'] === '1') {
+      add_settings_error('plugin_hub_messages', 'plugin_hub_message', __('Plugin list refreshed successfully.', 'plugin-hub'), 'updated');
     }
 
     $api = new Plugin_Hub_API();
@@ -52,52 +67,66 @@ class Plugin_Hub_Admin
     }
 
     $filter = isset($_GET['filter']) ? sanitize_text_field($_GET['filter']) : 'all';
-    $counts = $this->get_plugin_counts($repos, true);
+    $counts = $this->get_plugin_counts($repos);
 
     include PLUGIN_HUB_PLUGIN_DIR . 'includes/admin-display.php';
   }
 
-private function get_plugin_counts($repos, $show_beta)
-    {
-        $counts = array(
-            'all' => 0,
-            'active' => 0,
-            'inactive' => 0,
-            'update' => 0,
-            'beta' => 0  // Add the 'beta' key here
-        );
+  private function get_plugin_counts($repos)
+  {
+    $counts = array(
+      'all' => 0,
+      'active' => 0,
+      'inactive' => 0,
+      'update' => 0,
+      'beta' => 0
+    );
 
-        $api = new Plugin_Hub_API();
+    $api = new Plugin_Hub_API();
+    $show_beta = get_option('plugin_hub_show_beta', false);
 
-        foreach ($repos as $repo) {
-            $latest_release = $api->get_latest_release($repo['repo_url']);
-            $is_installed = $api->is_plugin_installed($repo['name']);
-            $is_active = $api->is_plugin_active($repo['name']);
-            $update_available = $api->is_update_available($repo, $latest_release);
-            $is_beta = $latest_release && version_compare(ltrim($latest_release->tag_name, 'v'), '1.0.0', '<');
+    foreach ($repos as $repo) {
+      $latest_release = $api->get_latest_release($repo['repo_url']);
+      $is_installed = $api->is_plugin_installed($repo['name']);
+      $is_active = $api->is_plugin_active($repo['name']);
+      $update_available = $api->is_update_available($repo, $latest_release);
+      $is_beta = $latest_release && version_compare(ltrim($latest_release->tag_name, 'v'), '1.0.0', '<');
 
-            if (!$show_beta && $is_beta) {
-                continue;
-            }
+      if (!$show_beta && $is_beta) {
+        continue;
+      }
 
-            $counts['all']++;
+      $counts['all']++;
 
-            if ($is_active) {
-                $counts['active']++;
-            } elseif ($is_installed) {
-                $counts['inactive']++;
-            }
+      if ($is_active) {
+        $counts['active']++;
+      } elseif ($is_installed) {
+        $counts['inactive']++;
+      }
 
-            if ($update_available) {
-                $counts['update']++;
-            }
+      if ($update_available) {
+        $counts['update']++;
+      }
 
-            if ($is_beta) {
-                $counts['beta']++;
-            }
-        }
-
-        return $counts;
+      if ($is_beta) {
+        $counts['beta']++;
+      }
     }
 
+    return $counts;
+  }
+
+  public function ajax_toggle_beta_plugins()
+  {
+    check_ajax_referer('plugin-hub-nonce', 'nonce');
+
+    if (!current_user_can('manage_options')) {
+      wp_send_json_error('You do not have permission to change this setting.');
+    }
+
+    $show_beta = isset($_POST['show_beta']) ? filter_var($_POST['show_beta'], FILTER_VALIDATE_BOOLEAN) : false;
+    update_option('plugin_hub_show_beta', $show_beta);
+
+    wp_send_json_success('Setting updated successfully.');
+  }
 }
