@@ -56,11 +56,11 @@ if (!defined('ABSPATH')) {
           <tbody id="the-list">
             <?php foreach ($repos as $repo): ?>
               <?php
-              $latest_release = $api->get_latest_release($repo['repo_url']);
               $is_installed = $api->is_plugin_installed($repo['name']);
               $is_active = $api->is_plugin_active($repo['name']);
-              $update_available = $api->is_update_available($repo, $latest_release);
-              $is_beta = $latest_release && version_compare(ltrim($latest_release->tag_name, 'v'), '1.0.0', '<');
+              $installed_version = $api->get_installed_plugin_version($repo['name']);
+              $update_available = $api->is_update_available($repo, $installed_version);
+              $is_beta = version_compare($repo['version'], '1.0.0', '<');
 
               if (($filter === 'active' && !$is_active) ||
                 ($filter === 'inactive' && $is_active) ||
@@ -78,9 +78,9 @@ if (!defined('ABSPATH')) {
                 <td class="column-actions">
                   <div class="plugin-actions">
                     <?php if (!$is_installed): ?>
-                      <a href="#" class="button install-now" data-repo="<?php echo esc_attr($repo['name']); ?>" data-url="<?php echo esc_url($latest_release ? $latest_release->zipball_url : ''); ?>">Install Now</a>
+                      <a href="#" class="button install-now" data-repo="<?php echo esc_attr($repo['name']); ?>" data-url="<?php echo esc_url($repo['repo_url'] . '/archive/refs/tags/v' . $repo['version'] . '.zip'); ?>">Install Now</a>
                     <?php elseif ($update_available): ?>
-                      <a href="#" class="button update-now" data-repo="<?php echo esc_attr($repo['name']); ?>" data-url="<?php echo esc_url($latest_release ? $latest_release->zipball_url : ''); ?>">Update Now</a>
+                      <a href="#" class="button update-now" data-repo="<?php echo esc_attr($repo['name']); ?>" data-url="<?php echo esc_url($repo['repo_url'] . '/archive/refs/tags/v' . $repo['version'] . '.zip'); ?>">Update Now</a>
                     <?php elseif ($is_active): ?>
                       <a href="#" class="button deactivate-now" data-repo="<?php echo esc_attr($repo['name']); ?>">Deactivate</a>
                     <?php else: ?>
@@ -101,20 +101,13 @@ if (!defined('ABSPATH')) {
                   </div>
                 </td>
                 <td class="column-version">
-                  <?php echo esc_html($repo['version']); ?>
+                  <?php echo esc_html($installed_version); ?>
                   <?php if ($update_available): ?>
-                    <br><span class="update-available">Update available</span>
+                    <br><span class="update-available">Update available (<?php echo esc_html($repo['version']); ?>)</span>
                   <?php endif; ?>
                 </td>
                 <td class="column-last-update">
-                  <?php
-                  if ($latest_release) {
-                    $last_update = human_time_diff(strtotime($latest_release->published_at), current_time('timestamp'));
-                    echo esc_html($last_update . ' ago');
-                  } else {
-                    echo 'N/A';
-                  }
-                  ?>
+                  <?php echo esc_html($repo['version']); ?>
                 </td>
               </tr>
             <?php endforeach; ?>

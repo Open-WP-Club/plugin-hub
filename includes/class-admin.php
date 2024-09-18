@@ -86,11 +86,11 @@ class Plugin_Hub_Admin
     $show_beta = get_option('plugin_hub_show_beta', false);
 
     foreach ($repos as $repo) {
-      $latest_release = $api->get_latest_release($repo['repo_url']);
       $is_installed = $api->is_plugin_installed($repo['name']);
       $is_active = $api->is_plugin_active($repo['name']);
-      $update_available = $api->is_update_available($repo, $latest_release);
-      $is_beta = $latest_release && version_compare(ltrim($latest_release->tag_name, 'v'), '1.0.0', '<');
+      $installed_version = $api->get_installed_plugin_version($repo['name']);
+      $update_available = $api->is_update_available($repo, $installed_version);
+      $is_beta = version_compare($repo['version'], '1.0.0', '<');
 
       if (!$show_beta && $is_beta) {
         continue;

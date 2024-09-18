@@ -70,16 +70,6 @@ class Plugin_Hub_API
     return $this->get_org_repos();
   }
 
-  public function get_latest_release($repo_url)
-  {
-    $url = $repo_url . "/releases/latest";
-    $response = wp_remote_get($url);
-    if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) {
-      return null;
-    }
-    return json_decode(wp_remote_retrieve_body($response));
-  }
-
   public function is_plugin_installed($plugin_name)
   {
     if (!function_exists('get_plugins')) {
@@ -122,15 +112,9 @@ class Plugin_Hub_API
     return false;
   }
 
-  public function is_update_available($repo, $latest_release)
+  public function is_update_available($repo, $installed_version)
   {
-    $plugin_file = $this->get_plugin_file($repo['name']);
-    if (!$plugin_file || !$latest_release) {
-      return false;
-    }
-    $csv_version = $repo['version'];
-    $latest_version = ltrim($latest_release->tag_name, 'v');
-    return version_compare($latest_version, $csv_version, '>');
+    return version_compare($repo['version'], $installed_version, '>');
   }
 
   public function get_installed_plugin_version($plugin_name)
@@ -155,18 +139,15 @@ class Plugin_Hub_API
       $plugin_file = $this->get_plugin_file($repo['name']);
       if (!$plugin_file) continue;
 
-      $latest_release = $this->get_latest_release($repo['repo_url']);
-      if (!$latest_release) continue;
-
-      $github_version = ltrim($latest_release->tag_name, 'v');
       $wp_version = $transient->checked[$plugin_file];
+      $csv_version = $repo['version'];
 
-      if (version_compare($github_version, $wp_version, '>')) {
+      if (version_compare($csv_version, $wp_version, '>')) {
         $obj = new stdClass();
         $obj->slug = $plugin_file;
-        $obj->new_version = $github_version;
+        $obj->new_version = $csv_version;
         $obj->url = $repo['repo_url'];
-        $obj->package = $latest_release->zipball_url;
+        $obj->package = $repo['repo_url'] . '/archive/refs/tags/v' . $csv_version . '.zip';
         $transient->response[$plugin_file] = $obj;
       }
     }
