@@ -46,11 +46,10 @@ if (!defined('ABSPATH')) {
               <td id="cb" class="manage-column column-cb check-column">
                 <input id="cb-select-all-1" type="checkbox">
               </td>
-              <th scope="col" class="manage-column column-actions">Actions</th>
               <th scope="col" class="manage-column column-name column-primary">Plugin</th>
               <th scope="col" class="manage-column column-description">Description</th>
               <th scope="col" class="manage-column column-version">Version</th>
-              <th scope="col" class="manage-column column-last-update">Last Update</th>
+              <th scope="col" class="manage-column column-actions">Actions</th>
             </tr>
           </thead>
           <tbody id="the-list">
@@ -75,20 +74,6 @@ if (!defined('ABSPATH')) {
                 <th scope="row" class="check-column">
                   <input type="checkbox" name="checked[]" value="<?php echo esc_attr($repo['name']); ?>">
                 </th>
-                <td class="column-actions">
-                  <div class="plugin-actions">
-                    <?php if (!$is_installed): ?>
-                      <a href="#" class="button install-now" data-repo="<?php echo esc_attr($repo['name']); ?>" data-url="<?php echo esc_url($repo['repo_url'] . '/archive/refs/tags/v' . $repo['version'] . '.zip'); ?>">Install Now</a>
-                    <?php elseif ($update_available): ?>
-                      <a href="#" class="button update-now" data-repo="<?php echo esc_attr($repo['name']); ?>" data-url="<?php echo esc_url($repo['repo_url'] . '/archive/refs/tags/v' . $repo['version'] . '.zip'); ?>">Update Now</a>
-                    <?php elseif ($is_active): ?>
-                      <a href="#" class="button deactivate-now" data-repo="<?php echo esc_attr($repo['name']); ?>">Deactivate</a>
-                    <?php else: ?>
-                      <a href="#" class="button activate-now" data-repo="<?php echo esc_attr($repo['name']); ?>">Activate</a>
-                      <a href="#" class="button delete-now" data-repo="<?php echo esc_attr($repo['name']); ?>">Delete</a>
-                    <?php endif; ?>
-                  </div>
-                </td>
                 <td class="plugin-title column-primary">
                   <strong><?php echo esc_html($repo['display_name']); ?></strong>
                   <div class="row-actions visible">
@@ -106,8 +91,19 @@ if (!defined('ABSPATH')) {
                     <br><span class="update-available">Update available (<?php echo esc_html($repo['version']); ?>)</span>
                   <?php endif; ?>
                 </td>
-                <td class="column-last-update">
-                  <?php echo esc_html($repo['version']); ?>
+                <td class="column-actions">
+                  <div class="plugin-actions">
+                    <?php if (!$is_installed): ?>
+                      <a href="#" class="button install-now" data-repo="<?php echo esc_attr($repo['name']); ?>" data-version="<?php echo esc_attr($repo['version']); ?>">Install Now</a>
+                    <?php elseif ($update_available): ?>
+                      <a href="#" class="button update-now" data-repo="<?php echo esc_attr($repo['name']); ?>" data-version="<?php echo esc_attr($repo['version']); ?>">Update Now</a>
+                    <?php elseif ($is_active): ?>
+                      <a href="#" class="button deactivate-now" data-repo="<?php echo esc_attr($repo['name']); ?>">Deactivate</a>
+                    <?php else: ?>
+                      <a href="#" class="button activate-now" data-repo="<?php echo esc_attr($repo['name']); ?>">Activate</a>
+                      <a href="#" class="button delete-now" data-repo="<?php echo esc_attr($repo['name']); ?>">Delete</a>
+                    <?php endif; ?>
+                  </div>
                 </td>
               </tr>
             <?php endforeach; ?>

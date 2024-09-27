@@ -1,14 +1,19 @@
+// plugin-hub-script.js
+
 jQuery(document).ready(function ($) {
   // Install plugin
   $(".install-now").on("click", function (e) {
     e.preventDefault();
     var button = $(this);
+    var repo = button.data("repo");
+    var version = button.data("version");
     performAction(
       "install_github_plugin",
       button,
       "Installing...",
       "Installed",
-      "Install Failed"
+      "Install Failed",
+      { repo: repo, version: version }
     );
   });
 
@@ -16,25 +21,83 @@ jQuery(document).ready(function ($) {
   $(".update-now").on("click", function (e) {
     e.preventDefault();
     var button = $(this);
-    performAction(
-      "update_github_plugin",
-      button,
-      "Updating...",
-      "Updated",
-      "Update Failed"
-    );
+    var repo = button.data("repo");
+    var version = button.data("version");
+    updatePlugin(button, repo, version);
   });
+
+  function updatePlugin(button, repo, version) {
+    button.text("Updating...");
+    $.ajax({
+      url: pluginHubAjax.ajax_url,
+      type: "POST",
+      data: {
+        action: "update_github_plugin",
+        nonce: pluginHubAjax.nonce,
+        repo: repo,
+        version: version,
+      },
+      success: function (response) {
+        if (response.success) {
+          button.text("Updated");
+          showMessage(response.data, "success");
+          // Verify update after a short delay
+          setTimeout(function () {
+            verifyUpdate(repo, version);
+          }, 2000);
+        } else {
+          button.text("Update Failed");
+          showMessage(response.data, "error");
+        }
+      },
+      error: function () {
+        button.text("Update Failed");
+        showMessage("An error occurred. Please try again.", "error");
+      },
+    });
+  }
+
+  function verifyUpdate(repo, version) {
+    $.ajax({
+      url: pluginHubAjax.ajax_url,
+      type: "POST",
+      data: {
+        action: "verify_plugin_update",
+        nonce: pluginHubAjax.nonce,
+        repo: repo,
+        version: version,
+      },
+      success: function (response) {
+        if (response.success) {
+          showMessage("Update verified: " + response.data, "success");
+          setTimeout(function () {
+            location.reload();
+          }, 1000);
+        } else {
+          showMessage("Update verification failed: " + response.data, "error");
+        }
+      },
+      error: function () {
+        showMessage(
+          "Failed to verify update. Please refresh the page and check the plugin version.",
+          "error"
+        );
+      },
+    });
+  }
 
   // Activate plugin
   $(".activate-now").on("click", function (e) {
     e.preventDefault();
     var button = $(this);
+    var repo = button.data("repo");
     performAction(
       "activate_github_plugin",
       button,
       "Activating...",
       "Activated",
-      "Activation Failed"
+      "Activation Failed",
+      { repo: repo }
     );
   });
 
@@ -42,12 +105,14 @@ jQuery(document).ready(function ($) {
   $(".deactivate-now").on("click", function (e) {
     e.preventDefault();
     var button = $(this);
+    var repo = button.data("repo");
     performAction(
       "deactivate_github_plugin",
       button,
       "Deactivating...",
       "Deactivated",
-      "Deactivation Failed"
+      "Deactivation Failed",
+      { repo: repo }
     );
   });
 
@@ -55,13 +120,15 @@ jQuery(document).ready(function ($) {
   $(".delete-now").on("click", function (e) {
     e.preventDefault();
     var button = $(this);
+    var repo = button.data("repo");
     if (confirm("Are you sure you want to delete this plugin?")) {
       performAction(
         "delete_github_plugin",
         button,
         "Deleting...",
         "Deleted",
-        "Delete Failed"
+        "Delete Failed",
+        { repo: repo }
       );
     }
   });
@@ -147,20 +214,20 @@ jQuery(document).ready(function ($) {
     button,
     processingText,
     successText,
-    failText
+    failText,
+    data
   ) {
-    var repo = button.data("repo");
-    var url = button.data("url");
     button.text(processingText);
     $.ajax({
       url: pluginHubAjax.ajax_url,
       type: "POST",
-      data: {
-        action: action,
-        nonce: pluginHubAjax.nonce,
-        repo: repo,
-        url: url,
-      },
+      data: $.extend(
+        {
+          action: action,
+          nonce: pluginHubAjax.nonce,
+        },
+        data
+      ),
       success: function (response) {
         if (response.success) {
           button.text(successText);
@@ -192,34 +259,26 @@ jQuery(document).ready(function ($) {
         var button = $('input[name="checked[]"][value="' + plugin + '"]')
           .closest("tr")
           .find(".plugin-actions a:first");
-        var url = button.data("url");
+        var version = button.data("version");
 
-        $.ajax({
-          url: pluginHubAjax.ajax_url,
-          type: "POST",
-          data: {
-            action: action,
-            nonce: pluginHubAjax.nonce,
-            repo: plugin,
-            url: url,
-          },
-          success: function (response) {
+        performAction(
+          action,
+          button,
+          "Processing...",
+          "Processed",
+          "Failed",
+          { repo: plugin, version: version },
+          function (success) {
             processedPlugins++;
-            if (response.success) {
+            if (success) {
               successCount++;
             } else {
               failCount++;
             }
             updateBulkActionStatus();
             processNextPlugin();
-          },
-          error: function () {
-            processedPlugins++;
-            failCount++;
-            updateBulkActionStatus();
-            processNextPlugin();
-          },
-        });
+          }
+        );
       } else {
         showMessage(
           "Bulk action completed. Success: " +

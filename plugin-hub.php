@@ -1,12 +1,16 @@
 <?php
 
 /**
- * Plugin Name: Plugin Hub
- * Description: Manages WordPress plugins from GitHub repositories, focusing on Open-WP-Club
- * Version: 1.4
- * Author: Your Name
- * Author URI: http://yourwebsite.com/
- * License: GPL2
+ * Plugin Name:             Plugin Hub
+ * Plugin URI:              https://github.com/Open-WP-Club/plugin-hub
+ * Description:             Manages WordPress plugins from GitHub repositories, focusing on Open-WP-Club
+ * Version:                 1.0.2
+ * Author:                  Gabriel Kanev
+ * Author URI:              https://gkanev.com
+ * License:                 GPL-2.0 License
+ * Requires at least:       6.0
+ * Requires PHP:            7.4
+ * Tested up to:            6.6.2
  */
 
 // If this file is called directly, abort.
