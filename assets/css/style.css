@@ -1,109 +1,202 @@
-/* assets/css/style.css */
-
-.plugin-hub-container {
-  display: flex;
-  gap: 20px;
+/* plugin-hub-style.css */
+.wrap {
+  margin: 10px 20px 0 2px;
+  position: relative;
 }
 
+#wpbody-content {
+  padding-bottom: 65px;
+  float: left;
+  width: 100%;
+  overflow: visible !important;
+}
+
+.wp-heading-inline {
+  margin-right: 5px;
+  margin-bottom: 20px;
+}
+
+/* Main container layout */
+.plugin-install-tab-wrapper {
+  margin-bottom: 20px;
+}
+
+/* Forces content area to make room for sidebar */
 .plugin-hub-main {
-  flex: 1;
+  float: left;
+  width: calc(100% - 300px);
 }
 
+/* Sidebar positioning */
 .plugin-hub-sidebar {
-  width: 200px;
-  background: #f9f9f9;
-  padding: 15px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  float: right;
+  width: 280px;
+  margin: 0 0 0 20px;
+  background: #fff;
+  border: 1px solid #c3c4c7;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .04);
+  box-sizing: border-box;
 }
 
-.plugin-hub-sidebar h3 {
-  margin-top: 0;
+.wp-filter {
+  margin-bottom: 20px;
+  padding: 12px 16px;
+  border: 1px solid #c3c4c7;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .04);
+  background: #fff;
+  color: #50575e;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
 }
 
-.plugin-hub-sidebar ul {
-  list-style-type: none;
+/* Plugin list table styles */
+.widefat {
+  border: 1px solid #c3c4c7;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .04);
+  margin: 0;
+}
+
+/* Subsubsub navigation styles */
+.subsubsub {
+  margin: 12px 0 25px;
+  padding: 0;
+  font-size: 13px;
+  color: #646970;
+  list-style: none;
+}
+
+.subsubsub li {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  white-space: nowrap;
+}
+
+.subsubsub a {
+  line-height: 2;
+  padding: .2em;
+  text-decoration: none;
+  color: #2271b1;
+}
+
+.subsubsub a.current {
+  color: #000;
+  font-weight: 600;
+}
+
+.subsubsub a .count {
+  color: #50575e;
+  font-weight: 400;
+}
+
+/* Sidebar styles */
+.plugin-hub-sidebar {
+  padding: 8px 12px;
+}
+
+.plugin-hub-sidebar h2 {
+  margin: 0;
+  padding: 8px 0;
+  font-size: 14px;
+  line-height: 1.4;
+  border-bottom: 1px solid #c3c4c7;
+}
+
+.plugin-hub-sidebar .inside {
+  margin: 12px 0;
   padding: 0;
 }
 
-.plugin-hub-sidebar li {
-  margin-bottom: 10px;
+.plugin-hub-sidebar ul {
+  margin: 0;
+  padding: 0;
 }
 
-.plugins .column-name {
-  width: 25%;
+.plugin-hub-sidebar ul li {
+  margin-bottom: 8px;
+  list-style: none;
 }
 
-.plugins .column-description {
-  width: 45%;
+.plugin-hub-sidebar .button {
+  display: inline-block;
+  margin: 0;
 }
 
-.plugins .column-last-update {
-  width: 15%;
+.plugin-hub-sidebar label {
+  display: block;
+  margin-bottom: 4px;
 }
 
-.plugins .plugin-description {
-  margin: 5px 0;
+/* Search input styles */
+#plugin-search-input {
+  min-width: 280px;
+  padding: 0 8px;
+  line-height: 2;
+  min-height: 30px;
 }
 
-.plugins .plugin-description p {
-  margin: 0 0 8px;
-}
-
+/* Plugin table styles */
 .plugins .active td,
 .plugins .active th {
   background-color: #f0f6fc;
 }
 
-.plugins .disabled td,
-.plugins .disabled th {
-  background-color: #f9f9f9;
-}
-
-#plugin-hub-messages {
-  margin-top: 10px;
-  padding: 10px;
-  border-left: 4px solid #46b450;
-  background: #fff;
-  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .1);
-  display: none;
-}
-
-#plugin-hub-messages.error {
-  border-left-color: #dc3232;
-}
-
-.plugin-action-link {
-  color: #0073aa;
-  text-decoration: none;
+.plugins .name {
+  font-size: 13px;
   font-weight: 600;
-  padding: 2px 5px;
-  border-radius: 3px;
-  background-color: #f1f1f1;
-  transition: all 0.3s ease;
 }
 
-.plugin-action-link:hover {
-  color: #00a0d2;
-  background-color: #e5e5e5;
-  text-decoration: none;
+.plugins .desc {
+  margin: 6px 0 12px;
+  color: #50575e;
 }
 
-/* Responsive adjustments */
-@media screen and (max-width: 782px) {
-  .plugin-hub-container {
-    flex-direction: column;
+.plugin-version-author-uri {
+  font-size: 13px;
+  margin-top: 8px;
+  color: #646970;
+}
+
+.update-message {
+  margin-left: 10px;
+  padding: 2px 8px;
+  background-color: #f0f6fc;
+}
+
+/* Clear fix */
+.wrap:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Responsive styles */
+@media screen and (max-width: 1100px) {
+  .plugin-hub-main {
+    width: 100%;
+    float: none;
   }
 
   .plugin-hub-sidebar {
-    width: auto;
+    width: 100%;
+    float: none;
+    margin: 20px 0 0 0;
+  }
+}
+
+@media screen and (max-width: 782px) {
+  .wp-filter {
+    flex-direction: column;
+    align-items: stretch;
   }
 
-  .plugins .column-last-update {
-    display: none;
+  #plugin-search-input {
+    width: 100%;
+    max-width: none;
   }
 
-  .plugins .column-description {
-    width: auto;
+  .subsubsub {
+    margin: 8px 0 15px;
   }
 }
