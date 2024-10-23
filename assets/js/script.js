@@ -1,5 +1,3 @@
-// plugin-hub-script.js
-
 jQuery(document).ready(function ($) {
   // Install plugin
   $(".install-now").on("click", function (e) {
