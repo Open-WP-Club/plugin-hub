@@ -14,6 +14,9 @@ if (!defined('ABSPATH')) {
         <div class="alignleft actions">
           <a href="<?php echo wp_nonce_url(admin_url('plugins.php?page=plugin-hub&action=refresh_cache'), 'plugin_hub_refresh_cache'); ?>" class="button">Refresh Plugin List</a>
         </div>
+        <div class="alignright">
+          <input type="search" id="plugin-search-input" class="wp-filter-search" placeholder="Search plugins..." aria-describedby="live-search-desc">
+        </div>
       </div>
 
       <ul class="subsubsub">
@@ -47,9 +50,9 @@ if (!defined('ABSPATH')) {
                 <input id="cb-select-all-1" type="checkbox">
               </td>
               <th scope="col" class="manage-column column-name column-primary">Plugin</th>
+              <th scope="col" class="manage-column column-actions">Actions</th>
               <th scope="col" class="manage-column column-description">Description</th>
               <th scope="col" class="manage-column column-version">Version</th>
-              <th scope="col" class="manage-column column-actions">Actions</th>
             </tr>
           </thead>
           <tbody id="the-list">
@@ -80,30 +83,32 @@ if (!defined('ABSPATH')) {
                     <span class="repo"><a href="<?php echo esc_url($repo['repo_url']); ?>" target="_blank">View on GitHub</a></span>
                   </div>
                 </td>
+                <td class="column-actions">
+                  <?php if (!$is_installed): ?>
+                    <a href="#" class="button install-now" data-repo="<?php echo esc_attr($repo['name']); ?>" data-version="<?php echo esc_attr($repo['version']); ?>">Install Now</a>
+                  <?php elseif ($update_available): ?>
+                    <a href="#" class="button update-now" data-repo="<?php echo esc_attr($repo['name']); ?>" data-version="<?php echo esc_attr($repo['version']); ?>">Update Now</a>
+                  <?php elseif ($is_active): ?>
+                    <a href="#" class="button deactivate-now" data-repo="<?php echo esc_attr($repo['name']); ?>">Deactivate</a>
+                  <?php else: ?>
+                    <a href="#" class="button activate-now" data-repo="<?php echo esc_attr($repo['name']); ?>">Activate</a>
+                    <a href="#" class="button delete-now" data-repo="<?php echo esc_attr($repo['name']); ?>">Delete</a>
+                  <?php endif; ?>
+                </td>
                 <td class="column-description desc">
                   <div class="plugin-description">
                     <p><?php echo esc_html($repo['description']); ?></p>
                   </div>
                 </td>
                 <td class="column-version">
-                  <?php echo esc_html($installed_version); ?>
-                  <?php if ($update_available): ?>
-                    <br><span class="update-available">Update available (<?php echo esc_html($repo['version']); ?>)</span>
-                  <?php endif; ?>
-                </td>
-                <td class="column-actions">
-                  <div class="plugin-actions">
-                    <?php if (!$is_installed): ?>
-                      <a href="#" class="button install-now" data-repo="<?php echo esc_attr($repo['name']); ?>" data-version="<?php echo esc_attr($repo['version']); ?>">Install Now</a>
-                    <?php elseif ($update_available): ?>
-                      <a href="#" class="button update-now" data-repo="<?php echo esc_attr($repo['name']); ?>" data-version="<?php echo esc_attr($repo['version']); ?>">Update Now</a>
-                    <?php elseif ($is_active): ?>
-                      <a href="#" class="button deactivate-now" data-repo="<?php echo esc_attr($repo['name']); ?>">Deactivate</a>
-                    <?php else: ?>
-                      <a href="#" class="button activate-now" data-repo="<?php echo esc_attr($repo['name']); ?>">Activate</a>
-                      <a href="#" class="button delete-now" data-repo="<?php echo esc_attr($repo['name']); ?>">Delete</a>
+                  <?php if (!$is_installed): ?>
+                    Latest version is <?php echo esc_html($repo['version']); ?>
+                  <?php else: ?>
+                    Installed version is <?php echo esc_html($installed_version); ?>
+                    <?php if ($update_available): ?>
+                      <br>Update available (<?php echo esc_html($repo['version']); ?>)
                     <?php endif; ?>
-                  </div>
+                  <?php endif; ?>
                 </td>
               </tr>
             <?php endforeach; ?>
