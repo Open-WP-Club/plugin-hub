@@ -1,5 +1,3 @@
-// plugin-hub-script.js
-
 jQuery(document).ready(function ($) {
   // Install plugin
   $(".install-now").on("click", function (e) {
@@ -121,16 +119,14 @@ jQuery(document).ready(function ($) {
     e.preventDefault();
     var button = $(this);
     var repo = button.data("repo");
-    if (confirm("Are you sure you want to delete this plugin?")) {
-      performAction(
-        "delete_github_plugin",
-        button,
-        "Deleting...",
-        "Deleted",
-        "Delete Failed",
-        { repo: repo }
-      );
-    }
+    performAction(
+      "delete_github_plugin",
+      button,
+      "Deleting...",
+      "Deleted",
+      "Delete Failed",
+      { repo: repo }
+    );
   });
 
   // Beta plugin toggle
@@ -186,7 +182,6 @@ jQuery(document).ready(function ($) {
         bulkAction("update_github_plugin", selectedPlugins);
         break;
       case "delete":
-        // Filter out active plugins
         var inactivePlugins = selectedPlugins.filter(function (plugin) {
           return !$('input[name="checked[]"][value="' + plugin + '"]')
             .closest("tr")
@@ -198,13 +193,7 @@ jQuery(document).ready(function ($) {
           );
           return;
         }
-        if (
-          confirm(
-            "Are you sure you want to delete the selected inactive plugins?"
-          )
-        ) {
-          bulkAction("delete_github_plugin", inactivePlugins);
-        }
+        bulkAction("delete_github_plugin", inactivePlugins);
         break;
     }
   });
@@ -318,4 +307,27 @@ jQuery(document).ready(function ($) {
       messageDiv.fadeOut();
     }, 3000);
   }
+  // Plugin search functionality
+  $("#plugin-search-input").on("keyup", function () {
+    var searchText = $(this).val().toLowerCase();
+    $("#the-list tr").each(function () {
+      var pluginName = $(this)
+        .find(".plugin-title strong")
+        .text()
+        .toLowerCase();
+      var pluginDescription = $(this)
+        .find(".plugin-description p")
+        .text()
+        .toLowerCase();
+
+      if (
+        pluginName.indexOf(searchText) > -1 ||
+        pluginDescription.indexOf(searchText) > -1
+      ) {
+        $(this).show();
+      } else {
+        $(this).hide();
+      }
+    });
+  });
 });
