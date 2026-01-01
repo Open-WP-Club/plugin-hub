@@ -1,60 +1,68 @@
 <?php
-// Check if this file is being accessed directly
-if (!defined('ABSPATH')) {
-  exit;
+/**
+ * Admin display template.
+ *
+ * @package    PluginHub
+ * @subpackage PluginHub/includes
+ * @since      1.0.0
+ */
+
+// Check if this file is being accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
 }
 ?>
 
 <div class="wrap">
-  <h1 class="wp-heading-inline"><?php echo esc_html(get_admin_page_title()); ?></h1>
+	<h1 class="wp-heading-inline"><?php echo esc_html( get_admin_page_title() ); ?></h1>
 
-  <div id="poststuff">
-    <div id="post-body" class="metabox-holder">
-      <div id="post-body-content">
-        <div class="wp-filter">
-          <div class="search-form">
-            <input type="search" id="plugin-search-input" placeholder="Search installed plugins..." size="40">
-          </div>
-        </div>
+	<div id="poststuff">
+		<div id="post-body" class="metabox-holder">
+			<div id="post-body-content">
+				<div class="wp-filter">
+					<div class="search-form">
+						<input type="search" id="plugin-search-input" placeholder="<?php esc_attr_e( 'Search installed plugins...', 'plugin-hub' ); ?>" size="40">
+					</div>
+				</div>
 
-        <form id="plugin-hub-form" method="post">
-          <?php wp_nonce_field('plugin_hub_bulk_action', 'plugin_hub_nonce'); ?>
+				<form id="plugin-hub-form" method="post">
+					<?php wp_nonce_field( 'plugin_hub_bulk_action', 'plugin_hub_nonce' ); ?>
 
-          <ul class="subsubsub">
-            <li><a href="?page=plugin-hub&filter=all" <?php echo $filter === 'all' ? 'class="current"' : ''; ?>>All <span class="count">(<?php echo $counts['all']; ?>)</span></a> |</li>
-            <li><a href="?page=plugin-hub&filter=active" <?php echo $filter === 'active' ? 'class="current"' : ''; ?>>Active <span class="count">(<?php echo $counts['active']; ?>)</span></a> |</li>
-            <li><a href="?page=plugin-hub&filter=inactive" <?php echo $filter === 'inactive' ? 'class="current"' : ''; ?>>Inactive <span class="count">(<?php echo $counts['inactive']; ?>)</span></a> |</li>
-            <li><a href="?page=plugin-hub&filter=update" <?php echo $filter === 'update' ? 'class="current"' : ''; ?>>Updates Available <span class="count">(<?php echo $counts['update']; ?>)</span></a> |</li>
-            <li><a href="?page=plugin-hub&filter=beta" <?php echo $filter === 'beta' ? 'class="current"' : ''; ?>>Beta <span class="count">(<?php echo $counts['beta']; ?>)</span></a></li>
-          </ul>
+					<ul class="subsubsub">
+						<li><a href="?page=plugin-hub&filter=all" <?php echo 'all' === $filter ? 'class="current"' : ''; ?>><?php esc_html_e( 'All', 'plugin-hub' ); ?> <span class="count">(<?php echo absint( $counts['all'] ); ?>)</span></a> |</li>
+						<li><a href="?page=plugin-hub&filter=active" <?php echo 'active' === $filter ? 'class="current"' : ''; ?>><?php esc_html_e( 'Active', 'plugin-hub' ); ?> <span class="count">(<?php echo absint( $counts['active'] ); ?>)</span></a> |</li>
+						<li><a href="?page=plugin-hub&filter=inactive" <?php echo 'inactive' === $filter ? 'class="current"' : ''; ?>><?php esc_html_e( 'Inactive', 'plugin-hub' ); ?> <span class="count">(<?php echo absint( $counts['inactive'] ); ?>)</span></a> |</li>
+						<li><a href="?page=plugin-hub&filter=update" <?php echo 'update' === $filter ? 'class="current"' : ''; ?>><?php esc_html_e( 'Updates Available', 'plugin-hub' ); ?> <span class="count">(<?php echo absint( $counts['update'] ); ?>)</span></a> |</li>
+						<li><a href="?page=plugin-hub&filter=beta" <?php echo 'beta' === $filter ? 'class="current"' : ''; ?>><?php esc_html_e( 'Beta', 'plugin-hub' ); ?> <span class="count">(<?php echo absint( $counts['beta'] ); ?>)</span></a></li>
+					</ul>
 
-          <div class="tablenav top">
-            <div class="alignleft actions bulkactions">
-              <label for="bulk-action-selector-top" class="screen-reader-text">Select bulk action</label>
-              <select name="action" id="bulk-action-selector-top">
-                <option value="-1">Bulk Actions</option>
-                <option value="activate">Activate</option>
-                <option value="deactivate">Deactivate</option>
-                <option value="update">Update</option>
-                <option value="delete">Delete</option>
-              </select>
-              <input type="submit" class="button action" value="Apply">
-            </div>
-          </div>
+					<div class="tablenav top">
+						<div class="alignleft actions bulkactions">
+							<label for="bulk-action-selector-top" class="screen-reader-text"><?php esc_html_e( 'Select bulk action', 'plugin-hub' ); ?></label>
+							<select name="action" id="bulk-action-selector-top">
+								<option value="-1"><?php esc_html_e( 'Bulk Actions', 'plugin-hub' ); ?></option>
+								<option value="activate"><?php esc_html_e( 'Activate', 'plugin-hub' ); ?></option>
+								<option value="deactivate"><?php esc_html_e( 'Deactivate', 'plugin-hub' ); ?></option>
+								<option value="update"><?php esc_html_e( 'Update', 'plugin-hub' ); ?></option>
+								<option value="delete"><?php esc_html_e( 'Delete', 'plugin-hub' ); ?></option>
+							</select>
+							<input type="submit" class="button action" value="<?php esc_attr_e( 'Apply', 'plugin-hub' ); ?>">
+						</div>
+					</div>
 
-          <table class="wp-list-table widefat plugins">
-            <thead>
-              <tr>
-                <td class="manage-column column-cb check-column">
-                  <input id="cb-select-all-1" type="checkbox">
-                </td>
-                <th scope="col" class="manage-column column-name column-primary">Plugin</th>
-                <th scope="col" class="manage-column column-description">Description</th>
-              </tr>
-            </thead>
+					<table class="wp-list-table widefat plugins">
+						<thead>
+							<tr>
+								<td class="manage-column column-cb check-column">
+									<input id="cb-select-all-1" type="checkbox">
+								</td>
+								<th scope="col" class="manage-column column-name column-primary"><?php esc_html_e( 'Plugin', 'plugin-hub' ); ?></th>
+								<th scope="col" class="manage-column column-description"><?php esc_html_e( 'Description', 'plugin-hub' ); ?></th>
+							</tr>
+						</thead>
 
-            <tbody id="the-list">
-              <?php foreach ($repos as $repo): ?>
+						<tbody id="the-list">
+							<?php foreach ( $repos as $repo ) : ?>
                 <?php
                 $is_installed = $api->is_plugin_installed($repo['name']);
                 $is_active = $api->is_plugin_active($repo['name']);

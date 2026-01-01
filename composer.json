@@ -1,0 +1,40 @@
+{
+  "name": "open-wp-club/plugin-hub",
+  "description": "WordPress plugin for managing GitHub-hosted plugins",
+  "type": "wordpress-plugin",
+  "license": "GPL-2.0-or-later",
+  "authors": [
+    {
+      "name": "Open WP Club",
+      "homepage": "https://openwpclub.com"
+    }
+  ],
+  "require": {
+    "php": ">=8.0"
+  },
+  "require-dev": {
+    "squizlabs/php_codesniffer": "^3.7",
+    "wp-coding-standards/wpcs": "^3.0",
+    "phpstan/phpstan": "^1.10",
+    "phpcompatibility/php-compatibility": "^9.3"
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
+  },
+  "scripts": {
+    "phpcs": "phpcs --standard=WordPress --extensions=php --ignore=*/vendor/*,*/node_modules/* .",
+    "phpcbf": "phpcbf --standard=WordPress --extensions=php --ignore=*/vendor/*,*/node_modules/* .",
+    "phpstan": "phpstan analyse includes/ plugin-hub.php",
+    "lint": [
+      "@phpcs",
+      "@phpstan"
+    ],
+    "fix": "@phpcbf"
+  },
+  "support": {
+    "issues": "https://github.com/Open-WP-Club/plugin-hub/issues",
+    "source": "https://github.com/Open-WP-Club/plugin-hub"
+  }
+}

@@ -1,61 +1,125 @@
 <?php
+/**
+ * The core plugin class.
+ *
+ * @package    PluginHub
+ * @subpackage PluginHub/includes
+ * @since      1.0.0
+ */
 
-class Plugin_Hub_Main
-{
-  private $admin;
-  private $api;
+namespace PluginHub;
 
-  public function __construct()
-  {
-    $this->load_dependencies();
-    $this->define_admin_hooks();
-    $this->define_api_hooks();
-  }
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
-  private function load_dependencies()
-  {
-    require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-admin.php';
-    require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-api.php';
+/**
+ * Main plugin class.
+ *
+ * Orchestrates the plugin functionality by loading dependencies
+ * and defining hooks for the admin area and API.
+ *
+ * @since 1.0.0
+ */
+class Main {
 
-    $this->admin = new Plugin_Hub_Admin();
-    $this->api = new Plugin_Hub_API();
-  }
+	/**
+	 * The admin instance.
+	 *
+	 * @since  1.0.0
+	 * @access private
+	 * @var    Admin
+	 */
+	private $admin;
 
-  private function define_admin_hooks()
-  {
-    add_action('admin_menu', array($this->admin, 'add_admin_menu'));
-    add_action('admin_enqueue_scripts', array($this->admin, 'enqueue_styles'));
-    add_action('admin_enqueue_scripts', array($this->admin, 'enqueue_scripts'));
-    add_action('admin_init', array($this->admin, 'handle_refresh_cache'));
-  }
+	/**
+	 * The API instance.
+	 *
+	 * @since  1.0.0
+	 * @access private
+	 * @var    API
+	 */
+	private $api;
 
-  private function define_api_hooks()
-  {
-    add_filter('pre_set_site_transient_update_plugins', array($this->api, 'check_for_plugin_updates'));
-    add_action('wp_ajax_install_github_plugin', array($this->api, 'ajax_install_github_plugin'));
-    add_action('wp_ajax_activate_github_plugin', array($this->api, 'ajax_activate_github_plugin'));
-    add_action('wp_ajax_deactivate_github_plugin', array($this->api, 'ajax_deactivate_github_plugin'));
-    add_action('wp_ajax_update_github_plugin', array($this->api, 'ajax_update_github_plugin'));
-    add_action('wp_ajax_delete_github_plugin', array($this->api, 'ajax_delete_github_plugin'));
-    add_action('wp_ajax_toggle_beta_plugins', array($this->admin, 'ajax_toggle_beta_plugins'));
-  }
+	/**
+	 * Initialize the class and set its properties.
+	 *
+	 * @since 1.0.0
+	 */
+	public function __construct() {
+		$this->load_dependencies();
+		$this->define_admin_hooks();
+		$this->define_api_hooks();
+	}
 
-  public function ajax_toggle_beta_plugins()
-  {
-    check_ajax_referer('plugin-hub-nonce', 'nonce');
+	/**
+	 * Load the required dependencies for this plugin.
+	 *
+	 * @since  1.0.0
+	 * @access private
+	 */
+	private function load_dependencies() {
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-admin.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-api.php';
 
-    if (!current_user_can('manage_options')) {
-      wp_send_json_error('You do not have permission to change this setting.');
-    }
+		$this->admin = new Admin();
+		$this->api   = new API();
+	}
 
-    $show_beta = isset($_POST['show_beta']) ? filter_var($_POST['show_beta'], FILTER_VALIDATE_BOOLEAN) : false;
-    update_option('plugin_hub_show_beta', $show_beta);
+	/**
+	 * Register all of the hooks related to the admin area functionality.
+	 *
+	 * @since  1.0.0
+	 * @access private
+	 */
+	private function define_admin_hooks() {
+		add_action( 'admin_menu', array( $this->admin, 'add_admin_menu' ) );
+		add_action( 'admin_enqueue_scripts', array( $this->admin, 'enqueue_styles' ) );
+		add_action( 'admin_enqueue_scripts', array( $this->admin, 'enqueue_scripts' ) );
+		add_action( 'admin_init', array( $this->admin, 'handle_refresh_cache' ) );
+	}
 
-    wp_send_json_success('Setting updated successfully.');
-  }
+	/**
+	 * Register all of the hooks related to the API functionality.
+	 *
+	 * @since  1.0.0
+	 * @access private
+	 */
+	private function define_api_hooks() {
+		add_filter( 'pre_set_site_transient_update_plugins', array( $this->api, 'check_for_plugin_updates' ) );
+		add_action( 'wp_ajax_install_github_plugin', array( $this->api, 'ajax_install_github_plugin' ) );
+		add_action( 'wp_ajax_activate_github_plugin', array( $this->api, 'ajax_activate_github_plugin' ) );
+		add_action( 'wp_ajax_deactivate_github_plugin', array( $this->api, 'ajax_deactivate_github_plugin' ) );
+		add_action( 'wp_ajax_update_github_plugin', array( $this->api, 'ajax_update_github_plugin' ) );
+		add_action( 'wp_ajax_delete_github_plugin', array( $this->api, 'ajax_delete_github_plugin' ) );
+		add_action( 'wp_ajax_toggle_beta_plugins', array( $this->admin, 'ajax_toggle_beta_plugins' ) );
+	}
 
-  public function run()
-  {
-    // Future functionality can be added here
-  }
+	/**
+	 * Toggle beta plugins visibility via AJAX.
+	 *
+	 * @since 1.0.0
+	 */
+	public function ajax_toggle_beta_plugins() {
+		check_ajax_referer( 'plugin-hub-nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( esc_html__( 'You do not have permission to change this setting.', 'plugin-hub' ) );
+		}
+
+		$show_beta = isset( $_POST['show_beta'] ) ? filter_var( wp_unslash( $_POST['show_beta'] ), FILTER_VALIDATE_BOOLEAN ) : false;
+		update_option( 'plugin_hub_show_beta', $show_beta );
+
+		wp_send_json_success( esc_html__( 'Setting updated successfully.', 'plugin-hub' ) );
+	}
+
+	/**
+	 * Run the plugin.
+	 *
+	 * @since 1.0.0
+	 */
+	public function run() {
+		// Future functionality can be added here.
+	}
 }
