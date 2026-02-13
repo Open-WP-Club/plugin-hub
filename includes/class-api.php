@@ -40,7 +40,7 @@ class API {
 	 * @access private
 	 * @var    string
 	 */
-	private $csv_url = 'https://raw.githubusercontent.com/Open-WP-Club/.github/main/plugins.csv?token=';
+	private $csv_url = 'https://raw.githubusercontent.com/Open-WP-Club/.github/main/plugins.csv';
 
 	/**
 	 * GitHub plugins array.
@@ -70,12 +70,24 @@ class API {
 	private $cache_expiration = DAY_IN_SECONDS;
 
 	/**
+	 * Log a debug message if WP_DEBUG is enabled.
+	 *
+	 * @since  1.2.0
+	 * @access private
+	 * @param  string $message The message to log.
+	 */
+	private function log( $message ) {
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log( 'Plugin Hub: ' . $message );
+		}
+	}
+
+	/**
 	 * Initialize the class.
 	 *
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		$this->csv_url .= time();
 		$this->load_github_plugins();
 	}
 
@@ -103,7 +115,7 @@ class API {
 
 		$response = wp_remote_get( $this->csv_url );
 		if ( is_wp_error( $response ) ) {
-			error_log( 'Plugin Hub: Error fetching CSV file: ' . $response->get_error_message() );
+			$this->log( 'Error fetching CSV file: ' . $response->get_error_message() );
 			return array();
 		}
 
@@ -309,7 +321,7 @@ class API {
 		$response = wp_remote_get( $api_url, $args );
 
 		if ( is_wp_error( $response ) ) {
-			error_log( 'Plugin Hub: Error fetching GitHub release: ' . $response->get_error_message() );
+			$this->log( 'Error fetching GitHub release: ' . $response->get_error_message() );
 			return false;
 		}
 
@@ -320,8 +332,8 @@ class API {
 			return $release['zipball_url'];
 		}
 
-		error_log( "Plugin Hub: Unable to find zipball_url in GitHub API response for {$repo_name} v{$version}" );
-		error_log( 'Plugin Hub: GitHub API response: ' . print_r( $release, true ) );
+		$this->log( "Unable to find zipball_url in GitHub API response for {$repo_name} v{$version}" );
+		$this->log( 'GitHub API response: ' . wp_json_encode( $release ) );
 		return false;
 	}
 
@@ -480,10 +492,10 @@ class API {
 		$result = $upgrader->upgrade( $plugin_file, array( 'package' => $download_url ) );
 
 		if ( is_wp_error( $result ) ) {
-			error_log( 'Plugin Hub: Update failed for ' . $repo_name . '. Error: ' . $result->get_error_message() );
+			$this->log( 'Update failed for ' . $repo_name . '. Error: ' . $result->get_error_message() );
 			wp_send_json_error( $result->get_error_message() );
 		} elseif ( false === $result ) {
-			error_log( 'Plugin Hub: Update failed for ' . $repo_name . '. No error message provided.' );
+			$this->log( 'Update failed for ' . $repo_name . '. No error message provided.' );
 			wp_send_json_error( esc_html__( 'Update failed. Please check the error log for more details.', 'plugin-hub' ) );
 		}
 
@@ -496,7 +508,7 @@ class API {
 			/* translators: %s: Version number */
 			wp_send_json_success( sprintf( esc_html__( 'Plugin updated successfully to version %s', 'plugin-hub' ), $new_version ) );
 		} else {
-			error_log( 'Plugin Hub: Update reported success but version mismatch for ' . $repo_name . '. Expected: ' . $version . ', Actual: ' . $new_version );
+			$this->log( 'Update reported success but version mismatch for ' . $repo_name . '. Expected: ' . $version . ', Actual: ' . $new_version );
 			wp_send_json_error( esc_html__( 'Update reported success but version mismatch. Please check the error log for more details.', 'plugin-hub' ) );
 		}
 	}
@@ -530,6 +542,10 @@ class API {
 		}
 
 		$deleted = delete_plugins( array( $plugin_file ) );
+
+		if ( is_wp_error( $deleted ) ) {
+			wp_send_json_error( $deleted->get_error_message() );
+		}
 
 		if ( $deleted ) {
 			wp_send_json_success( esc_html__( 'Plugin deleted successfully.', 'plugin-hub' ) );
@@ -619,7 +635,7 @@ class API {
 		$response = wp_remote_get( $api_url, $args );
 
 		if ( is_wp_error( $response ) ) {
-			error_log( 'Plugin Hub: Error fetching latest GitHub release: ' . $response->get_error_message() );
+			$this->log( 'Error fetching latest GitHub release: ' . $response->get_error_message() );
 			return false;
 		}
 
@@ -630,7 +646,7 @@ class API {
 			return ltrim( $release['tag_name'], 'v' );
 		}
 
-		error_log( "Plugin Hub: Unable to find tag_name in GitHub API response for {$repo_name}" );
+		$this->log( "Unable to find tag_name in GitHub API response for {$repo_name}" );
 		return false;
 	}
 
@@ -706,7 +722,7 @@ class API {
 		$response = wp_remote_get( $api_url, $args );
 
 		if ( is_wp_error( $response ) ) {
-			error_log( 'Plugin Hub: Error fetching GitHub releases: ' . $response->get_error_message() );
+			$this->log( 'Error fetching GitHub releases: ' . $response->get_error_message() );
 			return false;
 		}
 

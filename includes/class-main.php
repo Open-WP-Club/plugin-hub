@@ -63,8 +63,8 @@ class Main {
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-admin.php';
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-api.php';
 
-		$this->admin = new Admin();
 		$this->api   = new API();
+		$this->admin = new Admin( $this->api );
 	}
 
 	/**
@@ -93,25 +93,11 @@ class Main {
 		add_action( 'wp_ajax_deactivate_github_plugin', array( $this->api, 'ajax_deactivate_github_plugin' ) );
 		add_action( 'wp_ajax_update_github_plugin', array( $this->api, 'ajax_update_github_plugin' ) );
 		add_action( 'wp_ajax_delete_github_plugin', array( $this->api, 'ajax_delete_github_plugin' ) );
+		add_action( 'wp_ajax_disable_github_plugin', array( $this->api, 'ajax_disable_github_plugin' ) );
+		add_action( 'wp_ajax_verify_plugin_update', array( $this->api, 'verify_plugin_update' ) );
+		add_action( 'wp_ajax_force_refresh_plugins', array( $this->api, 'ajax_force_refresh_plugins' ) );
+		add_action( 'wp_ajax_get_changelog', array( $this->api, 'ajax_get_changelog' ) );
 		add_action( 'wp_ajax_toggle_beta_plugins', array( $this->admin, 'ajax_toggle_beta_plugins' ) );
-	}
-
-	/**
-	 * Toggle beta plugins visibility via AJAX.
-	 *
-	 * @since 1.0.0
-	 */
-	public function ajax_toggle_beta_plugins() {
-		check_ajax_referer( 'plugin-hub-nonce', 'nonce' );
-
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( esc_html__( 'You do not have permission to change this setting.', 'plugin-hub' ) );
-		}
-
-		$show_beta = isset( $_POST['show_beta'] ) ? filter_var( wp_unslash( $_POST['show_beta'] ), FILTER_VALIDATE_BOOLEAN ) : false;
-		update_option( 'plugin_hub_show_beta', $show_beta );
-
-		wp_send_json_success( esc_html__( 'Setting updated successfully.', 'plugin-hub' ) );
 	}
 
 	/**

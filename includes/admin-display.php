@@ -63,126 +63,139 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 						<tbody id="the-list">
 							<?php foreach ( $repos as $repo ) : ?>
-                <?php
-                $is_installed = $api->is_plugin_installed($repo['name']);
-                $is_active = $api->is_plugin_active($repo['name']);
-                $installed_version = $api->get_installed_plugin_version($repo['name']);
-                $update_available = $api->is_update_available($repo, $installed_version);
-                $is_beta = version_compare($repo['version'], '1.0.0', '<');
+								<?php
+								$is_installed      = $api->is_plugin_installed( $repo['name'] );
+								$is_active         = $api->is_plugin_active( $repo['name'] );
+								$installed_version = $api->get_installed_plugin_version( $repo['name'] );
+								$update_available  = $api->is_update_available( $repo, $installed_version );
+								$is_beta           = version_compare( $repo['version'], '1.0.0', '<' );
 
-                if (($filter === 'active' && !$is_active) ||
-                  ($filter === 'inactive' && $is_active) ||
-                  ($filter === 'update' && !$update_available) ||
-                  ($filter === 'beta' && !$is_beta) ||
-                  (!get_option('plugin_hub_show_beta', false) && $is_beta)
-                ) {
-                  continue;
-                }
-                ?>
-                <tr class="<?php echo $is_active ? 'active' : 'inactive'; ?>">
-                  <th scope="row" class="check-column">
-                    <input type="checkbox" name="checked[]" value="<?php echo esc_attr($repo['name']); ?>">
-                  </th>
-                  <td class="plugin-title column-primary">
-                    <strong><?php echo esc_html($repo['display_name']); ?></strong>
-                    <div class="row-actions visible">
-                      <?php if (!$is_installed): ?>
-                        <span class="install">
-                          <a href="#" class="install-now" data-repo="<?php echo esc_attr($repo['name']); ?>" data-version="<?php echo esc_attr($repo['version']); ?>">Install Now</a>
-                        </span>
-                      <?php elseif ($is_active): ?>
-                        <span class="deactivate">
-                          <a href="#" class="deactivate-now" data-repo="<?php echo esc_attr($repo['name']); ?>">Deactivate</a>
-                        </span>
-                      <?php else: ?>
-                        <span class="activate">
-                          <a href="#" class="activate-now" data-repo="<?php echo esc_attr($repo['name']); ?>">Activate</a>
-                        </span> |
-                        <span class="delete">
-                          <a href="#" class="delete-now" data-repo="<?php echo esc_attr($repo['name']); ?>" class="delete">Delete</a>
-                        </span>
-                      <?php endif; ?>
-                      <?php if ($update_available): ?> |
-                        <span class="update">
-                          <a href="#" class="update-now" data-repo="<?php echo esc_attr($repo['name']); ?>" data-version="<?php echo esc_attr($repo['version']); ?>">Update Now</a>
-                        </span>
-                      <?php endif; ?> |
-                      <span class="view">
-                        <a href="<?php echo esc_url($repo['repo_url']); ?>" target="_blank">View on GitHub</a>
-                      </span>
-                    </div>
-                    <button type="button" class="toggle-row"><span class="screen-reader-text">Show more details</span></button>
-                  </td>
-                  <td class="column-description desc">
-                    <div class="plugin-description">
-                      <p><?php echo esc_html($repo['description']); ?></p>
-                    </div>
-                    <div class="active second plugin-version-author-uri">
-                      <?php if (!$is_installed): ?>
-                        <?php if ($installed_version === 'N/A' || $installed_version === 'Not Installed'): ?>
-                          Beta version
-                        <?php else: ?>
-                          Latest version is <?php echo esc_html($repo['version']); ?>
-                        <?php endif; ?>
-                      <?php else: ?>
-                        Version <?php echo esc_html($installed_version); ?>
-                        <?php if ($update_available): ?>
-                          <strong class="update-message">Update available (<?php echo esc_html($repo['version']); ?>)</strong>
-                        <?php endif; ?>
-                      <?php endif; ?>
-                    </div>
-                  </td>
-                </tr>
-              <?php endforeach; ?>
-            </tbody>
+								if (
+									( 'active' === $filter && ! $is_active ) ||
+									( 'inactive' === $filter && ( ! $is_installed || $is_active ) ) ||
+									( 'update' === $filter && ! $update_available ) ||
+									( 'beta' === $filter && ! $is_beta ) ||
+									( ! get_option( 'plugin_hub_show_beta', false ) && $is_beta )
+								) {
+									continue;
+								}
+								?>
+								<tr class="<?php echo $is_active ? 'active' : 'inactive'; ?>">
+									<th scope="row" class="check-column">
+										<input type="checkbox" name="checked[]" value="<?php echo esc_attr( $repo['name'] ); ?>">
+									</th>
+									<td class="plugin-title column-primary">
+										<strong><?php echo esc_html( $repo['display_name'] ); ?></strong>
+										<div class="row-actions visible">
+											<?php if ( ! $is_installed ) : ?>
+												<span class="install">
+													<a href="#" class="install-now" data-repo="<?php echo esc_attr( $repo['name'] ); ?>" data-version="<?php echo esc_attr( $repo['version'] ); ?>"><?php esc_html_e( 'Install Now', 'plugin-hub' ); ?></a>
+												</span>
+											<?php elseif ( $is_active ) : ?>
+												<span class="deactivate">
+													<a href="#" class="deactivate-now" data-repo="<?php echo esc_attr( $repo['name'] ); ?>"><?php esc_html_e( 'Deactivate', 'plugin-hub' ); ?></a>
+												</span>
+											<?php else : ?>
+												<span class="activate">
+													<a href="#" class="activate-now" data-repo="<?php echo esc_attr( $repo['name'] ); ?>"><?php esc_html_e( 'Activate', 'plugin-hub' ); ?></a>
+												</span> |
+												<span class="delete">
+													<a href="#" class="delete-now" data-repo="<?php echo esc_attr( $repo['name'] ); ?>"><?php esc_html_e( 'Delete', 'plugin-hub' ); ?></a>
+												</span>
+											<?php endif; ?>
+											<?php if ( $update_available ) : ?>
+												|
+												<span class="update">
+													<a href="#" class="update-now" data-repo="<?php echo esc_attr( $repo['name'] ); ?>" data-version="<?php echo esc_attr( $repo['version'] ); ?>"><?php esc_html_e( 'Update Now', 'plugin-hub' ); ?></a>
+												</span>
+											<?php endif; ?>
+											| <span class="view">
+												<a href="<?php echo esc_url( $repo['repo_url'] ); ?>" target="_blank"><?php esc_html_e( 'View on GitHub', 'plugin-hub' ); ?></a>
+											</span>
+										</div>
+										<button type="button" class="toggle-row"><span class="screen-reader-text"><?php esc_html_e( 'Show more details', 'plugin-hub' ); ?></span></button>
+									</td>
+									<td class="column-description desc">
+										<div class="plugin-description">
+											<p><?php echo esc_html( $repo['description'] ); ?></p>
+										</div>
+										<div class="active second plugin-version-author-uri">
+											<?php if ( ! $is_installed ) : ?>
+												<?php if ( $is_beta ) : ?>
+													<?php esc_html_e( 'Beta version', 'plugin-hub' ); ?>
+												<?php else : ?>
+													<?php
+													/* translators: %s: Plugin version number */
+													printf( esc_html__( 'Latest version is %s', 'plugin-hub' ), esc_html( $repo['version'] ) );
+													?>
+												<?php endif; ?>
+											<?php else : ?>
+												<?php
+												/* translators: %s: Plugin version number */
+												printf( esc_html__( 'Version %s', 'plugin-hub' ), esc_html( $installed_version ) );
+												?>
+												<?php if ( $update_available ) : ?>
+													<strong class="update-message">
+														<?php
+														/* translators: %s: New version number */
+														printf( esc_html__( 'Update available (%s)', 'plugin-hub' ), esc_html( $repo['version'] ) );
+														?>
+													</strong>
+												<?php endif; ?>
+											<?php endif; ?>
+										</div>
+									</td>
+								</tr>
+							<?php endforeach; ?>
+						</tbody>
 
-            <tfoot>
-              <tr>
-                <td class="manage-column column-cb check-column">
-                  <input id="cb-select-all-2" type="checkbox">
-                </td>
-                <th scope="col" class="manage-column column-name column-primary">Plugin</th>
-                <th scope="col" class="manage-column column-description">Description</th>
-              </tr>
-            </tfoot>
-          </table>
-        </form>
-      </div><!-- /post-body-content -->
+						<tfoot>
+							<tr>
+								<td class="manage-column column-cb check-column">
+									<input id="cb-select-all-2" type="checkbox">
+								</td>
+								<th scope="col" class="manage-column column-name column-primary"><?php esc_html_e( 'Plugin', 'plugin-hub' ); ?></th>
+								<th scope="col" class="manage-column column-description"><?php esc_html_e( 'Description', 'plugin-hub' ); ?></th>
+							</tr>
+						</tfoot>
+					</table>
+				</form>
+			</div><!-- /post-body-content -->
 
-      <div id="postbox-container-1" class="postbox-container">
-        <div class="postbox">
-          <h2 class="hndle"><span>GitHub Repository</span></h2>
-          <div class="inside">
-            <a href="https://github.com/<?php echo esc_attr($this->organization); ?>" target="_blank" class="button-secondary">View Organization</a>
-          </div>
-        </div>
+			<div id="postbox-container-1" class="postbox-container">
+				<div class="postbox">
+					<h2 class="hndle"><span><?php esc_html_e( 'GitHub Repository', 'plugin-hub' ); ?></span></h2>
+					<div class="inside">
+						<a href="https://github.com/<?php echo esc_attr( $this->organization ); ?>" target="_blank" class="button-secondary"><?php esc_html_e( 'View Organization', 'plugin-hub' ); ?></a>
+					</div>
+				</div>
 
-        <div class="postbox">
-          <h2 class="hndle"><span>Plugin Settings</span></h2>
-          <div class="inside">
-            <p>
-              <label for="show-beta-plugins" class="switch">
-                <input type="checkbox" id="show-beta-plugins" name="show_beta_plugins" <?php checked(get_option('plugin_hub_show_beta', false)); ?>>
-                Show Beta Plugins (< 1.0.0)
-                  </label>
-            </p>
-            <p>
-              <a href="<?php echo wp_nonce_url(admin_url('plugins.php?page=plugin-hub&action=refresh_cache'), 'plugin_hub_refresh_cache'); ?>" class="button">Refresh Plugin List</a>
-            </p>
-          </div>
-        </div>
+				<div class="postbox">
+					<h2 class="hndle"><span><?php esc_html_e( 'Plugin Settings', 'plugin-hub' ); ?></span></h2>
+					<div class="inside">
+						<p>
+							<label for="show-beta-plugins" class="switch">
+								<input type="checkbox" id="show-beta-plugins" name="show_beta_plugins" <?php checked( get_option( 'plugin_hub_show_beta', false ) ); ?>>
+								<?php esc_html_e( 'Show Beta Plugins (< 1.0.0)', 'plugin-hub' ); ?>
+							</label>
+						</p>
+						<p>
+							<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'plugins.php?page=plugin-hub&action=refresh_cache' ), 'plugin_hub_refresh_cache' ) ); ?>" class="button"><?php esc_html_e( 'Refresh Plugin List', 'plugin-hub' ); ?></a>
+						</p>
+					</div>
+				</div>
 
-        <div class="postbox">
-          <h2 class="hndle"><span>Quick Links</span></h2>
-          <div class="inside">
-            <ul>
-              <li><a href="https://github.com/<?php echo esc_attr($this->organization); ?>" target="_blank">GitHub Organization</a></li>
-              <li><a href="https://example.com/documentation" target="_blank">Documentation</a></li>
-              <li><a href="https://example.com/support" target="_blank">Support</a></li>
-            </ul>
-          </div>
-        </div>
-      </div><!-- /postbox-container-1 -->
-    </div><!-- /post-body -->
-  </div><!-- /poststuff -->
+				<div class="postbox">
+					<h2 class="hndle"><span><?php esc_html_e( 'Quick Links', 'plugin-hub' ); ?></span></h2>
+					<div class="inside">
+						<ul>
+							<li><a href="https://github.com/<?php echo esc_attr( $this->organization ); ?>" target="_blank"><?php esc_html_e( 'GitHub Organization', 'plugin-hub' ); ?></a></li>
+							<li><a href="https://github.com/<?php echo esc_attr( $this->organization ); ?>/plugin-hub" target="_blank"><?php esc_html_e( 'Documentation', 'plugin-hub' ); ?></a></li>
+							<li><a href="https://github.com/<?php echo esc_attr( $this->organization ); ?>/plugin-hub/issues" target="_blank"><?php esc_html_e( 'Support', 'plugin-hub' ); ?></a></li>
+						</ul>
+					</div>
+				</div>
+			</div><!-- /postbox-container-1 -->
+		</div><!-- /post-body -->
+	</div><!-- /poststuff -->
 </div><!-- /wrap -->

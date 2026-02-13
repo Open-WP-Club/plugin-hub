@@ -31,4 +31,9 @@ delete_transient( 'plugin_hub_csv_cache' );
  * Get all options that start with 'plugin_hub_disabled_' and delete them.
  */
 global $wpdb;
-$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE 'plugin_hub_disabled_%'" );
+$wpdb->query(
+	$wpdb->prepare(
+		"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
+		$wpdb->esc_like( 'plugin_hub_disabled_' ) . '%'
+	)
+);

@@ -4,7 +4,7 @@
  * Plugin Name:             Plugin Hub
  * Plugin URI:              https://github.com/Open-WP-Club/plugin-hub
  * Description:             Manages WordPress plugins from GitHub repositories, focusing on Open-WP-Club
- * Version:                 1.1.0
+ * Version:                 1.2.0
  * Author:                  Gabriel Kanev
  * Author URI:              https://gkanev.com
  * License:                 GPL-2.0+
@@ -24,7 +24,7 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-define( 'PLUGIN_HUB_VERSION', '1.1.0' );
+define( 'PLUGIN_HUB_VERSION', '1.2.0' );
 define( 'PLUGIN_HUB_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PLUGIN_HUB_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 

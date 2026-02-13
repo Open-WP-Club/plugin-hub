@@ -34,6 +34,25 @@ class Admin {
 	private $organization = 'Open-WP-Club';
 
 	/**
+	 * The API instance.
+	 *
+	 * @since  1.2.0
+	 * @access private
+	 * @var    API
+	 */
+	private $api;
+
+	/**
+	 * Initialize the class.
+	 *
+	 * @since 1.2.0
+	 * @param API|null $api Optional API instance for dependency injection.
+	 */
+	public function __construct( $api = null ) {
+		$this->api = $api ?? new API();
+	}
+
+	/**
 	 * Add the plugin admin page to the WordPress menu.
 	 *
 	 * @since 1.0.0
@@ -90,8 +109,12 @@ class Admin {
 	public function handle_refresh_cache() {
 		if ( isset( $_GET['action'] ) && 'refresh_cache' === $_GET['action'] ) {
 			check_admin_referer( 'plugin_hub_refresh_cache' );
-			$api = new API();
-			$api->refresh_csv_cache();
+
+			if ( ! current_user_can( 'manage_options' ) ) {
+				wp_die( esc_html__( 'You do not have permission to refresh the cache.', 'plugin-hub' ) );
+			}
+
+			$this->api->refresh_csv_cache();
 			wp_safe_redirect( admin_url( 'plugins.php?page=plugin-hub&cache_refreshed=1' ) );
 			exit;
 		}
@@ -116,17 +139,12 @@ class Admin {
 			);
 		}
 
-		$api   = new API();
+		$api   = $this->api;
 		$repos = $api->get_org_repos();
 
-		// Add error logging.
-		if ( empty( $repos ) ) {
-			error_log( 'Plugin Hub: No repositories found or error occurred while fetching repositories.' );
-		} else {
-			error_log( 'Plugin Hub: Fetched ' . count( $repos ) . ' repositories.' );
-		}
-
-		$filter = isset( $_GET['filter'] ) ? sanitize_text_field( wp_unslash( $_GET['filter'] ) ) : 'all';
+		$filter          = isset( $_GET['filter'] ) ? sanitize_text_field( wp_unslash( $_GET['filter'] ) ) : 'all';
+		$allowed_filters = array( 'all', 'active', 'inactive', 'update', 'beta' );
+		$filter          = in_array( $filter, $allowed_filters, true ) ? $filter : 'all';
 		$counts = $this->get_plugin_counts( $repos );
 
 		include PLUGIN_HUB_PLUGIN_DIR . 'includes/admin-display.php';
@@ -149,14 +167,13 @@ class Admin {
 			'beta'     => 0,
 		);
 
-		$api       = new API();
 		$show_beta = get_option( 'plugin_hub_show_beta', false );
 
 		foreach ( $repos as $repo ) {
-			$is_installed      = $api->is_plugin_installed( $repo['name'] );
-			$is_active         = $api->is_plugin_active( $repo['name'] );
-			$installed_version = $api->get_installed_plugin_version( $repo['name'] );
-			$update_available  = $api->is_update_available( $repo, $installed_version );
+			$is_installed      = $this->api->is_plugin_installed( $repo['name'] );
+			$is_active         = $this->api->is_plugin_active( $repo['name'] );
+			$installed_version = $this->api->get_installed_plugin_version( $repo['name'] );
+			$update_available  = $this->api->is_update_available( $repo, $installed_version );
 			$is_beta           = version_compare( $repo['version'], '1.0.0', '<' );
 
 			if ( ! $show_beta && $is_beta ) {
