@@ -98,6 +98,7 @@ class Main {
 		add_action( 'wp_ajax_force_refresh_plugins', array( $this->api, 'ajax_force_refresh_plugins' ) );
 		add_action( 'wp_ajax_get_changelog', array( $this->api, 'ajax_get_changelog' ) );
 		add_action( 'wp_ajax_toggle_beta_plugins', array( $this->admin, 'ajax_toggle_beta_plugins' ) );
+		add_action( 'wp_ajax_save_github_token', array( $this->admin, 'ajax_save_github_token' ) );
 	}
 
 	/**

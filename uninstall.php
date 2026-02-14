@@ -19,11 +19,13 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
  */
 delete_option( 'plugin_hub_github_plugins' );
 delete_option( 'plugin_hub_show_beta' );
+delete_option( 'plugin_hub_github_token' );
 
 /**
  * Delete plugin transients.
  */
 delete_transient( 'plugin_hub_csv_cache' );
+delete_transient( 'plugin_hub_rate_limit' );
 
 /**
  * Delete disabled plugin options.

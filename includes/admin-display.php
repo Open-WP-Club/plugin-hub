@@ -174,6 +174,28 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<h2 class="hndle"><span><?php esc_html_e( 'Plugin Settings', 'plugin-hub' ); ?></span></h2>
 					<div class="inside">
 						<p>
+							<label for="github-token"><strong><?php esc_html_e( 'GitHub Token', 'plugin-hub' ); ?></strong></label><br>
+							<input type="password" id="github-token" class="regular-text" value="<?php echo esc_attr( get_option( 'plugin_hub_github_token', '' ) ); ?>" placeholder="<?php esc_attr_e( 'ghp_...', 'plugin-hub' ); ?>" style="width:100%;margin-top:4px;">
+							<button type="button" id="save-github-token" class="button" style="margin-top:6px;"><?php esc_html_e( 'Save Token', 'plugin-hub' ); ?></button>
+							<span id="token-status" style="margin-left:8px;"></span>
+						</p>
+						<?php
+						$rate_limit = get_transient( 'plugin_hub_rate_limit' );
+						if ( $rate_limit ) :
+						?>
+						<p class="description" id="rate-limit-info">
+							<?php
+							/* translators: %1$d: remaining requests, %2$d: total limit */
+							printf(
+								esc_html__( 'API Rate Limit: %1$d / %2$d remaining', 'plugin-hub' ),
+								(int) $rate_limit['remaining'],
+								(int) $rate_limit['limit']
+							);
+							?>
+						</p>
+						<?php endif; ?>
+						<hr style="margin:12px 0;">
+						<p>
 							<label for="show-beta-plugins" class="switch">
 								<input type="checkbox" id="show-beta-plugins" name="show_beta_plugins" <?php checked( get_option( 'plugin_hub_show_beta', false ) ); ?>>
 								<?php esc_html_e( 'Show Beta Plugins (< 1.0.0)', 'plugin-hub' ); ?>

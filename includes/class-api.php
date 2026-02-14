@@ -83,6 +83,58 @@ class API {
 	}
 
 	/**
+	 * Get headers for GitHub API requests.
+	 *
+	 * Includes Authorization header when a token is configured.
+	 *
+	 * @since  1.3.0
+	 * @access private
+	 * @return array Headers array for wp_remote_get().
+	 */
+	private function get_github_headers() {
+		$headers = array(
+			'Accept'     => 'application/vnd.github.v3+json',
+			'User-Agent' => 'WordPress/Plugin-Hub',
+		);
+
+		$token = get_option( 'plugin_hub_github_token', '' );
+		if ( ! empty( $token ) ) {
+			$headers['Authorization'] = 'token ' . $token;
+		}
+
+		return $headers;
+	}
+
+	/**
+	 * Track GitHub API rate limit from response headers.
+	 *
+	 * @since  1.3.0
+	 * @access private
+	 * @param  array|WP_Error $response The wp_remote_get() response.
+	 */
+	private function track_rate_limit( $response ) {
+		if ( is_wp_error( $response ) ) {
+			return;
+		}
+
+		$remaining = wp_remote_retrieve_header( $response, 'x-ratelimit-remaining' );
+		$limit     = wp_remote_retrieve_header( $response, 'x-ratelimit-limit' );
+		$reset     = wp_remote_retrieve_header( $response, 'x-ratelimit-reset' );
+
+		if ( '' !== $remaining && '' !== $limit ) {
+			set_transient(
+				'plugin_hub_rate_limit',
+				array(
+					'remaining' => (int) $remaining,
+					'limit'     => (int) $limit,
+					'reset'     => (int) $reset,
+				),
+				5 * MINUTE_IN_SECONDS
+			);
+		}
+	}
+
+	/**
 	 * Initialize the class.
 	 *
 	 * @since 1.0.0
@@ -311,14 +363,10 @@ class API {
 	public function get_github_release_download_url( $repo_name, $version ) {
 		$api_url = "https://api.github.com/repos/{$this->organization}/{$repo_name}/releases/tags/v{$version}";
 
-		$args = array(
-			'headers' => array(
-				'Accept'     => 'application/vnd.github.v3+json',
-				'User-Agent' => 'WordPress/Plugin-Hub',
-			),
-		);
+		$args = array( 'headers' => $this->get_github_headers() );
 
 		$response = wp_remote_get( $api_url, $args );
+		$this->track_rate_limit( $response );
 
 		if ( is_wp_error( $response ) ) {
 			$this->log( 'Error fetching GitHub release: ' . $response->get_error_message() );
@@ -328,11 +376,31 @@ class API {
 		$body    = wp_remote_retrieve_body( $response );
 		$release = json_decode( $body, true );
 
+		// Priority: asset named {repo-name}.zip > any .zip asset > zipball_url.
+		if ( ! empty( $release['assets'] ) && is_array( $release['assets'] ) ) {
+			$any_zip_url = false;
+
+			foreach ( $release['assets'] as $asset ) {
+				if ( ! empty( $asset['browser_download_url'] ) && '.zip' === substr( $asset['name'], -4 ) ) {
+					if ( $asset['name'] === $repo_name . '.zip' ) {
+						return $asset['browser_download_url'];
+					}
+					if ( ! $any_zip_url ) {
+						$any_zip_url = $asset['browser_download_url'];
+					}
+				}
+			}
+
+			if ( $any_zip_url ) {
+				return $any_zip_url;
+			}
+		}
+
 		if ( isset( $release['zipball_url'] ) ) {
 			return $release['zipball_url'];
 		}
 
-		$this->log( "Unable to find zipball_url in GitHub API response for {$repo_name} v{$version}" );
+		$this->log( "Unable to find download URL in GitHub API response for {$repo_name} v{$version}" );
 		$this->log( 'GitHub API response: ' . wp_json_encode( $release ) );
 		return false;
 	}
@@ -625,14 +693,10 @@ class API {
 	private function get_latest_github_version( $repo_name ) {
 		$api_url = "https://api.github.com/repos/{$this->organization}/{$repo_name}/releases/latest";
 
-		$args = array(
-			'headers' => array(
-				'Accept'     => 'application/vnd.github.v3+json',
-				'User-Agent' => 'WordPress/Plugin-Hub',
-			),
-		);
+		$args = array( 'headers' => $this->get_github_headers() );
 
 		$response = wp_remote_get( $api_url, $args );
+		$this->track_rate_limit( $response );
 
 		if ( is_wp_error( $response ) ) {
 			$this->log( 'Error fetching latest GitHub release: ' . $response->get_error_message() );
@@ -712,14 +776,10 @@ class API {
 	public function get_github_changelog( $repo_name, $current_version, $new_version ) {
 		$api_url = "https://api.github.com/repos/{$this->organization}/{$repo_name}/releases";
 
-		$args = array(
-			'headers' => array(
-				'Accept'     => 'application/vnd.github.v3+json',
-				'User-Agent' => 'WordPress/Plugin-Hub',
-			),
-		);
+		$args = array( 'headers' => $this->get_github_headers() );
 
 		$response = wp_remote_get( $api_url, $args );
+		$this->track_rate_limit( $response );
 
 		if ( is_wp_error( $response ) ) {
 			$this->log( 'Error fetching GitHub releases: ' . $response->get_error_message() );

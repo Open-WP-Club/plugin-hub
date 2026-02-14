@@ -91,12 +91,16 @@ class Admin {
 			return;
 		}
 		wp_enqueue_script( 'plugin-hub-script', PLUGIN_HUB_PLUGIN_URL . 'assets/js/script.js', array( 'jquery' ), PLUGIN_HUB_VERSION, true );
+		$rate_limit = get_transient( 'plugin_hub_rate_limit' );
+
 		wp_localize_script(
 			'plugin-hub-script',
 			'pluginHubAjax',
 			array(
-				'ajax_url' => admin_url( 'admin-ajax.php' ),
-				'nonce'    => wp_create_nonce( 'plugin-hub-nonce' ),
+				'ajax_url'   => admin_url( 'admin-ajax.php' ),
+				'nonce'      => wp_create_nonce( 'plugin-hub-nonce' ),
+				'rate_limit' => $rate_limit ? $rate_limit : array(),
+				'has_token'  => ! empty( get_option( 'plugin_hub_github_token', '' ) ),
 			)
 		);
 	}
@@ -198,6 +202,31 @@ class Admin {
 		}
 
 		return $counts;
+	}
+
+	/**
+	 * Save GitHub token via AJAX.
+	 *
+	 * @since 1.3.0
+	 */
+	public function ajax_save_github_token() {
+		check_ajax_referer( 'plugin-hub-nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( esc_html__( 'You do not have permission to change this setting.', 'plugin-hub' ) );
+		}
+
+		$token = isset( $_POST['token'] ) ? sanitize_text_field( wp_unslash( $_POST['token'] ) ) : '';
+		update_option( 'plugin_hub_github_token', $token );
+
+		// Clear rate limit transient so it refreshes with new auth state.
+		delete_transient( 'plugin_hub_rate_limit' );
+
+		if ( empty( $token ) ) {
+			wp_send_json_success( esc_html__( 'Token removed.', 'plugin-hub' ) );
+		}
+
+		wp_send_json_success( esc_html__( 'Token saved successfully.', 'plugin-hub' ) );
 	}
 
 	/**

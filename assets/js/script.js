@@ -132,6 +132,39 @@ jQuery( document ).ready( function( $ ) {
 		);
 	});
 
+	// Save GitHub token.
+	$( '#save-github-token' ).on( 'click', function() {
+		var button = $( this );
+		var token = $( '#github-token' ).val();
+		button.prop( 'disabled', true ).text( 'Saving...' );
+		$.ajax({
+			url: pluginHubAjax.ajax_url,
+			type: 'POST',
+			data: {
+				action: 'save_github_token',
+				nonce: pluginHubAjax.nonce,
+				token: token
+			},
+			success: function( response ) {
+				button.prop( 'disabled', false ).text( 'Save Token' );
+				if ( response.success ) {
+					$( '#token-status' ).text( '✓ ' + response.data ).css( 'color', '#46b450' );
+				} else {
+					$( '#token-status' ).text( '✗ ' + response.data ).css( 'color', '#dc3232' );
+				}
+				setTimeout( function() {
+					$( '#token-status' ).fadeOut( function() {
+						$( this ).text( '' ).show();
+					});
+				}, 3000 );
+			},
+			error: function() {
+				button.prop( 'disabled', false ).text( 'Save Token' );
+				$( '#token-status' ).text( '✗ An error occurred.' ).css( 'color', '#dc3232' );
+			}
+		});
+	});
+
 	// Beta plugin toggle.
 	$( '#show-beta-plugins' ).on( 'change', function() {
 		var showBeta = $( this ).is( ':checked' );
