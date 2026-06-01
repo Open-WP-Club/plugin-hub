@@ -119,6 +119,20 @@ class Admin {
 					'select_action_plugin' => __( 'Please select an action and at least one plugin.', 'plugin-hub' ),
 					'no_inactive_selected' => __( 'No inactive plugins selected for deletion. Active plugins cannot be deleted.', 'plugin-hub' ),
 					'verify_error'         => __( 'Failed to verify update. Please refresh the page and check the plugin version.', 'plugin-hub' ),
+					'loading_changelog'    => __( 'Loading changelog…', 'plugin-hub' ),
+					'changelog'            => __( 'Changelog', 'plugin-hub' ),
+					'no_changelog'         => __( 'No changelog available for this version.', 'plugin-hub' ),
+					'whats_new'            => __( "What's new?", 'plugin-hub' ),
+					'versions'             => __( 'Versions', 'plugin-hub' ),
+					'loading_versions'     => __( 'Loading…', 'plugin-hub' ),
+					'rollback_confirm'     => __( 'Roll back to version %s?', 'plugin-hub' ),
+					'current_version'      => __( 'current', 'plugin-hub' ),
+					'rolling_back'         => __( 'Rolling back…', 'plugin-hub' ),
+					'rolled_back'          => __( 'Rolled back', 'plugin-hub' ),
+					'rollback_failed'      => __( 'Rollback Failed', 'plugin-hub' ),
+					'clear_log_confirm'    => __( 'Clear the entire activity log?', 'plugin-hub' ),
+					'clearing'             => __( 'Clearing…', 'plugin-hub' ),
+					'clear_log'            => __( 'Clear Log', 'plugin-hub' ),
 				),
 			)
 		);
@@ -166,9 +180,12 @@ class Admin {
 		$repos = $api->get_org_repos();
 
 		$filter          = isset( $_GET['filter'] ) ? sanitize_text_field( wp_unslash( $_GET['filter'] ) ) : 'all';
-		$allowed_filters = array( 'all', 'active', 'inactive', 'update', 'beta' );
+		$allowed_filters = array( 'all', 'active', 'inactive', 'update', 'beta', 'activity' );
 		$filter          = in_array( $filter, $allowed_filters, true ) ? $filter : 'all';
-		$counts = $this->get_plugin_counts( $repos );
+		$counts          = $this->get_plugin_counts( $repos );
+
+		$autoupdate_plugins = get_option( 'plugin_hub_autoupdate_plugins', array() );
+		$activity_log       = $api->get_activity_log();
 
 		include PLUGIN_HUB_PLUGIN_DIR . 'includes/admin-display.php';
 	}
@@ -264,5 +281,53 @@ class Admin {
 		update_option( 'plugin_hub_show_beta', $show_beta );
 
 		wp_send_json_success( esc_html__( 'Setting updated successfully.', 'plugin-hub' ) );
+	}
+
+	/**
+	 * Toggle auto-update for a single plugin via AJAX.
+	 *
+	 * @since 1.3.0
+	 */
+	public function ajax_save_autoupdate_setting() {
+		check_ajax_referer( 'plugin-hub-nonce', 'nonce' );
+
+		if ( ! current_user_can( 'update_plugins' ) ) {
+			wp_send_json_error( esc_html__( 'You do not have permission to change this setting.', 'plugin-hub' ) );
+		}
+
+		$repo_name  = isset( $_POST['repo'] ) ? sanitize_text_field( wp_unslash( $_POST['repo'] ) ) : '';
+		$is_enabled = isset( $_POST['enabled'] ) ? filter_var( wp_unslash( $_POST['enabled'] ), FILTER_VALIDATE_BOOLEAN ) : false;
+
+		if ( empty( $repo_name ) ) {
+			wp_send_json_error( esc_html__( 'Invalid plugin information.', 'plugin-hub' ) );
+		}
+
+		$autoupdate_plugins = get_option( 'plugin_hub_autoupdate_plugins', array() );
+
+		if ( $is_enabled ) {
+			$autoupdate_plugins[] = $repo_name;
+			$autoupdate_plugins   = array_unique( $autoupdate_plugins );
+		} else {
+			$autoupdate_plugins = array_values( array_diff( $autoupdate_plugins, array( $repo_name ) ) );
+		}
+
+		update_option( 'plugin_hub_autoupdate_plugins', $autoupdate_plugins );
+		wp_send_json_success( esc_html__( 'Setting updated.', 'plugin-hub' ) );
+	}
+
+	/**
+	 * Clear the activity log via AJAX.
+	 *
+	 * @since 1.3.0
+	 */
+	public function ajax_clear_activity_log() {
+		check_ajax_referer( 'plugin-hub-nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( esc_html__( 'You do not have permission.', 'plugin-hub' ) );
+		}
+
+		update_option( 'plugin_hub_activity_log', array(), false );
+		wp_send_json_success( esc_html__( 'Activity log cleared.', 'plugin-hub' ) );
 	}
 }

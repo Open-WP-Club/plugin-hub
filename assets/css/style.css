@@ -171,7 +171,148 @@
   clear: both;
 }
 
-/* Responsive styles */
+/* =========================================================================
+   Changelog modal
+   ========================================================================= */
+
+#plugin-hub-modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, .6);
+  z-index: 100000;
+}
+
+#plugin-hub-modal {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 640px;
+  max-height: 80vh;
+  background: #fff;
+  border-radius: 3px;
+  box-shadow: 0 5px 30px rgba(0, 0, 0, .3);
+  z-index: 100001;
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #dcdcde;
+  flex-shrink: 0;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  line-height: 1;
+  color: #646970;
+  padding: 0 4px;
+}
+
+.modal-close:hover {
+  color: #1d2327;
+}
+
+#plugin-hub-modal-content {
+  padding: 16px 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+#plugin-hub-modal-content h2,
+#plugin-hub-modal-content h3,
+#plugin-hub-modal-content h4 {
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+#plugin-hub-modal-content ul {
+  margin: 0 0 12px 20px;
+  list-style: disc;
+}
+
+/* =========================================================================
+   Rollback
+   ========================================================================= */
+
+.rollback-list {
+  margin-top: 6px;
+}
+
+.rollback-version-item {
+  display: inline-block;
+  margin: 2px 4px 2px 0;
+  font-size: 12px;
+}
+
+.rollback-current {
+  color: #50575e;
+}
+
+.rollback-date {
+  color: #8c8f94;
+  font-size: 11px;
+}
+
+/* =========================================================================
+   Activity log
+   ========================================================================= */
+
+.activity-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  color: #fff;
+}
+
+.activity-install    { background: #0073aa; }
+.activity-update     { background: #00a32a; }
+.activity-rollback   { background: #dba617; }
+.activity-activate   { background: #00a32a; }
+.activity-deactivate { background: #8c8f94; }
+.activity-delete     { background: #d63638; }
+.activity-auto-update { background: #1d9bd1; }
+
+/* =========================================================================
+   Auto-update label
+   ========================================================================= */
+
+.plugin-autoupdate-label {
+  font-size: 11px;
+  color: #00a32a;
+  font-weight: 600;
+}
+
+.view-changelog {
+  font-size: 13px;
+}
+
+/* =========================================================================
+   Responsive styles
+   ========================================================================= */
+
 @media screen and (max-width: 1100px) {
   .plugin-hub-main {
     width: 100%;

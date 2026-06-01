@@ -95,8 +95,12 @@ class Main {
 		add_action( 'wp_ajax_delete_github_plugin', array( $this->api, 'ajax_delete_github_plugin' ) );
 		add_action( 'wp_ajax_verify_plugin_update', array( $this->api, 'verify_plugin_update' ) );
 		add_action( 'wp_ajax_get_changelog', array( $this->api, 'ajax_get_changelog' ) );
+		add_action( 'wp_ajax_get_plugin_releases', array( $this->api, 'ajax_get_plugin_releases' ) );
 		add_action( 'wp_ajax_toggle_beta_plugins', array( $this->admin, 'ajax_toggle_beta_plugins' ) );
 		add_action( 'wp_ajax_save_github_token', array( $this->admin, 'ajax_save_github_token' ) );
+		add_action( 'wp_ajax_save_autoupdate_setting', array( $this->admin, 'ajax_save_autoupdate_setting' ) );
+		add_action( 'wp_ajax_clear_activity_log', array( $this->admin, 'ajax_clear_activity_log' ) );
+		add_action( 'plugin_hub_daily_update_check', array( $this->api, 'do_auto_updates_and_notify' ) );
 	}
 
 	/**

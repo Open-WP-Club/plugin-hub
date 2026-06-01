@@ -526,6 +526,7 @@ class API {
 			'file' => $plugin_info,
 		);
 		update_option( 'plugin_hub_github_plugins', $this->github_plugins );
+		$this->log_activity( 'install', $repo_name, $version );
 
 		wp_send_json_success( esc_html__( 'Plugin installed successfully.', 'plugin-hub' ) );
 	}
@@ -561,6 +562,8 @@ class API {
 		}
 
 		delete_option( "plugin_hub_disabled_{$repo_name}" );
+		$this->log_activity( 'activate', $repo_name, $this->get_installed_plugin_version( $repo_name ) );
+
 		wp_send_json_success( esc_html__( 'Plugin activated successfully.', 'plugin-hub' ) );
 	}
 
@@ -588,7 +591,9 @@ class API {
 			wp_send_json_error( esc_html__( 'Plugin not found.', 'plugin-hub' ) );
 		}
 
+		$deactivated_version = $this->get_installed_plugin_version( $repo_name );
 		deactivate_plugins( $plugin_file );
+		$this->log_activity( 'deactivate', $repo_name, $deactivated_version );
 
 		wp_send_json_success( esc_html__( 'Plugin deactivated successfully.', 'plugin-hub' ) );
 	}
@@ -651,10 +656,13 @@ class API {
 
 		// Force refresh of plugin update information.
 		wp_clean_plugins_cache();
+		$this->installed_plugins_cache = null;
 
 		// Verify the update.
 		$new_version = $this->get_installed_plugin_version( $repo_name );
 		if ( version_compare( $new_version, $version, '>=' ) ) {
+			$is_rollback = ! empty( $_POST['is_rollback'] );
+			$this->log_activity( $is_rollback ? 'rollback' : 'update', $repo_name, $new_version );
 			/* translators: %s: Version number */
 			wp_send_json_success( sprintf( esc_html__( 'Plugin updated successfully to version %s', 'plugin-hub' ), $new_version ) );
 		} else {
@@ -691,14 +699,15 @@ class API {
 			wp_send_json_error( esc_html__( 'Please deactivate the plugin before deleting.', 'plugin-hub' ) );
 		}
 
-		$deleted = delete_plugins( array( $plugin_file ) );
+		$deleted_version = $this->get_installed_plugin_version( $repo_name );
+		$deleted         = delete_plugins( array( $plugin_file ) );
 
 		if ( is_wp_error( $deleted ) ) {
 			wp_send_json_error( $deleted->get_error_message() );
 		}
 
 		if ( $deleted ) {
-			// Remove from the tracking option and clean up any disable flag.
+			$this->log_activity( 'delete', $repo_name, $deleted_version );
 			unset( $this->github_plugins[ $repo_name ] );
 			update_option( 'plugin_hub_github_plugins', $this->github_plugins );
 			delete_option( "plugin_hub_disabled_{$repo_name}" );
@@ -820,5 +829,203 @@ class API {
 		}
 
 		wp_send_json_error( esc_html__( 'Unable to fetch changelog.', 'plugin-hub' ) );
+	}
+
+	// -------------------------------------------------------------------------
+	// Activity log
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Append an entry to the activity log.
+	 *
+	 * @since  1.3.0
+	 * @access private
+	 * @param  string $action  install|update|rollback|activate|deactivate|delete|auto_update
+	 * @param  string $plugin  Plugin slug.
+	 * @param  string $version Version involved.
+	 */
+	private function log_activity( $action, $plugin, $version = '' ) {
+		$user  = wp_get_current_user();
+		$log   = get_option( 'plugin_hub_activity_log', array() );
+		$log[] = array(
+			'time'    => time(),
+			'user'    => $user->display_name ?: $user->user_login,
+			'action'  => $action,
+			'plugin'  => $plugin,
+			'version' => $version,
+		);
+
+		if ( count( $log ) > 200 ) {
+			$log = array_slice( $log, -200 );
+		}
+
+		update_option( 'plugin_hub_activity_log', $log, false );
+	}
+
+	/**
+	 * Return the activity log, most-recent first.
+	 *
+	 * @since  1.3.0
+	 * @return array
+	 */
+	public function get_activity_log() {
+		return array_reverse( get_option( 'plugin_hub_activity_log', array() ) );
+	}
+
+	// -------------------------------------------------------------------------
+	// Rollback / release list
+	// -------------------------------------------------------------------------
+
+	/**
+	 * AJAX handler: return the last 10 GitHub releases for a plugin.
+	 *
+	 * @since 1.3.0
+	 */
+	public function ajax_get_plugin_releases() {
+		check_ajax_referer( 'plugin-hub-nonce', 'nonce' );
+
+		if ( ! current_user_can( 'update_plugins' ) ) {
+			wp_send_json_error( esc_html__( 'You do not have permission.', 'plugin-hub' ) );
+		}
+
+		$repo_name = isset( $_POST['repo'] ) ? sanitize_text_field( wp_unslash( $_POST['repo'] ) ) : '';
+
+		if ( empty( $repo_name ) || ! $this->is_valid_repo_name( $repo_name ) ) {
+			wp_send_json_error( esc_html__( 'Invalid plugin information.', 'plugin-hub' ) );
+		}
+
+		$api_url = 'https://api.github.com/repos/' . PLUGIN_HUB_ORGANIZATION . "/{$repo_name}/releases?per_page=10";
+		$args    = array(
+			'headers' => $this->get_github_headers(),
+			'timeout' => 15,
+		);
+
+		$response = wp_remote_get( $api_url, $args );
+		$this->track_rate_limit( $response );
+
+		if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
+			wp_send_json_error( esc_html__( 'Unable to fetch releases.', 'plugin-hub' ) );
+		}
+
+		$releases = json_decode( wp_remote_retrieve_body( $response ), true );
+		if ( ! is_array( $releases ) ) {
+			wp_send_json_error( esc_html__( 'Unable to fetch releases.', 'plugin-hub' ) );
+		}
+
+		$current_version = $this->get_installed_plugin_version( $repo_name );
+		$result          = array();
+
+		foreach ( $releases as $release ) {
+			if ( empty( $release['tag_name'] ) || ! empty( $release['draft'] ) ) {
+				continue;
+			}
+			$version  = ltrim( $release['tag_name'], 'v' );
+			$result[] = array(
+				'version' => $version,
+				'name'    => ! empty( $release['name'] ) ? $release['name'] : $release['tag_name'],
+				'date'    => ! empty( $release['published_at'] ) ? substr( $release['published_at'], 0, 10 ) : '',
+				'current' => ( $version === $current_version ),
+			);
+		}
+
+		wp_send_json_success( $result );
+	}
+
+	// -------------------------------------------------------------------------
+	// Auto-update (cron)
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Check for updates, auto-update enabled plugins, and e-mail the admin.
+	 *
+	 * Called by the daily WP Cron event `plugin_hub_daily_update_check`.
+	 *
+	 * @since 1.3.0
+	 */
+	public function do_auto_updates_and_notify() {
+		$repos           = $this->refresh_csv_cache();
+		$autoupdate_list = get_option( 'plugin_hub_autoupdate_plugins', array() );
+		$updated         = array();
+		$available       = array();
+
+		foreach ( $repos as $repo ) {
+			if ( ! $this->is_plugin_installed( $repo['name'] ) ) {
+				continue;
+			}
+
+			$installed_version = $this->get_installed_plugin_version( $repo['name'] );
+			if ( ! $this->is_update_available( $repo, $installed_version ) ) {
+				continue;
+			}
+
+			if ( in_array( $repo['name'], $autoupdate_list, true ) ) {
+				$download_url = $this->get_github_release_download_url( $repo['name'], $repo['version'] );
+
+				if ( $download_url && $this->is_github_url( $download_url ) ) {
+					require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+					require_once ABSPATH . 'wp-admin/includes/plugin-install.php';
+
+					$plugin_file = $this->get_plugin_file( $repo['name'] );
+					if ( $plugin_file ) {
+						$skin     = new \WP_Ajax_Upgrader_Skin();
+						$upgrader = new \Plugin_Upgrader( $skin );
+						$result   = $upgrader->upgrade( $plugin_file, array( 'package' => $download_url ) );
+
+						if ( ! is_wp_error( $result ) && false !== $result ) {
+							// Invalidate cache so next admin load sees the new version.
+							$this->installed_plugins_cache = null;
+							$this->log_activity( 'auto_update', $repo['name'], $repo['version'] );
+							$updated[] = $repo['name'] . ' → v' . $repo['version'];
+						}
+					}
+				}
+			} else {
+				$available[] = $repo['name'] . ' (v' . $installed_version . ' → v' . $repo['version'] . ')';
+			}
+		}
+
+		if ( ! empty( $updated ) || ! empty( $available ) ) {
+			$this->send_update_notification( $updated, $available );
+		}
+	}
+
+	/**
+	 * Send a plain-text e-mail to the admin summarising update activity.
+	 *
+	 * @since  1.3.0
+	 * @access private
+	 * @param  array $updated   Plugins that were auto-updated.
+	 * @param  array $available Plugins with updates pending manual action.
+	 */
+	private function send_update_notification( $updated, $available ) {
+		$admin_email = get_option( 'admin_email' );
+		$site_name   = get_bloginfo( 'name' );
+		$hub_url     = admin_url( 'plugins.php?page=plugin-hub' );
+
+		/* translators: %s: site name */
+		$subject = sprintf( __( '[%s] Plugin Hub Update Report', 'plugin-hub' ), $site_name );
+
+		$body = '';
+
+		if ( ! empty( $updated ) ) {
+			$body .= __( 'The following plugins were automatically updated:', 'plugin-hub' ) . "\n";
+			foreach ( $updated as $item ) {
+				$body .= '  - ' . $item . "\n";
+			}
+			$body .= "\n";
+		}
+
+		if ( ! empty( $available ) ) {
+			$body .= __( 'The following plugins have updates available:', 'plugin-hub' ) . "\n";
+			foreach ( $available as $item ) {
+				$body .= '  - ' . $item . "\n";
+			}
+			$body .= "\n";
+		}
+
+		/* translators: %s: Plugin Hub admin URL */
+		$body .= sprintf( __( 'Manage your plugins: %s', 'plugin-hub' ), $hub_url );
+
+		wp_mail( $admin_email, $subject, $body );
 	}
 }

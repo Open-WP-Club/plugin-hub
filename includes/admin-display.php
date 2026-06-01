@@ -19,22 +19,83 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<div id="poststuff">
 		<div id="post-body" class="metabox-holder">
 			<div id="post-body-content">
+
+				<?php if ( 'activity' !== $filter ) : ?>
 				<div class="wp-filter">
 					<div class="search-form">
 						<input type="search" id="plugin-search-input" placeholder="<?php esc_attr_e( 'Search installed plugins...', 'plugin-hub' ); ?>" size="40">
 					</div>
 				</div>
+				<?php endif; ?>
 
+				<ul class="subsubsub">
+					<li><a href="?page=plugin-hub&filter=all" <?php echo 'all' === $filter ? 'class="current"' : ''; ?>><?php esc_html_e( 'All', 'plugin-hub' ); ?> <span class="count">(<?php echo absint( $counts['all'] ); ?>)</span></a> |</li>
+					<li><a href="?page=plugin-hub&filter=active" <?php echo 'active' === $filter ? 'class="current"' : ''; ?>><?php esc_html_e( 'Active', 'plugin-hub' ); ?> <span class="count">(<?php echo absint( $counts['active'] ); ?>)</span></a> |</li>
+					<li><a href="?page=plugin-hub&filter=inactive" <?php echo 'inactive' === $filter ? 'class="current"' : ''; ?>><?php esc_html_e( 'Inactive', 'plugin-hub' ); ?> <span class="count">(<?php echo absint( $counts['inactive'] ); ?>)</span></a> |</li>
+					<li><a href="?page=plugin-hub&filter=update" <?php echo 'update' === $filter ? 'class="current"' : ''; ?>><?php esc_html_e( 'Updates Available', 'plugin-hub' ); ?> <span class="count">(<?php echo absint( $counts['update'] ); ?>)</span></a> |</li>
+					<li><a href="?page=plugin-hub&filter=beta" <?php echo 'beta' === $filter ? 'class="current"' : ''; ?>><?php esc_html_e( 'Beta', 'plugin-hub' ); ?> <span class="count">(<?php echo absint( $counts['beta'] ); ?>)</span></a> |</li>
+					<li><a href="?page=plugin-hub&filter=activity" <?php echo 'activity' === $filter ? 'class="current"' : ''; ?>><?php esc_html_e( 'Activity Log', 'plugin-hub' ); ?></a></li>
+				</ul>
+
+				<?php if ( 'activity' === $filter ) : ?>
+
+				<!-- ===== Activity Log ===== -->
+				<table class="wp-list-table widefat fixed striped">
+					<thead>
+						<tr>
+							<th><?php esc_html_e( 'Date / Time', 'plugin-hub' ); ?></th>
+							<th><?php esc_html_e( 'Action', 'plugin-hub' ); ?></th>
+							<th><?php esc_html_e( 'Plugin', 'plugin-hub' ); ?></th>
+							<th><?php esc_html_e( 'Version', 'plugin-hub' ); ?></th>
+							<th><?php esc_html_e( 'User', 'plugin-hub' ); ?></th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php if ( empty( $activity_log ) ) : ?>
+						<tr>
+							<td colspan="5"><?php esc_html_e( 'No activity recorded yet.', 'plugin-hub' ); ?></td>
+						</tr>
+						<?php else : ?>
+							<?php
+							$action_labels = array(
+								'install'     => __( 'Install', 'plugin-hub' ),
+								'update'      => __( 'Update', 'plugin-hub' ),
+								'rollback'    => __( 'Rollback', 'plugin-hub' ),
+								'activate'    => __( 'Activate', 'plugin-hub' ),
+								'deactivate'  => __( 'Deactivate', 'plugin-hub' ),
+								'delete'      => __( 'Delete', 'plugin-hub' ),
+								'auto_update' => __( 'Auto-Update', 'plugin-hub' ),
+							);
+							$action_classes = array(
+								'install'     => 'activity-install',
+								'update'      => 'activity-update',
+								'rollback'    => 'activity-rollback',
+								'activate'    => 'activity-activate',
+								'deactivate'  => 'activity-deactivate',
+								'delete'      => 'activity-delete',
+								'auto_update' => 'activity-auto-update',
+							);
+							foreach ( $activity_log as $entry ) :
+								$label = isset( $action_labels[ $entry['action'] ] ) ? $action_labels[ $entry['action'] ] : esc_html( $entry['action'] );
+								$class = isset( $action_classes[ $entry['action'] ] ) ? $action_classes[ $entry['action'] ] : '';
+							?>
+							<tr>
+								<td><?php echo esc_html( wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $entry['time'] ) ); ?></td>
+								<td><span class="activity-badge <?php echo esc_attr( $class ); ?>"><?php echo esc_html( $label ); ?></span></td>
+								<td><?php echo esc_html( $entry['plugin'] ); ?></td>
+								<td><?php echo esc_html( $entry['version'] ); ?></td>
+								<td><?php echo esc_html( $entry['user'] ); ?></td>
+							</tr>
+							<?php endforeach; ?>
+						<?php endif; ?>
+					</tbody>
+				</table>
+
+				<?php else : ?>
+
+				<!-- ===== Plugin list ===== -->
 				<form id="plugin-hub-form" method="post">
 					<?php wp_nonce_field( 'plugin_hub_bulk_action', 'plugin_hub_nonce' ); ?>
-
-					<ul class="subsubsub">
-						<li><a href="?page=plugin-hub&filter=all" <?php echo 'all' === $filter ? 'class="current"' : ''; ?>><?php esc_html_e( 'All', 'plugin-hub' ); ?> <span class="count">(<?php echo absint( $counts['all'] ); ?>)</span></a> |</li>
-						<li><a href="?page=plugin-hub&filter=active" <?php echo 'active' === $filter ? 'class="current"' : ''; ?>><?php esc_html_e( 'Active', 'plugin-hub' ); ?> <span class="count">(<?php echo absint( $counts['active'] ); ?>)</span></a> |</li>
-						<li><a href="?page=plugin-hub&filter=inactive" <?php echo 'inactive' === $filter ? 'class="current"' : ''; ?>><?php esc_html_e( 'Inactive', 'plugin-hub' ); ?> <span class="count">(<?php echo absint( $counts['inactive'] ); ?>)</span></a> |</li>
-						<li><a href="?page=plugin-hub&filter=update" <?php echo 'update' === $filter ? 'class="current"' : ''; ?>><?php esc_html_e( 'Updates Available', 'plugin-hub' ); ?> <span class="count">(<?php echo absint( $counts['update'] ); ?>)</span></a> |</li>
-						<li><a href="?page=plugin-hub&filter=beta" <?php echo 'beta' === $filter ? 'class="current"' : ''; ?>><?php esc_html_e( 'Beta', 'plugin-hub' ); ?> <span class="count">(<?php echo absint( $counts['beta'] ); ?>)</span></a></li>
-					</ul>
 
 					<div class="tablenav top">
 						<div class="alignleft actions bulkactions">
@@ -69,6 +130,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 								$installed_version = $api->get_installed_plugin_version( $repo['name'] );
 								$update_available  = $api->is_update_available( $repo, $installed_version );
 								$is_beta           = version_compare( $repo['version'], '1.0.0', '<' );
+								$auto_update_on    = in_array( $repo['name'], $autoupdate_plugins, true );
 
 								if (
 									( 'active' === $filter && ! $is_active ) ||
@@ -108,10 +170,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 												<span class="update">
 													<a href="#" class="update-now" data-repo="<?php echo esc_attr( $repo['name'] ); ?>" data-version="<?php echo esc_attr( $repo['version'] ); ?>"><?php esc_html_e( 'Update Now', 'plugin-hub' ); ?></a>
 												</span>
+												<span class="view-changelog">
+													<a href="#" class="open-changelog"
+														data-repo="<?php echo esc_attr( $repo['name'] ); ?>"
+														data-current-version="<?php echo esc_attr( $installed_version ); ?>"
+														data-new-version="<?php echo esc_attr( $repo['version'] ); ?>"
+													><?php esc_html_e( "What's new?", 'plugin-hub' ); ?></a>
+												</span>
 											<?php endif; ?>
 											| <span class="view">
 												<a href="<?php echo esc_url( $repo['repo_url'] ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'View on GitHub', 'plugin-hub' ); ?></a>
 											</span>
+											<?php if ( $is_installed ) : ?>
+												| <span class="rollback">
+													<a href="#" class="rollback-toggle" data-repo="<?php echo esc_attr( $repo['name'] ); ?>"><?php esc_html_e( 'Versions', 'plugin-hub' ); ?></a>
+													<span class="rollback-list" style="display:none;"></span>
+												</span>
+											<?php endif; ?>
 										</div>
 										<button type="button" class="toggle-row"><span class="screen-reader-text"><?php esc_html_e( 'Show more details', 'plugin-hub' ); ?></span></button>
 									</td>
@@ -142,6 +217,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 														?>
 													</strong>
 												<?php endif; ?>
+												<label class="plugin-autoupdate-label">
+													<input
+														type="checkbox"
+														class="autoupdate-toggle"
+														data-repo="<?php echo esc_attr( $repo['name'] ); ?>"
+														<?php checked( $auto_update_on ); ?>
+													>
+													<?php esc_html_e( 'Auto-update', 'plugin-hub' ); ?>
+												</label>
 											<?php endif; ?>
 										</div>
 									</td>
@@ -160,6 +244,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 						</tfoot>
 					</table>
 				</form>
+
+				<?php endif; ?>
+
 			</div><!-- /post-body-content -->
 
 			<div id="postbox-container-1" class="postbox-container">
@@ -182,8 +269,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<?php
 						$rate_limit = get_transient( 'plugin_hub_rate_limit' );
 						if ( $rate_limit ) :
+							$pct = $rate_limit['limit'] > 0 ? ( $rate_limit['remaining'] / $rate_limit['limit'] ) : 1;
 						?>
-						<p class="description" id="rate-limit-info">
+						<p class="description" id="rate-limit-info" <?php echo $pct < 0.1 ? 'style="color:#dc3232;font-weight:600;"' : ''; ?>>
 							<?php
 							/* translators: %1$d: remaining requests, %2$d: total limit */
 							printf(
@@ -204,6 +292,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<p>
 							<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'plugins.php?page=plugin-hub&action=refresh_cache' ), 'plugin_hub_refresh_cache' ) ); ?>" class="button"><?php esc_html_e( 'Refresh Plugin List', 'plugin-hub' ); ?></a>
 						</p>
+						<hr style="margin:12px 0;">
+						<p>
+							<button type="button" id="clear-activity-log" class="button button-link-delete"><?php esc_html_e( 'Clear Activity Log', 'plugin-hub' ); ?></button>
+						</p>
 					</div>
 				</div>
 
@@ -221,3 +313,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</div><!-- /post-body -->
 	</div><!-- /poststuff -->
 </div><!-- /wrap -->
+
+<!-- Changelog modal -->
+<div id="plugin-hub-modal-overlay"></div>
+<div id="plugin-hub-modal" role="dialog" aria-modal="true" aria-labelledby="plugin-hub-modal-title">
+	<div class="modal-header">
+		<h2 id="plugin-hub-modal-title"></h2>
+		<button type="button" id="plugin-hub-modal-close" class="modal-close" aria-label="<?php esc_attr_e( 'Close', 'plugin-hub' ); ?>">&times;</button>
+	</div>
+	<div id="plugin-hub-modal-content"></div>
+</div>
