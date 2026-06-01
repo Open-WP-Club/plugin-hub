@@ -110,7 +110,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 												</span>
 											<?php endif; ?>
 											| <span class="view">
-												<a href="<?php echo esc_url( $repo['repo_url'] ); ?>" target="_blank"><?php esc_html_e( 'View on GitHub', 'plugin-hub' ); ?></a>
+												<a href="<?php echo esc_url( $repo['repo_url'] ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'View on GitHub', 'plugin-hub' ); ?></a>
 											</span>
 										</div>
 										<button type="button" class="toggle-row"><span class="screen-reader-text"><?php esc_html_e( 'Show more details', 'plugin-hub' ); ?></span></button>
@@ -166,7 +166,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<div class="postbox">
 					<h2 class="hndle"><span><?php esc_html_e( 'GitHub Repository', 'plugin-hub' ); ?></span></h2>
 					<div class="inside">
-						<a href="https://github.com/<?php echo esc_attr( $this->organization ); ?>" target="_blank" class="button-secondary"><?php esc_html_e( 'View Organization', 'plugin-hub' ); ?></a>
+						<a href="<?php echo esc_url( 'https://github.com/' . PLUGIN_HUB_ORGANIZATION ); ?>" target="_blank" rel="noopener noreferrer" class="button-secondary"><?php esc_html_e( 'View Organization', 'plugin-hub' ); ?></a>
 					</div>
 				</div>
 
@@ -211,9 +211,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<h2 class="hndle"><span><?php esc_html_e( 'Quick Links', 'plugin-hub' ); ?></span></h2>
 					<div class="inside">
 						<ul>
-							<li><a href="https://github.com/<?php echo esc_attr( $this->organization ); ?>" target="_blank"><?php esc_html_e( 'GitHub Organization', 'plugin-hub' ); ?></a></li>
-							<li><a href="https://github.com/<?php echo esc_attr( $this->organization ); ?>/plugin-hub" target="_blank"><?php esc_html_e( 'Documentation', 'plugin-hub' ); ?></a></li>
-							<li><a href="https://github.com/<?php echo esc_attr( $this->organization ); ?>/plugin-hub/issues" target="_blank"><?php esc_html_e( 'Support', 'plugin-hub' ); ?></a></li>
+							<li><a href="<?php echo esc_url( 'https://github.com/' . PLUGIN_HUB_ORGANIZATION ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'GitHub Organization', 'plugin-hub' ); ?></a></li>
+							<li><a href="<?php echo esc_url( 'https://github.com/' . PLUGIN_HUB_ORGANIZATION . '/plugin-hub' ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Documentation', 'plugin-hub' ); ?></a></li>
+							<li><a href="<?php echo esc_url( 'https://github.com/' . PLUGIN_HUB_ORGANIZATION . '/plugin-hub/issues' ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Support', 'plugin-hub' ); ?></a></li>
 						</ul>
 					</div>
 				</div>

@@ -27,6 +27,7 @@ if ( ! defined( 'WPINC' ) ) {
 define( 'PLUGIN_HUB_VERSION', '1.2.0' );
 define( 'PLUGIN_HUB_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PLUGIN_HUB_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'PLUGIN_HUB_ORGANIZATION', 'Open-WP-Club' );
 
 // Include the main class.
 require_once PLUGIN_HUB_PLUGIN_DIR . 'includes/class-main.php';

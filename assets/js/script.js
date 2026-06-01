@@ -1,4 +1,5 @@
 jQuery( document ).ready( function( $ ) {
+	var i18n = pluginHubAjax.i18n;
 
 	// Install plugin.
 	$( '.install-now' ).on( 'click', function( e ) {
@@ -9,9 +10,9 @@ jQuery( document ).ready( function( $ ) {
 		performAction(
 			'install_github_plugin',
 			button,
-			'Installing...',
-			'Installed',
-			'Install Failed',
+			i18n.installing,
+			i18n.installed,
+			i18n.install_failed,
 			{ repo: repo, version: version }
 		);
 	});
@@ -26,7 +27,7 @@ jQuery( document ).ready( function( $ ) {
 	});
 
 	function updatePlugin( button, repo, version ) {
-		button.text( 'Updating...' );
+		button.text( i18n.updating );
 		$.ajax({
 			url: pluginHubAjax.ajax_url,
 			type: 'POST',
@@ -38,19 +39,19 @@ jQuery( document ).ready( function( $ ) {
 			},
 			success: function( response ) {
 				if ( response.success ) {
-					button.text( 'Updated' );
+					button.text( i18n.updated );
 					showMessage( response.data, 'success' );
 					setTimeout( function() {
 						verifyUpdate( repo, version );
 					}, 2000 );
 				} else {
-					button.text( 'Update Failed' );
+					button.text( i18n.update_failed );
 					showMessage( response.data, 'error' );
 				}
 			},
 			error: function() {
-				button.text( 'Update Failed' );
-				showMessage( 'An error occurred. Please try again.', 'error' );
+				button.text( i18n.update_failed );
+				showMessage( i18n.error_occurred, 'error' );
 			}
 		});
 	}
@@ -67,19 +68,16 @@ jQuery( document ).ready( function( $ ) {
 			},
 			success: function( response ) {
 				if ( response.success ) {
-					showMessage( 'Update verified: ' + response.data, 'success' );
+					showMessage( response.data, 'success' );
 					setTimeout( function() {
 						location.reload();
 					}, 1000 );
 				} else {
-					showMessage( 'Update verification failed: ' + response.data, 'error' );
+					showMessage( response.data, 'error' );
 				}
 			},
 			error: function() {
-				showMessage(
-					'Failed to verify update. Please refresh the page and check the plugin version.',
-					'error'
-				);
+				showMessage( i18n.verify_error, 'error' );
 			}
 		});
 	}
@@ -92,9 +90,9 @@ jQuery( document ).ready( function( $ ) {
 		performAction(
 			'activate_github_plugin',
 			button,
-			'Activating...',
-			'Activated',
-			'Activation Failed',
+			i18n.activating,
+			i18n.activated,
+			i18n.activation_failed,
 			{ repo: repo }
 		);
 	});
@@ -107,9 +105,9 @@ jQuery( document ).ready( function( $ ) {
 		performAction(
 			'deactivate_github_plugin',
 			button,
-			'Deactivating...',
-			'Deactivated',
-			'Deactivation Failed',
+			i18n.deactivating,
+			i18n.deactivated,
+			i18n.deactivation_failed,
 			{ repo: repo }
 		);
 	});
@@ -117,7 +115,7 @@ jQuery( document ).ready( function( $ ) {
 	// Delete plugin.
 	$( '.delete-now' ).on( 'click', function( e ) {
 		e.preventDefault();
-		if ( ! confirm( 'Are you sure you want to delete this plugin?' ) ) {
+		if ( ! window.confirm( i18n.delete_confirm ) ) {
 			return;
 		}
 		var button = $( this );
@@ -125,9 +123,9 @@ jQuery( document ).ready( function( $ ) {
 		performAction(
 			'delete_github_plugin',
 			button,
-			'Deleting...',
-			'Deleted',
-			'Delete Failed',
+			i18n.deleting,
+			i18n.deleted,
+			i18n.delete_failed,
 			{ repo: repo }
 		);
 	});
@@ -136,7 +134,7 @@ jQuery( document ).ready( function( $ ) {
 	$( '#save-github-token' ).on( 'click', function() {
 		var button = $( this );
 		var token = $( '#github-token' ).val();
-		button.prop( 'disabled', true ).text( 'Saving...' );
+		button.prop( 'disabled', true ).text( i18n.saving );
 		$.ajax({
 			url: pluginHubAjax.ajax_url,
 			type: 'POST',
@@ -146,7 +144,7 @@ jQuery( document ).ready( function( $ ) {
 				token: token
 			},
 			success: function( response ) {
-				button.prop( 'disabled', false ).text( 'Save Token' );
+				button.prop( 'disabled', false ).text( i18n.save_token );
 				if ( response.success ) {
 					$( '#token-status' ).text( '✓ ' + response.data ).css( 'color', '#46b450' );
 				} else {
@@ -159,8 +157,8 @@ jQuery( document ).ready( function( $ ) {
 				}, 3000 );
 			},
 			error: function() {
-				button.prop( 'disabled', false ).text( 'Save Token' );
-				$( '#token-status' ).text( '✗ An error occurred.' ).css( 'color', '#dc3232' );
+				button.prop( 'disabled', false ).text( i18n.save_token );
+				$( '#token-status' ).text( '✗ ' + i18n.error_occurred ).css( 'color', '#dc3232' );
 			}
 		});
 	});
@@ -184,7 +182,7 @@ jQuery( document ).ready( function( $ ) {
 				}
 			},
 			error: function() {
-				showMessage( 'An error occurred. Please try again.', 'error' );
+				showMessage( i18n.error_occurred, 'error' );
 			}
 		});
 	});
@@ -200,7 +198,7 @@ jQuery( document ).ready( function( $ ) {
 			.get();
 
 		if ( action === '-1' || selectedPlugins.length === 0 ) {
-			alert( 'Please select an action and at least one plugin.' );
+			window.alert( i18n.select_action_plugin );
 			return;
 		}
 
@@ -215,7 +213,7 @@ jQuery( document ).ready( function( $ ) {
 				bulkAction( 'update_github_plugin', selectedPlugins );
 				break;
 			case 'delete':
-				if ( ! confirm( 'Are you sure you want to delete the selected plugins?' ) ) {
+				if ( ! window.confirm( i18n.bulk_delete_confirm ) ) {
 					return;
 				}
 				var inactivePlugins = selectedPlugins.filter( function( plugin ) {
@@ -224,7 +222,7 @@ jQuery( document ).ready( function( $ ) {
 						.find( '.deactivate-now' ).length;
 				});
 				if ( inactivePlugins.length === 0 ) {
-					alert( 'No inactive plugins selected for deletion. Active plugins cannot be deleted.' );
+					window.alert( i18n.no_inactive_selected );
 					return;
 				}
 				bulkAction( 'delete_github_plugin', inactivePlugins );
@@ -273,7 +271,7 @@ jQuery( document ).ready( function( $ ) {
 			},
 			error: function() {
 				button.text( failText );
-				showMessage( 'An error occurred. Please try again.', 'error' );
+				showMessage( i18n.error_occurred, 'error' );
 				if ( typeof callback === 'function' ) {
 					callback( false );
 				}
@@ -287,16 +285,17 @@ jQuery( document ).ready( function( $ ) {
 		var successCount = 0;
 		var failCount = 0;
 
-		$( '<div id="bulk-action-status" class="notice notice-info"><p>Processing: 0/' + totalPlugins + '</p></div>' )
-			.insertBefore( '.wp-list-table' );
+		var statusDiv = $( '<div id="bulk-action-status" class="notice notice-info"><p></p></div>' );
+		statusDiv.find( 'p' ).text( i18n.processing + ' 0/' + totalPlugins );
+		statusDiv.insertBefore( '.wp-list-table' );
 
 		function processNextPlugin() {
 			if ( processedPlugins >= totalPlugins ) {
-				$( '#bulk-action-status' )
+				statusDiv
 					.removeClass( 'notice-info' )
 					.addClass( failCount > 0 ? 'notice-warning' : 'notice-success' )
 					.find( 'p' )
-					.text( 'Bulk action completed. Success: ' + successCount + ', Failed: ' + failCount );
+					.text( i18n.processing.replace( /\.\.\.$/, '' ) + ' ' + i18n.done + '. ' + successCount + ' ' + i18n.done.toLowerCase() + ', ' + failCount + ' ' + i18n.failed.toLowerCase() );
 				setTimeout( function() {
 					location.reload();
 				}, 2000 );
@@ -305,15 +304,23 @@ jQuery( document ).ready( function( $ ) {
 
 			var plugin = plugins[ processedPlugins ];
 			var row = $( 'input[name="checked[]"][value="' + plugin + '"]' ).closest( 'tr' );
-			var button = row.find( '.row-actions a:first' );
-			var version = button.data( 'version' );
+			var button, version;
+
+			// For update actions, target the update button specifically (it carries data-version).
+			// For all other actions, the first visible action link is the right target.
+			if ( 'update_github_plugin' === action ) {
+				button = row.find( '.update-now' );
+			} else {
+				button = row.find( '.row-actions a:first' );
+			}
+			version = button.data( 'version' ) || '';
 
 			performAction(
 				action,
 				button,
-				'Processing...',
-				'Done',
-				'Failed',
+				i18n.processing,
+				i18n.done,
+				i18n.failed,
 				{ repo: plugin, version: version },
 				function( success ) {
 					processedPlugins++;
@@ -322,7 +329,7 @@ jQuery( document ).ready( function( $ ) {
 					} else {
 						failCount++;
 					}
-					$( '#bulk-action-status p' ).text( 'Processing: ' + processedPlugins + '/' + totalPlugins );
+					statusDiv.find( 'p' ).text( i18n.processing + ' ' + processedPlugins + '/' + totalPlugins );
 					processNextPlugin();
 				}
 			);
@@ -339,7 +346,8 @@ jQuery( document ).ready( function( $ ) {
 		messageDiv
 			.removeClass( 'notice-success notice-error notice-warning notice-info' )
 			.addClass( 'notice notice-' + type )
-			.html( '<p>' + message + '</p>' )
+			.empty()
+			.append( $( '<p>' ).text( message ) )
 			.fadeIn();
 		setTimeout( function() {
 			messageDiv.fadeOut();

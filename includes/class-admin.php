@@ -25,15 +25,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Admin {
 
 	/**
-	 * The GitHub organization name.
-	 *
-	 * @since  1.0.0
-	 * @access private
-	 * @var    string
-	 */
-	private $organization = 'Open-WP-Club';
-
-	/**
 	 * The API instance.
 	 *
 	 * @since  1.2.0
@@ -101,6 +92,34 @@ class Admin {
 				'nonce'      => wp_create_nonce( 'plugin-hub-nonce' ),
 				'rate_limit' => $rate_limit ? $rate_limit : array(),
 				'has_token'  => ! empty( get_option( 'plugin_hub_github_token', '' ) ),
+				'i18n'       => array(
+					'installing'           => __( 'Installing...', 'plugin-hub' ),
+					'installed'            => __( 'Installed', 'plugin-hub' ),
+					'install_failed'       => __( 'Install Failed', 'plugin-hub' ),
+					'updating'             => __( 'Updating...', 'plugin-hub' ),
+					'updated'              => __( 'Updated', 'plugin-hub' ),
+					'update_failed'        => __( 'Update Failed', 'plugin-hub' ),
+					'activating'           => __( 'Activating...', 'plugin-hub' ),
+					'activated'            => __( 'Activated', 'plugin-hub' ),
+					'activation_failed'    => __( 'Activation Failed', 'plugin-hub' ),
+					'deactivating'         => __( 'Deactivating...', 'plugin-hub' ),
+					'deactivated'          => __( 'Deactivated', 'plugin-hub' ),
+					'deactivation_failed'  => __( 'Deactivation Failed', 'plugin-hub' ),
+					'deleting'             => __( 'Deleting...', 'plugin-hub' ),
+					'deleted'              => __( 'Deleted', 'plugin-hub' ),
+					'delete_failed'        => __( 'Delete Failed', 'plugin-hub' ),
+					'saving'               => __( 'Saving...', 'plugin-hub' ),
+					'save_token'           => __( 'Save Token', 'plugin-hub' ),
+					'processing'           => __( 'Processing...', 'plugin-hub' ),
+					'done'                 => __( 'Done', 'plugin-hub' ),
+					'failed'               => __( 'Failed', 'plugin-hub' ),
+					'error_occurred'       => __( 'An error occurred. Please try again.', 'plugin-hub' ),
+					'delete_confirm'       => __( 'Are you sure you want to delete this plugin?', 'plugin-hub' ),
+					'bulk_delete_confirm'  => __( 'Are you sure you want to delete the selected plugins?', 'plugin-hub' ),
+					'select_action_plugin' => __( 'Please select an action and at least one plugin.', 'plugin-hub' ),
+					'no_inactive_selected' => __( 'No inactive plugins selected for deletion. Active plugins cannot be deleted.', 'plugin-hub' ),
+					'verify_error'         => __( 'Failed to verify update. Please refresh the page and check the plugin version.', 'plugin-hub' ),
+				),
 			)
 		);
 	}

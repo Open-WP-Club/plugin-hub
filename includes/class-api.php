@@ -25,22 +25,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 class API {
 
 	/**
-	 * The GitHub organization name.
-	 *
-	 * @since  1.0.0
-	 * @access private
-	 * @var    string
-	 */
-	private $organization = 'Open-WP-Club';
-
-	/**
 	 * The CSV URL for plugin data.
 	 *
 	 * @since  1.0.0
 	 * @access private
 	 * @var    string
 	 */
-	private $csv_url = 'https://raw.githubusercontent.com/Open-WP-Club/.github/main/plugins.csv';
+	private $csv_url = '';
 
 	/**
 	 * GitHub plugins array.
@@ -50,6 +41,15 @@ class API {
 	 * @var    array
 	 */
 	private $github_plugins = array();
+
+	/**
+	 * In-request cache of get_plugins() result.
+	 *
+	 * @since  1.3.0
+	 * @access private
+	 * @var    array|null
+	 */
+	private $installed_plugins_cache = null;
 
 	/**
 	 * Cache key for transients.
@@ -80,6 +80,70 @@ class API {
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 			error_log( 'Plugin Hub: ' . $message );
 		}
+	}
+
+	/**
+	 * Get all installed plugins, caching the result for the current request.
+	 *
+	 * Calling get_plugins() is expensive (reads disk). In a single admin page
+	 * load the installed plugin list doesn't change, so we cache it to avoid
+	 * calling it dozens of times in the plugin list loop.
+	 *
+	 * @since  1.3.0
+	 * @access private
+	 * @return array All installed plugins from get_plugins().
+	 */
+	private function get_all_installed_plugins() {
+		if ( null === $this->installed_plugins_cache ) {
+			if ( ! function_exists( 'get_plugins' ) ) {
+				require_once ABSPATH . 'wp-admin/includes/plugin.php';
+			}
+			$this->installed_plugins_cache = get_plugins();
+		}
+		return $this->installed_plugins_cache;
+	}
+
+	/**
+	 * Validate a repository or plugin name.
+	 *
+	 * GitHub repo names only allow alphanumeric, hyphens, and underscores.
+	 *
+	 * @since  1.3.0
+	 * @access private
+	 * @param  string $name Name to validate.
+	 * @return bool         True if the name contains only allowed characters.
+	 */
+	private function is_valid_repo_name( $name ) {
+		return (bool) preg_match( '/^[a-zA-Z0-9_-]+$/', $name );
+	}
+
+	/**
+	 * Validate a plugin version string.
+	 *
+	 * @since  1.3.0
+	 * @access private
+	 * @param  string $version Version string to validate.
+	 * @return bool            True if the version string is in a valid format.
+	 */
+	private function is_valid_version( $version ) {
+		return (bool) preg_match( '/^[0-9a-zA-Z._-]+$/', $version );
+	}
+
+	/**
+	 * Check whether a URL points to an allowed GitHub host.
+	 *
+	 * Prevents SSRF by ensuring plugin packages are only downloaded from
+	 * known GitHub infrastructure.
+	 *
+	 * @since  1.3.0
+	 * @access private
+	 * @param  string $url URL to check.
+	 * @return bool        True if the URL host is an allowed GitHub host.
+	 */
+	private function is_github_url( $url ) {
+		$allowed_hosts = array( 'api.github.com', 'github.com', 'codeload.github.com', 'objects.githubusercontent.com' );
+		$host          = wp_parse_url( $url, PHP_URL_HOST );
+		return in_array( $host, $allowed_hosts, true );
 	}
 
 	/**
@@ -140,6 +204,7 @@ class API {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
+		$this->csv_url = 'https://raw.githubusercontent.com/' . PLUGIN_HUB_ORGANIZATION . '/.github/main/plugins.csv';
 		$this->load_github_plugins();
 	}
 
@@ -165,9 +230,15 @@ class API {
 			return $cached_data;
 		}
 
-		$response = wp_remote_get( $this->csv_url );
+		$response = wp_remote_get( $this->csv_url, array( 'timeout' => 15 ) );
 		if ( is_wp_error( $response ) ) {
 			$this->log( 'Error fetching CSV file: ' . $response->get_error_message() );
+			return array();
+		}
+
+		$status_code = wp_remote_retrieve_response_code( $response );
+		if ( 200 !== $status_code ) {
+			$this->log( 'Unexpected HTTP status ' . $status_code . ' fetching plugin CSV.' );
 			return array();
 		}
 
@@ -188,7 +259,9 @@ class API {
 	 * @return array               Array of repository data.
 	 */
 	private function parse_csv_content( $csv_content ) {
-		$lines = explode( "\n", trim( $csv_content ) );
+		// Normalize line endings so Windows-formatted (\r\n) and old Mac (\r) CSVs parse correctly.
+		$csv_content = str_replace( array( "\r\n", "\r" ), "\n", $csv_content );
+		$lines       = explode( "\n", trim( $csv_content ) );
 		$repos = array();
 
 		// Remove the header row.
@@ -229,11 +302,7 @@ class API {
 	 * @return bool                True if installed, false otherwise.
 	 */
 	public function is_plugin_installed( $plugin_name ) {
-		if ( ! function_exists( 'get_plugins' ) ) {
-			require_once ABSPATH . 'wp-admin/includes/plugin.php';
-		}
-		$all_plugins = get_plugins();
-		foreach ( $all_plugins as $plugin_file => $plugin_data ) {
+		foreach ( $this->get_all_installed_plugins() as $plugin_file => $plugin_data ) {
 			if ( 0 === strpos( $plugin_file, $plugin_name . '/' ) ) {
 				return true;
 			}
@@ -253,18 +322,7 @@ class API {
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
 		$plugin_file = $this->get_plugin_file( $plugin_name );
-		return $plugin_file && is_plugin_active( $plugin_file );
-	}
-
-	/**
-	 * Check if a plugin is disabled via Plugin Hub.
-	 *
-	 * @since  1.0.0
-	 * @param  string $plugin_name The plugin name/slug.
-	 * @return bool                True if disabled, false otherwise.
-	 */
-	public function is_plugin_disabled( $plugin_name ) {
-		return get_option( "plugin_hub_disabled_{$plugin_name}", false );
+		return $plugin_file && is_plugin_active( $plugin_file ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals
 	}
 
 	/**
@@ -275,11 +333,7 @@ class API {
 	 * @return string|bool              Plugin file path or false if not found.
 	 */
 	public function get_plugin_file( $plugin_name ) {
-		if ( ! function_exists( 'get_plugins' ) ) {
-			require_once ABSPATH . 'wp-admin/includes/plugin.php';
-		}
-		$all_plugins = get_plugins();
-		foreach ( $all_plugins as $plugin_file => $plugin_data ) {
+		foreach ( $this->get_all_installed_plugins() as $plugin_file => $plugin_data ) {
 			if ( 0 === strpos( $plugin_file, $plugin_name . '/' ) ) {
 				return $plugin_file;
 			}
@@ -335,6 +389,10 @@ class API {
 				continue;
 			}
 
+			if ( ! isset( $transient->checked[ $plugin_file ] ) ) {
+				continue;
+			}
+
 			$wp_version  = $transient->checked[ $plugin_file ];
 			$csv_version = $repo['version'];
 
@@ -361,15 +419,24 @@ class API {
 	 * @return string|bool            Download URL or false on failure.
 	 */
 	public function get_github_release_download_url( $repo_name, $version ) {
-		$api_url = "https://api.github.com/repos/{$this->organization}/{$repo_name}/releases/tags/v{$version}";
+		$api_url = "https://api.github.com/repos/" . PLUGIN_HUB_ORGANIZATION . "/{$repo_name}/releases/tags/v{$version}";
 
-		$args = array( 'headers' => $this->get_github_headers() );
+		$args = array(
+			'headers' => $this->get_github_headers(),
+			'timeout' => 15,
+		);
 
 		$response = wp_remote_get( $api_url, $args );
 		$this->track_rate_limit( $response );
 
 		if ( is_wp_error( $response ) ) {
 			$this->log( 'Error fetching GitHub release: ' . $response->get_error_message() );
+			return false;
+		}
+
+		$status_code = wp_remote_retrieve_response_code( $response );
+		if ( 200 !== $status_code ) {
+			$this->log( "Unexpected HTTP status {$status_code} fetching GitHub release for {$repo_name} v{$version}." );
 			return false;
 		}
 
@@ -420,7 +487,7 @@ class API {
 		$repo_name = isset( $_POST['repo'] ) ? sanitize_text_field( wp_unslash( $_POST['repo'] ) ) : '';
 		$version   = isset( $_POST['version'] ) ? sanitize_text_field( wp_unslash( $_POST['version'] ) ) : '';
 
-		if ( empty( $repo_name ) || empty( $version ) ) {
+		if ( empty( $repo_name ) || empty( $version ) || ! $this->is_valid_repo_name( $repo_name ) || ! $this->is_valid_version( $version ) ) {
 			wp_send_json_error( esc_html__( 'Invalid plugin information.', 'plugin-hub' ) );
 		}
 
@@ -432,6 +499,10 @@ class API {
 			wp_send_json_error( $error_message );
 		}
 
+		if ( ! $this->is_github_url( $download_url ) ) {
+			wp_send_json_error( esc_html__( 'Invalid download URL.', 'plugin-hub' ) );
+		}
+
 		require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
 		require_once ABSPATH . 'wp-admin/includes/plugin-install.php';
 
@@ -441,11 +512,18 @@ class API {
 
 		if ( is_wp_error( $installed ) ) {
 			wp_send_json_error( $installed->get_error_message() );
+		} elseif ( false === $installed ) {
+			wp_send_json_error( esc_html__( 'Installation failed. Please check the error log for more details.', 'plugin-hub' ) );
+		}
+
+		$plugin_info = $upgrader->plugin_info();
+		if ( ! $plugin_info ) {
+			wp_send_json_error( esc_html__( 'Plugin installed but file path could not be determined.', 'plugin-hub' ) );
 		}
 
 		$this->github_plugins[ $repo_name ] = array(
 			'repo' => $repo_name,
-			'file' => $upgrader->plugin_info(),
+			'file' => $plugin_info,
 		);
 		update_option( 'plugin_hub_github_plugins', $this->github_plugins );
 
@@ -466,7 +544,7 @@ class API {
 
 		$repo_name = isset( $_POST['repo'] ) ? sanitize_text_field( wp_unslash( $_POST['repo'] ) ) : '';
 
-		if ( empty( $repo_name ) ) {
+		if ( empty( $repo_name ) || ! $this->is_valid_repo_name( $repo_name ) ) {
 			wp_send_json_error( esc_html__( 'Invalid plugin information.', 'plugin-hub' ) );
 		}
 
@@ -500,7 +578,7 @@ class API {
 
 		$repo_name = isset( $_POST['repo'] ) ? sanitize_text_field( wp_unslash( $_POST['repo'] ) ) : '';
 
-		if ( empty( $repo_name ) ) {
+		if ( empty( $repo_name ) || ! $this->is_valid_repo_name( $repo_name ) ) {
 			wp_send_json_error( esc_html__( 'Invalid plugin information.', 'plugin-hub' ) );
 		}
 
@@ -530,7 +608,7 @@ class API {
 		$repo_name = isset( $_POST['repo'] ) ? sanitize_text_field( wp_unslash( $_POST['repo'] ) ) : '';
 		$version   = isset( $_POST['version'] ) ? sanitize_text_field( wp_unslash( $_POST['version'] ) ) : '';
 
-		if ( empty( $repo_name ) || empty( $version ) ) {
+		if ( empty( $repo_name ) || empty( $version ) || ! $this->is_valid_repo_name( $repo_name ) || ! $this->is_valid_version( $version ) ) {
 			wp_send_json_error( esc_html__( 'Invalid plugin information.', 'plugin-hub' ) );
 		}
 
@@ -540,6 +618,10 @@ class API {
 			/* translators: %1$s: Repository name, %2$s: Version number */
 			$error_message = sprintf( esc_html__( 'Unable to fetch download URL for %1$s v%2$s. Please check the error log for more details.', 'plugin-hub' ), $repo_name, $version );
 			wp_send_json_error( $error_message );
+		}
+
+		if ( ! $this->is_github_url( $download_url ) ) {
+			wp_send_json_error( esc_html__( 'Invalid download URL.', 'plugin-hub' ) );
 		}
 
 		require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
@@ -595,7 +677,7 @@ class API {
 
 		$repo_name = isset( $_POST['repo'] ) ? sanitize_text_field( wp_unslash( $_POST['repo'] ) ) : '';
 
-		if ( empty( $repo_name ) ) {
+		if ( empty( $repo_name ) || ! $this->is_valid_repo_name( $repo_name ) ) {
 			wp_send_json_error( esc_html__( 'Invalid plugin information.', 'plugin-hub' ) );
 		}
 
@@ -616,40 +698,15 @@ class API {
 		}
 
 		if ( $deleted ) {
+			// Remove from the tracking option and clean up any disable flag.
+			unset( $this->github_plugins[ $repo_name ] );
+			update_option( 'plugin_hub_github_plugins', $this->github_plugins );
+			delete_option( "plugin_hub_disabled_{$repo_name}" );
+
 			wp_send_json_success( esc_html__( 'Plugin deleted successfully.', 'plugin-hub' ) );
 		}
 
 		wp_send_json_error( esc_html__( 'Failed to delete the plugin.', 'plugin-hub' ) );
-	}
-
-	/**
-	 * AJAX handler for disabling a GitHub plugin.
-	 *
-	 * @since 1.0.0
-	 */
-	public function ajax_disable_github_plugin() {
-		check_ajax_referer( 'plugin-hub-nonce', 'nonce' );
-
-		if ( ! current_user_can( 'deactivate_plugins' ) ) {
-			wp_send_json_error( esc_html__( 'You do not have permission to disable plugins.', 'plugin-hub' ) );
-		}
-
-		$repo_name = isset( $_POST['repo'] ) ? sanitize_text_field( wp_unslash( $_POST['repo'] ) ) : '';
-
-		if ( empty( $repo_name ) ) {
-			wp_send_json_error( esc_html__( 'Invalid plugin information.', 'plugin-hub' ) );
-		}
-
-		$plugin_file = $this->get_plugin_file( $repo_name );
-
-		if ( ! $plugin_file ) {
-			wp_send_json_error( esc_html__( 'Plugin not found.', 'plugin-hub' ) );
-		}
-
-		deactivate_plugins( $plugin_file );
-		update_option( "plugin_hub_disabled_{$repo_name}", true );
-
-		wp_send_json_success( esc_html__( 'Plugin disabled successfully.', 'plugin-hub' ) );
 	}
 
 	/**
@@ -667,7 +724,7 @@ class API {
 		$repo_name        = isset( $_POST['repo'] ) ? sanitize_text_field( wp_unslash( $_POST['repo'] ) ) : '';
 		$expected_version = isset( $_POST['version'] ) ? sanitize_text_field( wp_unslash( $_POST['version'] ) ) : '';
 
-		if ( empty( $repo_name ) || empty( $expected_version ) ) {
+		if ( empty( $repo_name ) || empty( $expected_version ) || ! $this->is_valid_repo_name( $repo_name ) || ! $this->is_valid_version( $expected_version ) ) {
 			wp_send_json_error( esc_html__( 'Invalid plugin information.', 'plugin-hub' ) );
 		}
 
@@ -683,88 +740,6 @@ class API {
 	}
 
 	/**
-	 * Get the latest version from GitHub releases.
-	 *
-	 * @since  1.0.0
-	 * @access private
-	 * @param  string      $repo_name Repository name.
-	 * @return string|bool            Version string or false on failure.
-	 */
-	private function get_latest_github_version( $repo_name ) {
-		$api_url = "https://api.github.com/repos/{$this->organization}/{$repo_name}/releases/latest";
-
-		$args = array( 'headers' => $this->get_github_headers() );
-
-		$response = wp_remote_get( $api_url, $args );
-		$this->track_rate_limit( $response );
-
-		if ( is_wp_error( $response ) ) {
-			$this->log( 'Error fetching latest GitHub release: ' . $response->get_error_message() );
-			return false;
-		}
-
-		$body    = wp_remote_retrieve_body( $response );
-		$release = json_decode( $body, true );
-
-		if ( isset( $release['tag_name'] ) ) {
-			return ltrim( $release['tag_name'], 'v' );
-		}
-
-		$this->log( "Unable to find tag_name in GitHub API response for {$repo_name}" );
-		return false;
-	}
-
-	/**
-	 * Force refresh all plugin information from GitHub.
-	 *
-	 * @since  1.0.0
-	 * @return bool True if updated, false otherwise.
-	 */
-	public function force_refresh_plugins() {
-		$repos   = $this->get_org_repos();
-		$updated = false;
-
-		foreach ( $repos as &$repo ) {
-			$latest_version = $this->get_latest_github_version( $repo['name'] );
-			if ( $latest_version && $latest_version !== $repo['version'] ) {
-				$repo['version'] = $latest_version;
-				$updated         = true;
-			}
-		}
-
-		if ( $updated ) {
-			set_transient( $this->cache_key, $repos, $this->cache_expiration );
-		}
-
-		// Clear WordPress plugin update cache.
-		wp_clean_plugins_cache();
-		delete_site_transient( 'update_plugins' );
-
-		return $updated;
-	}
-
-	/**
-	 * AJAX handler to force refresh plugins.
-	 *
-	 * @since 1.0.0
-	 */
-	public function ajax_force_refresh_plugins() {
-		check_ajax_referer( 'plugin-hub-nonce', 'nonce' );
-
-		if ( ! current_user_can( 'update_plugins' ) ) {
-			wp_send_json_error( esc_html__( 'You do not have permission to refresh plugin information.', 'plugin-hub' ) );
-		}
-
-		$updated = $this->force_refresh_plugins();
-
-		if ( $updated ) {
-			wp_send_json_success( esc_html__( 'Plugin information refreshed successfully.', 'plugin-hub' ) );
-		}
-
-		wp_send_json_success( esc_html__( 'No updates found. Plugin information is already up to date.', 'plugin-hub' ) );
-	}
-
-	/**
 	 * Get changelog from GitHub releases.
 	 *
 	 * @since  1.0.0
@@ -774,9 +749,12 @@ class API {
 	 * @return string|bool                  Changelog HTML or false on failure.
 	 */
 	public function get_github_changelog( $repo_name, $current_version, $new_version ) {
-		$api_url = "https://api.github.com/repos/{$this->organization}/{$repo_name}/releases";
+		$api_url = "https://api.github.com/repos/" . PLUGIN_HUB_ORGANIZATION . "/{$repo_name}/releases";
 
-		$args = array( 'headers' => $this->get_github_headers() );
+		$args = array(
+			'headers' => $this->get_github_headers(),
+			'timeout' => 15,
+		);
 
 		$response = wp_remote_get( $api_url, $args );
 		$this->track_rate_limit( $response );
@@ -786,8 +764,19 @@ class API {
 			return false;
 		}
 
+		$status_code = wp_remote_retrieve_response_code( $response );
+		if ( 200 !== $status_code ) {
+			$this->log( "Unexpected HTTP status {$status_code} fetching releases for {$repo_name}." );
+			return false;
+		}
+
 		$body     = wp_remote_retrieve_body( $response );
 		$releases = json_decode( $body, true );
+
+		if ( ! is_array( $releases ) ) {
+			$this->log( "Invalid JSON response fetching changelog for {$repo_name}." );
+			return false;
+		}
 
 		$changelog = '';
 		foreach ( $releases as $release ) {
@@ -812,11 +801,15 @@ class API {
 	public function ajax_get_changelog() {
 		check_ajax_referer( 'plugin-hub-nonce', 'nonce' );
 
+		if ( ! current_user_can( 'install_plugins' ) ) {
+			wp_send_json_error( esc_html__( 'You do not have permission to view changelogs.', 'plugin-hub' ) );
+		}
+
 		$repo_name       = isset( $_POST['repo'] ) ? sanitize_text_field( wp_unslash( $_POST['repo'] ) ) : '';
 		$current_version = isset( $_POST['current_version'] ) ? sanitize_text_field( wp_unslash( $_POST['current_version'] ) ) : '';
 		$new_version     = isset( $_POST['new_version'] ) ? sanitize_text_field( wp_unslash( $_POST['new_version'] ) ) : '';
 
-		if ( empty( $repo_name ) || empty( $current_version ) || empty( $new_version ) ) {
+		if ( empty( $repo_name ) || empty( $current_version ) || empty( $new_version ) || ! $this->is_valid_repo_name( $repo_name ) || ! $this->is_valid_version( $current_version ) || ! $this->is_valid_version( $new_version ) ) {
 			wp_send_json_error( esc_html__( 'Invalid plugin information.', 'plugin-hub' ) );
 		}
 

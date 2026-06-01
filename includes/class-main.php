@@ -93,9 +93,7 @@ class Main {
 		add_action( 'wp_ajax_deactivate_github_plugin', array( $this->api, 'ajax_deactivate_github_plugin' ) );
 		add_action( 'wp_ajax_update_github_plugin', array( $this->api, 'ajax_update_github_plugin' ) );
 		add_action( 'wp_ajax_delete_github_plugin', array( $this->api, 'ajax_delete_github_plugin' ) );
-		add_action( 'wp_ajax_disable_github_plugin', array( $this->api, 'ajax_disable_github_plugin' ) );
 		add_action( 'wp_ajax_verify_plugin_update', array( $this->api, 'verify_plugin_update' ) );
-		add_action( 'wp_ajax_force_refresh_plugins', array( $this->api, 'ajax_force_refresh_plugins' ) );
 		add_action( 'wp_ajax_get_changelog', array( $this->api, 'ajax_get_changelog' ) );
 		add_action( 'wp_ajax_toggle_beta_plugins', array( $this->admin, 'ajax_toggle_beta_plugins' ) );
 		add_action( 'wp_ajax_save_github_token', array( $this->admin, 'ajax_save_github_token' ) );
