@@ -1,0 +1,17 @@
+includes:
+	- vendor/szepeviktor/phpstan-wordpress/extension.neon
+
+parameters:
+	level: 5
+	paths:
+		- includes
+		- plugin-hub.php
+
+	excludePaths:
+		analyse:
+			- includes/admin-display.php
+
+	bootstrapFiles:
+		- phpstan-bootstrap.php
+
+	treatPhpDocTypesAsCertain: false

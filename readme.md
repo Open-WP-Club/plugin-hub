@@ -10,6 +10,11 @@ Plugin Hub is a WordPress plugin that manages and installs plugins directly from
 - Cache plugin information for improved performance
 - Display beta plugins (optional)
 - Refresh plugin list manually
+- Roll back to a previous published release
+- Opt selected plugins into daily automatic updates
+- Review an activity log of plugin-management actions
+- Use an optional GitHub token for higher API rate limits
+- Resolve standard versioned release ZIPs directly, without spending GitHub REST API quota
 
 ## Installation
 
@@ -27,7 +32,8 @@ Plugin Hub is a WordPress plugin that manages and installs plugins directly from
 ## Configuration
 
 - To show or hide beta plugins, use the checkbox in the sidebar of the Plugin Hub page.
-- The plugin list is cached for 24 hours by default. You can modify this duration by changing the `$cache_expiration` value in the `Plugin_Hub_API` class.
+- The plugin list is cached for 24 hours and falls back to the last validated catalog if GitHub is temporarily unavailable.
+- Requires WordPress 6.0 or later (tested through 7.1) and PHP 8.0 or later.
 
 ## Development
 

@@ -1,10 +1,9 @@
 <?php
-
 /**
  * Plugin Name:             Plugin Hub
  * Plugin URI:              https://github.com/Open-WP-Club/plugin-hub
  * Description:             Manages WordPress plugins from GitHub repositories, focusing on Open-WP-Club
- * Version:                 1.3.0
+ * Version:                 1.4.0
  * Author:                  Open WP Club
  * Author URI:              https://openwpclub.com
  * License:                 GPL-2.0+
@@ -13,8 +12,10 @@
  * Domain Path:             /languages
  * Requires at least:       6.0
  * Requires PHP:            8.0
- * Tested up to:            6.9
+ * Tested up to:            7.1
  * Update URI:              https://github.com/Open-WP-Club/plugin-hub
+ *
+ * @package PluginHub
  */
 
 namespace PluginHub;
@@ -24,7 +25,7 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-define( 'PLUGIN_HUB_VERSION', '1.3.0' );
+define( 'PLUGIN_HUB_VERSION', '1.4.0' );
 define( 'PLUGIN_HUB_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PLUGIN_HUB_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'PLUGIN_HUB_ORGANIZATION', 'Open-WP-Club' );
@@ -39,7 +40,7 @@ require_once PLUGIN_HUB_PLUGIN_DIR . 'includes/class-main.php';
  */
 function activate_plugin_hub() {
 	if ( ! wp_next_scheduled( 'plugin_hub_daily_update_check' ) ) {
-		wp_schedule_event( time(), 'daily', 'plugin_hub_daily_update_check' );
+		wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', 'plugin_hub_daily_update_check' );
 	}
 }
 register_activation_hook( __FILE__, __NAMESPACE__ . '\activate_plugin_hub' );
@@ -60,8 +61,7 @@ register_deactivation_hook( __FILE__, __NAMESPACE__ . '\deactivate_plugin_hub' )
  * @since 1.0.0
  */
 function run_plugin_hub() {
-	$plugin = new Main();
-	$plugin->run();
+	new Main();
 }
 
 run_plugin_hub();

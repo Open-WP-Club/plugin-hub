@@ -25,9 +25,9 @@ A clear and concise description of what actually happened.
 If applicable, add screenshots to help explain your problem.
 
 ## Environment
-- WordPress Version: [e.g. 6.9]
+- WordPress Version: [e.g. 7.1]
 - PHP Version: [e.g. 8.0]
-- Plugin Hub Version: [e.g. 1.1.0]
+- Plugin Hub Version: [e.g. 1.4.0]
 - Theme: [e.g. Twenty Twenty-Four]
 - Browser: [e.g. Chrome 120]
 - Server: [e.g. Apache, Nginx]

@@ -191,9 +191,9 @@ If you can't find what you're looking for:
 
 ## 🔄 Version
 
-This documentation is for **Plugin Hub v1.1.0**
+This documentation is for **Plugin Hub v1.4.0**
 
-Last updated: 2026-01-02
+Last updated: 2026-08-28
 
 ---
 

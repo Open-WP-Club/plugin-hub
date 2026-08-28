@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 ?>
 
-<div class="wrap">
+<div class="wrap plugin-hub-wrap">
 	<h1 class="wp-heading-inline"><?php echo esc_html( get_admin_page_title() ); ?></h1>
 
 	<div id="poststuff">
@@ -57,7 +57,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						</tr>
 						<?php else : ?>
 							<?php
-							$action_labels = array(
+							$action_labels  = array(
 								'install'     => __( 'Install', 'plugin-hub' ),
 								'update'      => __( 'Update', 'plugin-hub' ),
 								'rollback'    => __( 'Rollback', 'plugin-hub' ),
@@ -78,7 +78,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							foreach ( $activity_log as $entry ) :
 								$label = isset( $action_labels[ $entry['action'] ] ) ? $action_labels[ $entry['action'] ] : esc_html( $entry['action'] );
 								$class = isset( $action_classes[ $entry['action'] ] ) ? $action_classes[ $entry['action'] ] : '';
-							?>
+								?>
 							<tr>
 								<td><?php echo esc_html( wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $entry['time'] ) ); ?></td>
 								<td><span class="activity-badge <?php echo esc_attr( $class ); ?>"><?php echo esc_html( $label ); ?></span></td>
@@ -123,13 +123,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 						</thead>
 
 						<tbody id="the-list">
+							<?php $visible_repos = 0; ?>
 							<?php foreach ( $repos as $repo ) : ?>
 								<?php
 								$is_installed      = $api->is_plugin_installed( $repo['name'] );
 								$is_active         = $api->is_plugin_active( $repo['name'] );
 								$installed_version = $api->get_installed_plugin_version( $repo['name'] );
 								$update_available  = $api->is_update_available( $repo, $installed_version );
-								$is_beta           = version_compare( $repo['version'], '1.0.0', '<' );
+								$is_available      = ! empty( $repo['available'] );
+								$is_beta           = $is_available && version_compare( $repo['version'], '1.0.0', '<' );
 								$auto_update_on    = in_array( $repo['name'], $autoupdate_plugins, true );
 
 								if (
@@ -141,18 +143,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 								) {
 									continue;
 								}
+								++$visible_repos;
 								?>
-								<tr class="<?php echo $is_active ? 'active' : 'inactive'; ?>">
-									<th scope="row" class="check-column">
-										<input type="checkbox" name="checked[]" value="<?php echo esc_attr( $repo['name'] ); ?>">
-									</th>
-									<td class="plugin-title column-primary">
+									<tr class="<?php echo $is_active ? 'active' : 'inactive'; ?>">
+										<td class="check-column">
+											<input type="checkbox" name="checked[]" value="<?php echo esc_attr( $repo['name'] ); ?>">
+										</td>
+										<th scope="row" class="plugin-title column-primary">
 										<strong><?php echo esc_html( $repo['display_name'] ); ?></strong>
 										<div class="row-actions visible">
-											<?php if ( ! $is_installed ) : ?>
-												<span class="install">
-													<a href="#" class="install-now" data-repo="<?php echo esc_attr( $repo['name'] ); ?>" data-version="<?php echo esc_attr( $repo['version'] ); ?>"><?php esc_html_e( 'Install Now', 'plugin-hub' ); ?></a>
-												</span>
+										<?php if ( ! $is_installed && $is_available ) : ?>
+											<span class="install">
+												<a href="#" class="install-now" data-repo="<?php echo esc_attr( $repo['name'] ); ?>" data-version="<?php echo esc_attr( $repo['version'] ); ?>"><?php esc_html_e( 'Install Now', 'plugin-hub' ); ?></a>
+											</span>
+										<?php elseif ( ! $is_installed ) : ?>
+											<span class="unavailable"><?php esc_html_e( 'No release available', 'plugin-hub' ); ?></span>
 											<?php elseif ( $is_active ) : ?>
 												<span class="deactivate">
 													<a href="#" class="deactivate-now" data-repo="<?php echo esc_attr( $repo['name'] ); ?>"><?php esc_html_e( 'Deactivate', 'plugin-hub' ); ?></a>
@@ -189,14 +194,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 											<?php endif; ?>
 										</div>
 										<button type="button" class="toggle-row"><span class="screen-reader-text"><?php esc_html_e( 'Show more details', 'plugin-hub' ); ?></span></button>
-									</td>
+										</th>
 									<td class="column-description desc">
 										<div class="plugin-description">
 											<p><?php echo esc_html( $repo['description'] ); ?></p>
 										</div>
 										<div class="active second plugin-version-author-uri">
 											<?php if ( ! $is_installed ) : ?>
-												<?php if ( $is_beta ) : ?>
+												<?php if ( ! $is_available ) : ?>
+													<?php esc_html_e( 'No published release', 'plugin-hub' ); ?>
+												<?php elseif ( $is_beta ) : ?>
 													<?php esc_html_e( 'Beta version', 'plugin-hub' ); ?>
 												<?php else : ?>
 													<?php
@@ -231,6 +238,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 									</td>
 								</tr>
 							<?php endforeach; ?>
+							<?php if ( 0 === $visible_repos ) : ?>
+								<tr class="no-items">
+									<td colspan="3"><?php esc_html_e( 'No plugins match the current view. Refresh the catalog or adjust the filter.', 'plugin-hub' ); ?></td>
+								</tr>
+							<?php endif; ?>
 						</tbody>
 
 						<tfoot>
@@ -262,24 +274,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<div class="inside">
 						<p>
 							<label for="github-token"><strong><?php esc_html_e( 'GitHub Token', 'plugin-hub' ); ?></strong></label><br>
-							<input type="password" id="github-token" class="regular-text" value="<?php echo esc_attr( get_option( 'plugin_hub_github_token', '' ) ); ?>" placeholder="<?php esc_attr_e( 'ghp_...', 'plugin-hub' ); ?>" style="width:100%;margin-top:4px;">
-							<button type="button" id="save-github-token" class="button" style="margin-top:6px;"><?php esc_html_e( 'Save Token', 'plugin-hub' ); ?></button>
+								<input type="password" id="github-token" class="regular-text" value="" autocomplete="new-password" placeholder="<?php echo esc_attr( get_option( 'plugin_hub_github_token', '' ) ? __( 'Token configured — enter a replacement', 'plugin-hub' ) : __( 'github_pat_…', 'plugin-hub' ) ); ?>" style="width:100%;margin-top:4px;">
+								<button type="button" id="save-github-token" class="button" style="margin-top:6px;"><?php esc_html_e( 'Save Token', 'plugin-hub' ); ?></button>
+								<?php if ( get_option( 'plugin_hub_github_token', '' ) ) : ?>
+									<button type="button" id="remove-github-token" class="button button-link-delete" style="margin-top:6px;"><?php esc_html_e( 'Remove Token', 'plugin-hub' ); ?></button>
+								<?php endif; ?>
 							<span id="token-status" style="margin-left:8px;"></span>
 						</p>
-						<?php
-						$rate_limit = get_transient( 'plugin_hub_rate_limit' );
-						if ( $rate_limit ) :
-							$pct = $rate_limit['limit'] > 0 ? ( $rate_limit['remaining'] / $rate_limit['limit'] ) : 1;
-						?>
-						<p class="description" id="rate-limit-info" <?php echo $pct < 0.1 ? 'style="color:#dc3232;font-weight:600;"' : ''; ?>>
 							<?php
-							/* translators: %1$d: remaining requests, %2$d: total limit */
-							printf(
-								esc_html__( 'API Rate Limit: %1$d / %2$d remaining', 'plugin-hub' ),
-								(int) $rate_limit['remaining'],
-								(int) $rate_limit['limit']
-							);
-							?>
+							$rate_limit = get_transient( 'plugin_hub_rate_limit' );
+							if ( $rate_limit ) :
+								$pct = $rate_limit['limit'] > 0 ? ( $rate_limit['remaining'] / $rate_limit['limit'] ) : 1;
+								/* translators: %1$d: remaining requests, %2$d: total limit. */
+								$rate_limit_message = sprintf( __( 'API Rate Limit: %1$d / %2$d remaining', 'plugin-hub' ), (int) $rate_limit['remaining'], (int) $rate_limit['limit'] );
+								?>
+						<p class="description" id="rate-limit-info" <?php echo $pct < 0.1 ? 'style="color:#dc3232;font-weight:600;"' : ''; ?>>
+								<?php echo esc_html( $rate_limit_message ); ?>
 						</p>
 						<?php endif; ?>
 						<hr style="margin:12px 0;">
@@ -315,8 +325,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 </div><!-- /wrap -->
 
 <!-- Changelog modal -->
-<div id="plugin-hub-modal-overlay"></div>
-<div id="plugin-hub-modal" role="dialog" aria-modal="true" aria-labelledby="plugin-hub-modal-title">
+<div id="plugin-hub-modal-overlay" hidden></div>
+<div id="plugin-hub-modal" role="dialog" aria-modal="true" aria-labelledby="plugin-hub-modal-title" tabindex="-1" hidden>
 	<div class="modal-header">
 		<h2 id="plugin-hub-modal-title"></h2>
 		<button type="button" id="plugin-hub-modal-close" class="modal-close" aria-label="<?php esc_attr_e( 'Close', 'plugin-hub' ); ?>">&times;</button>

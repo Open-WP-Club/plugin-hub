@@ -88,6 +88,7 @@ class Main {
 	 */
 	private function define_api_hooks() {
 		add_filter( 'pre_set_site_transient_update_plugins', array( $this->api, 'check_for_plugin_updates' ) );
+		add_filter( 'plugins_api', array( $this->api, 'get_plugin_information' ), 20, 3 );
 		add_action( 'wp_ajax_install_github_plugin', array( $this->api, 'ajax_install_github_plugin' ) );
 		add_action( 'wp_ajax_activate_github_plugin', array( $this->api, 'ajax_activate_github_plugin' ) );
 		add_action( 'wp_ajax_deactivate_github_plugin', array( $this->api, 'ajax_deactivate_github_plugin' ) );
@@ -101,14 +102,5 @@ class Main {
 		add_action( 'wp_ajax_save_autoupdate_setting', array( $this->admin, 'ajax_save_autoupdate_setting' ) );
 		add_action( 'wp_ajax_clear_activity_log', array( $this->admin, 'ajax_clear_activity_log' ) );
 		add_action( 'plugin_hub_daily_update_check', array( $this->api, 'do_auto_updates_and_notify' ) );
-	}
-
-	/**
-	 * Run the plugin.
-	 *
-	 * @since 1.0.0
-	 */
-	public function run() {
-		// Future functionality can be added here.
 	}
 }

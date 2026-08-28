@@ -310,7 +310,7 @@ MINUTE_IN_SECONDS // 60
 ### Plugin Constants
 ```php
 // Define in main plugin file
-define( 'PLUGIN_HUB_VERSION', '1.1.0' );
+define( 'PLUGIN_HUB_VERSION', '1.4.0' );
 define( 'PLUGIN_HUB_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PLUGIN_HUB_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 ```

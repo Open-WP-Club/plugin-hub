@@ -70,8 +70,8 @@ Feature requests are welcome! Include:
 
 4. **Test thoroughly**
    - Test on a clean WordPress installation
-   - Test with WordPress 6.0 and 6.9
-   - Test with PHP 8.0+
+   - Test with WordPress 6.0 and 7.1
+   - Test with supported PHP versions (8.0+)
    - Check for PHP errors and warnings
    - Verify AJAX functionality
    - Test security (nonces, capabilities, escaping)
@@ -131,7 +131,7 @@ Your PR should:
 ## Development Setup
 
 ### Requirements
-- WordPress 6.0+ (tested to 6.9)
+- WordPress 6.0+ (tested to 7.1)
 - PHP 8.0+
 - Git
 - Code editor
@@ -147,7 +147,7 @@ Your PR should:
 
 2. **Install dev dependencies** (optional)
    ```bash
-   composer install --dev
+   composer install
    ```
 
 3. **Enable debugging**
@@ -245,17 +245,17 @@ sprintf( esc_html__( 'Installing %s', 'plugin-hub' ), $name );
 
 Run PHP CodeSniffer:
 ```bash
-phpcs --standard=WordPress includes/ plugin-hub.php
+composer phpcs
 ```
 
 Auto-fix issues:
 ```bash
-phpcbf --standard=WordPress includes/ plugin-hub.php
+composer fix
 ```
 
 Run static analysis:
 ```bash
-phpstan analyse includes/
+composer phpstan
 ```
 
 ## Documentation
@@ -320,8 +320,8 @@ For maintainers releasing new versions:
 
 4. **Create release**
    ```bash
-   git tag -a v1.1.0 -m "Release version 1.1.0"
-   git push origin v1.1.0
+   git tag -a vX.Y.Z -m "Release version X.Y.Z"
+   git push origin vX.Y.Z
    ```
 
 5. **GitHub release**

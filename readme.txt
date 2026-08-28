@@ -2,9 +2,9 @@
 Contributors: gkanev
 Tags: plugins, github, installer, plugin-manager, open-wp-club
 Requires at least: 6.0
-Tested up to: 6.9
+Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.1.0
+Stable tag: 1.4.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -25,6 +25,9 @@ Plugin Hub is a powerful WordPress plugin that enables you to manage and install
 * **Plugin Filtering**: Filter plugins by status (active, inactive, updates available, beta)
 * **Cache Management**: Built-in caching for improved performance with manual refresh option
 * **Secure**: Implements WordPress security best practices with nonce verification and capability checks
+* **Rollback**: Install a previous published GitHub release when needed
+* **Activity Log**: Review manual and automatic plugin-management actions
+* **GitHub Authentication**: Optionally use a token for higher API limits
 
 = Requirements =
 
@@ -50,7 +53,7 @@ The plugin checks for updates by comparing version numbers from GitHub releases 
 
 = Can I use this with private repositories? =
 
-Currently, Plugin Hub is designed to work with public GitHub repositories. Support for private repositories would require GitHub authentication.
+Plugin Hub installs packages from public GitHub releases. An optional GitHub token increases API rate limits, but private release assets are not currently supported.
 
 = How often is the plugin list cached? =
 
@@ -67,6 +70,22 @@ Beta plugins are those with version numbers less than 1.0.0. You can toggle thei
 3. Settings panel with beta plugin toggle
 
 == Changelog ==
+
+= 1.4.0 =
+* Tested with WordPress 7.1 and updated custom admin list-table markup
+* Fixed manual updates, automatic updates, and rollbacks to use the WordPress upgrader correctly
+* Added exact post-update version verification and stable GitHub archive directory handling
+* Validated catalog entries, repository URLs, requested releases, and download hosts
+* Added last-known-good catalog fallback and release URL caching
+* Added direct versioned release downloads before the GitHub REST API fallback
+* Prevented stored GitHub tokens from being exposed in page markup
+* Hardened release rendering and improved changelog modal accessibility
+* Synchronized plugin metadata and improved uninstall cleanup
+
+= 1.3.0 =
+* Added GitHub token and API rate-limit support
+* Added changelog and release history views
+* Added rollback, per-plugin automatic updates, e-mail reports, and activity logging
 
 = 1.1.0 =
 * Added PHP 8.0 namespaces for modern code organization
@@ -88,6 +107,9 @@ Beta plugins are those with version numbers less than 1.0.0. You can toggle thei
 * Initial release
 
 == Upgrade Notice ==
+
+= 1.4.0 =
+Recommended compatibility and reliability update for WordPress 7.1.
 
 = 1.1.0 =
 This version requires PHP 8.0 or higher and WordPress 6.0 or higher. Please ensure your server meets these requirements before upgrading.

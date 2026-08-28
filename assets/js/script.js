@@ -1,5 +1,6 @@
 jQuery( document ).ready( function( $ ) {
 	var i18n = pluginHubAjax.i18n;
+	var modalTrigger = null;
 
 	// =========================================================================
 	// Install
@@ -48,7 +49,7 @@ jQuery( document ).ready( function( $ ) {
 				if ( response.success ) {
 					button.text( successText );
 					showMessage( response.data, 'success' );
-					setTimeout( function() { verifyUpdate( repo, version ); }, 2000 );
+					setTimeout( function() { verifyUpdate( repo, version ); }, 500 );
 				} else {
 					button.text( failText );
 					showMessage( response.data, 'error' );
@@ -154,12 +155,42 @@ jQuery( document ).ready( function( $ ) {
 	} );
 
 	function openModal() {
-		$( '#plugin-hub-modal-overlay, #plugin-hub-modal' ).fadeIn( 150 );
+		modalTrigger = document.activeElement;
+		$( '#plugin-hub-modal-overlay, #plugin-hub-modal' ).prop( 'hidden', false ).hide().fadeIn( 150 );
+		$( '#plugin-hub-modal' ).trigger( 'focus' );
 	}
 
 	function closeModal() {
-		$( '#plugin-hub-modal-overlay, #plugin-hub-modal' ).fadeOut( 150 );
+		$( '#plugin-hub-modal-overlay, #plugin-hub-modal' ).fadeOut( 150, function() {
+			$( this ).prop( 'hidden', true );
+		} );
+		if ( modalTrigger ) {
+			modalTrigger.focus();
+			modalTrigger = null;
+		}
 	}
+
+	$( '#plugin-hub-modal' ).on( 'keydown', function( e ) {
+		if ( 9 !== e.which ) {
+			return;
+		}
+
+		var focusable = $( this ).find( 'a[href], button:not(:disabled), [tabindex]:not([tabindex="-1"])' ).filter( ':visible' );
+		if ( ! focusable.length ) {
+			e.preventDefault();
+			return;
+		}
+
+		var first = focusable.first()[ 0 ];
+		var last  = focusable.last()[ 0 ];
+		if ( e.shiftKey && document.activeElement === first ) {
+			e.preventDefault();
+			last.focus();
+		} else if ( ! e.shiftKey && document.activeElement === last ) {
+			e.preventDefault();
+			first.focus();
+		}
+	} );
 
 	// =========================================================================
 	// Rollback
@@ -195,20 +226,28 @@ jQuery( document ).ready( function( $ ) {
 					return;
 				}
 
-				var html = '<br>';
+				listEl.empty().append( $( '<br>' ) );
 				$.each( response.data, function( idx, release ) {
-					var label = release.version;
+					var item;
+					var label = $( '<span>' ).text( release.version );
 					if ( release.date ) {
-						label += ' <span class="rollback-date">(' + release.date + ')</span>';
+						label.append( ' ' ).append( $( '<span class="rollback-date">' ).text( '(' + release.date + ')' ) );
 					}
 					if ( release.current ) {
-						html += '<span class="rollback-version-item rollback-current">' + label + ' &mdash; <em>' + i18n.current_version + '</em></span> ';
+						item = $( '<span class="rollback-version-item rollback-current">' )
+							.append( label )
+							.append( ' — ' )
+							.append( $( '<em>' ).text( i18n.current_version ) );
 					} else {
-						html += '<a href="#" class="rollback-version-item" data-repo="' + repo + '" data-version="' + release.version + '">' + label + '</a> ';
+						item = $( '<a href="#" class="rollback-version-item">' )
+							.attr( 'data-repo', repo )
+							.attr( 'data-version', release.version )
+							.append( label );
 					}
+					listEl.append( item ).append( ' ' );
 				} );
 
-				listEl.html( html ).data( 'loaded', true ).show();
+				listEl.data( 'loaded', true ).show();
 			},
 			error: function() {
 				link.text( i18n.versions );
@@ -250,6 +289,12 @@ jQuery( document ).ready( function( $ ) {
 			url:  pluginHubAjax.ajax_url,
 			type: 'POST',
 			data: { action: 'save_autoupdate_setting', nonce: pluginHubAjax.nonce, repo: repo, enabled: enabled ? 1 : 0 },
+			success: function( response ) {
+				if ( ! response.success ) {
+					checkbox.prop( 'checked', ! enabled );
+					showMessage( response.data, 'error' );
+				}
+			},
 			error: function() {
 				checkbox.prop( 'checked', ! enabled );
 				showMessage( i18n.error_occurred, 'error' );
@@ -271,6 +316,9 @@ jQuery( document ).ready( function( $ ) {
 			data: { action: 'save_github_token', nonce: pluginHubAjax.nonce, token: token },
 			success: function( response ) {
 				button.prop( 'disabled', false ).text( i18n.save_token );
+				if ( response.success ) {
+					$( '#github-token' ).val( '' );
+				}
 				var color = response.success ? '#46b450' : '#dc3232';
 				var mark  = response.success ? '✓ ' : '✗ ';
 				$( '#token-status' ).text( mark + response.data ).css( 'color', color );
@@ -281,6 +329,28 @@ jQuery( document ).ready( function( $ ) {
 			error: function() {
 				button.prop( 'disabled', false ).text( i18n.save_token );
 				$( '#token-status' ).text( '✗ ' + i18n.error_occurred ).css( 'color', '#dc3232' );
+			},
+		} );
+	} );
+
+	$( '#remove-github-token' ).on( 'click', function() {
+		var button = $( this );
+		button.prop( 'disabled', true );
+		$.ajax( {
+			url: pluginHubAjax.ajax_url,
+			type: 'POST',
+			data: { action: 'save_github_token', nonce: pluginHubAjax.nonce, clear: 1 },
+			success: function( response ) {
+				if ( response.success ) {
+					location.reload();
+					return;
+				}
+				button.prop( 'disabled', false );
+				showMessage( response.data, 'error' );
+			},
+			error: function() {
+				button.prop( 'disabled', false );
+				showMessage( i18n.error_occurred, 'error' );
 			},
 		} );
 	} );
@@ -431,12 +501,21 @@ jQuery( document ).ready( function( $ ) {
 
 			var plugin = plugins[ processed ];
 			var row    = $( 'input[name="checked[]"][value="' + plugin + '"]' ).closest( 'tr' );
-			var button, version;
+			var selectors = {
+				activate_github_plugin: '.activate-now',
+				deactivate_github_plugin: '.deactivate-now',
+				update_github_plugin: '.update-now',
+				delete_github_plugin: '.delete-now',
+			};
+			var button = row.find( selectors[ action ] );
+			var version;
 
-			if ( 'update_github_plugin' === action ) {
-				button  = row.find( '.update-now' );
-			} else {
-				button  = row.find( '.row-actions a:first' );
+			if ( ! button.length ) {
+				processed++;
+				fail++;
+				statusDiv.find( 'p' ).text( i18n.processing + ' ' + processed + '/' + total );
+				next();
+				return;
 			}
 			version = button.data( 'version' ) || '';
 

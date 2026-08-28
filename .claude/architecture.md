@@ -128,7 +128,7 @@ get_installed_plugin_version( $name ) // Get version
 get_org_repos()                   // Fetch & cache CSV
 parse_csv_content( $csv )         // Parse CSV data
 refresh_csv_cache()               // Clear & refetch
-get_github_release_download_url() // Get zipball URL
+get_github_release_download_url() // Resolve release ZIP URL
 get_latest_github_version()       // Fetch latest release
 get_github_changelog()            // Get release notes
 ```
@@ -171,9 +171,9 @@ ajax_install_github_plugin()
          │
          ▼
 get_github_release_download_url()
-  - Query GitHub API
-  - Get release data
-  - Extract zipball URL
+  - Check the versioned `{repository}.zip` asset URL directly
+  - Fall back to the GitHub API for non-standard releases
+  - Extract an asset or zipball URL
          │
          ▼
 WordPress Plugin_Upgrader
@@ -381,7 +381,7 @@ do_action( 'plugin_hub_after_cache_refresh', $repos );
 
 ### WordPress Core
 - Minimum: 6.0
-- Tested: 6.9
+- Tested: 7.1
 - Required Functions:
   - Options API
   - Transients API

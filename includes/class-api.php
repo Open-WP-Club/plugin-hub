@@ -52,13 +52,21 @@ class API {
 	private $installed_plugins_cache = null;
 
 	/**
+	 * Expected extraction directory while installing a GitHub package.
+	 *
+	 * @since 1.4.0
+	 * @var string
+	 */
+	private $expected_package_slug = '';
+
+	/**
 	 * Cache key for transients.
 	 *
 	 * @since  1.0.0
 	 * @access private
 	 * @var    string
 	 */
-	private $cache_key = 'plugin_hub_csv_cache';
+	private $cache_key = 'plugin_hub_csv_cache_v2';
 
 	/**
 	 * Cache expiration time in seconds.
@@ -70,6 +78,14 @@ class API {
 	private $cache_expiration = DAY_IN_SECONDS;
 
 	/**
+	 * Maximum accepted catalog size (one MiB).
+	 *
+	 * @since 1.4.0
+	 * @var int
+	 */
+	private $maximum_catalog_size = 1048576;
+
+	/**
 	 * Log a debug message if WP_DEBUG is enabled.
 	 *
 	 * @since  1.2.0
@@ -78,7 +94,7 @@ class API {
 	 */
 	private function log( $message ) {
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			error_log( 'Plugin Hub: ' . $message );
+			error_log( 'Plugin Hub: ' . $message ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Intentionally gated by WP_DEBUG.
 		}
 	}
 
@@ -126,7 +142,7 @@ class API {
 	 * @return bool            True if the version string is in a valid format.
 	 */
 	private function is_valid_version( $version ) {
-		return (bool) preg_match( '/^[0-9a-zA-Z._-]+$/', $version );
+		return (bool) preg_match( '/^\d+(?:\.\d+){0,3}(?:[-_.][0-9A-Za-z][0-9A-Za-z._-]*)?$/D', $version );
 	}
 
 	/**
@@ -142,8 +158,10 @@ class API {
 	 */
 	private function is_github_url( $url ) {
 		$allowed_hosts = array( 'api.github.com', 'github.com', 'codeload.github.com', 'objects.githubusercontent.com' );
+		$scheme        = wp_parse_url( $url, PHP_URL_SCHEME );
 		$host          = wp_parse_url( $url, PHP_URL_HOST );
-		return in_array( $host, $allowed_hosts, true );
+
+		return 'https' === $scheme && in_array( strtolower( (string) $host ), $allowed_hosts, true );
 	}
 
 	/**
@@ -157,13 +175,14 @@ class API {
 	 */
 	private function get_github_headers() {
 		$headers = array(
-			'Accept'     => 'application/vnd.github.v3+json',
-			'User-Agent' => 'WordPress/Plugin-Hub',
+			'Accept'               => 'application/vnd.github+json',
+			'User-Agent'           => 'Plugin-Hub/' . PLUGIN_HUB_VERSION . '; ' . home_url( '/' ),
+			'X-GitHub-Api-Version' => '2026-03-10',
 		);
 
 		$token = get_option( 'plugin_hub_github_token', '' );
 		if ( ! empty( $token ) ) {
-			$headers['Authorization'] = 'token ' . $token;
+			$headers['Authorization'] = 'Bearer ' . $token;
 		}
 
 		return $headers;
@@ -174,7 +193,7 @@ class API {
 	 *
 	 * @since  1.3.0
 	 * @access private
-	 * @param  array|WP_Error $response The wp_remote_get() response.
+	 * @param  array|\WP_Error $response The wp_remote_get() response.
 	 */
 	private function track_rate_limit( $response ) {
 		if ( is_wp_error( $response ) ) {
@@ -226,26 +245,39 @@ class API {
 	 */
 	public function get_org_repos() {
 		$cached_data = get_transient( $this->cache_key );
-		if ( false !== $cached_data ) {
+		if ( false !== $cached_data && is_array( $cached_data ) ) {
 			return $cached_data;
 		}
 
-		$response = wp_remote_get( $this->csv_url, array( 'timeout' => 15 ) );
+		$response = wp_safe_remote_get(
+			$this->csv_url,
+			array(
+				'timeout'             => 15,
+				'redirection'         => 3,
+				'limit_response_size' => $this->maximum_catalog_size,
+			)
+		);
 		if ( is_wp_error( $response ) ) {
 			$this->log( 'Error fetching CSV file: ' . $response->get_error_message() );
-			return array();
+			return $this->get_last_known_repos();
 		}
 
 		$status_code = wp_remote_retrieve_response_code( $response );
 		if ( 200 !== $status_code ) {
 			$this->log( 'Unexpected HTTP status ' . $status_code . ' fetching plugin CSV.' );
-			return array();
+			return $this->get_last_known_repos();
 		}
 
 		$csv_content = wp_remote_retrieve_body( $response );
 		$repos       = $this->parse_csv_content( $csv_content );
 
+		if ( empty( $repos ) ) {
+			$this->log( 'The plugin catalog was empty or invalid; using the last known catalog.' );
+			return $this->get_last_known_repos();
+		}
+
 		set_transient( $this->cache_key, $repos, $this->cache_expiration );
+		update_option( 'plugin_hub_last_known_repos', $repos, false );
 
 		return $repos;
 	}
@@ -262,25 +294,80 @@ class API {
 		// Normalize line endings so Windows-formatted (\r\n) and old Mac (\r) CSVs parse correctly.
 		$csv_content = str_replace( array( "\r\n", "\r" ), "\n", $csv_content );
 		$lines       = explode( "\n", trim( $csv_content ) );
-		$repos = array();
+		$repos       = array();
 
 		// Remove the header row.
 		array_shift( $lines );
 
 		foreach ( $lines as $line ) {
 			$data = str_getcsv( $line );
-			if ( count( $data ) >= 5 ) {
-				$repos[] = array(
-					'name'         => trim( $data[0] ),
-					'display_name' => trim( $data[1] ),
-					'description'  => trim( $data[2] ),
-					'version'      => trim( $data[3] ),
-					'repo_url'     => trim( $data[4] ),
-				);
+			if ( count( $data ) < 5 ) {
+				continue;
+			}
+
+			$name     = trim( $data[0] );
+			$version  = trim( $data[3] );
+			$repo_url = esc_url_raw( trim( $data[4] ), array( 'https' ) );
+
+			if ( ! $this->is_valid_repo_name( $name ) || ! $this->is_catalog_repo_url( $repo_url, $name ) ) {
+				$this->log( 'Skipped invalid catalog entry for repository: ' . sanitize_text_field( $name ) );
+				continue;
+			}
+
+			$repos[ strtolower( $name ) ] = array(
+				'name'         => $name,
+				'display_name' => sanitize_text_field( trim( $data[1] ) ),
+				'description'  => sanitize_textarea_field( trim( $data[2] ) ),
+				'version'      => sanitize_text_field( $version ),
+				'repo_url'     => $repo_url,
+				'available'    => $this->is_valid_version( $version ),
+			);
+		}
+
+		return array_values( $repos );
+	}
+
+	/**
+	 * Return the last successfully validated catalog.
+	 *
+	 * @since 1.4.0
+	 * @return array
+	 */
+	private function get_last_known_repos() {
+		$repos = get_option( 'plugin_hub_last_known_repos', array() );
+		return is_array( $repos ) ? $repos : array();
+	}
+
+	/**
+	 * Validate that a catalog URL is the expected GitHub repository URL.
+	 *
+	 * @since 1.4.0
+	 * @param string $url       Repository URL.
+	 * @param string $repo_name Repository name.
+	 * @return bool
+	 */
+	private function is_catalog_repo_url( $url, $repo_name ) {
+		$host = strtolower( (string) wp_parse_url( $url, PHP_URL_HOST ) );
+		$path = trim( (string) wp_parse_url( $url, PHP_URL_PATH ), '/' );
+
+		return 'github.com' === $host && 0 === strcasecmp( $path, PLUGIN_HUB_ORGANIZATION . '/' . $repo_name );
+	}
+
+	/**
+	 * Find a repository in the validated catalog.
+	 *
+	 * @since 1.4.0
+	 * @param string $repo_name Repository name.
+	 * @return array|false
+	 */
+	private function get_catalog_repository( $repo_name ) {
+		foreach ( $this->get_org_repos() as $repo ) {
+			if ( isset( $repo['name'] ) && 0 === strcasecmp( $repo['name'], $repo_name ) ) {
+				return $repo;
 			}
 		}
 
-		return $repos;
+		return false;
 	}
 
 	/**
@@ -322,14 +409,20 @@ class API {
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
 		$plugin_file = $this->get_plugin_file( $plugin_name );
-		return $plugin_file && is_plugin_active( $plugin_file ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals
+		$is_active   = $plugin_file && is_plugin_active( $plugin_file ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals
+
+		if ( ! $is_active && is_multisite() && $plugin_file ) {
+			$is_active = is_plugin_active_for_network( $plugin_file );
+		}
+
+		return $is_active;
 	}
 
 	/**
 	 * Get the plugin file path.
 	 *
 	 * @since  1.0.0
-	 * @param  string      $plugin_name The plugin name/slug.
+	 * @param  string $plugin_name The plugin name/slug.
 	 * @return string|bool              Plugin file path or false if not found.
 	 */
 	public function get_plugin_file( $plugin_name ) {
@@ -350,7 +443,7 @@ class API {
 	 * @return bool                      True if update available, false otherwise.
 	 */
 	public function is_update_available( $repo, $installed_version ) {
-		return version_compare( $repo['version'], $installed_version, '>' );
+		return ! empty( $repo['available'] ) && 'Not Installed' !== $installed_version && version_compare( $repo['version'], $installed_version, '>' );
 	}
 
 	/**
@@ -377,13 +470,17 @@ class API {
 	 * @return object            Modified transient.
 	 */
 	public function check_for_plugin_updates( $transient ) {
-		if ( empty( $transient->checked ) ) {
+		if ( ! is_object( $transient ) || empty( $transient->checked ) ) {
 			return $transient;
 		}
 
 		$repos = $this->get_org_repos();
 
 		foreach ( $repos as $repo ) {
+			if ( empty( $repo['available'] ) ) {
+				continue;
+			}
+
 			$plugin_file = $this->get_plugin_file( $repo['name'] );
 			if ( ! $plugin_file ) {
 				continue;
@@ -397,13 +494,11 @@ class API {
 			$csv_version = $repo['version'];
 
 			if ( version_compare( $csv_version, $wp_version, '>' ) ) {
-				$obj              = new \stdClass();
-				$obj->slug        = $plugin_file;
-				$obj->new_version = $csv_version;
-				$obj->url         = $repo['repo_url'];
-				$obj->package     = $this->get_github_release_download_url( $repo['name'], $csv_version );
+				$package = $this->get_github_release_download_url( $repo['name'], $csv_version );
 
-				$transient->response[ $plugin_file ] = $obj;
+				if ( $package ) {
+					$transient->response[ $plugin_file ] = $this->build_update_data( $repo, $plugin_file, $package );
+				}
 			}
 		}
 
@@ -411,46 +506,140 @@ class API {
 	}
 
 	/**
+	 * Build update metadata in the format expected by WordPress core.
+	 *
+	 * @since 1.4.0
+	 * @param array  $repo        Catalog repository data.
+	 * @param string $plugin_file Plugin basename.
+	 * @param string $package     Package URL.
+	 * @return object
+	 */
+	private function build_update_data( $repo, $plugin_file, $package ) {
+		return (object) array(
+			'id'           => $repo['repo_url'],
+			'slug'         => $repo['name'],
+			'plugin'       => $plugin_file,
+			'new_version'  => $repo['version'],
+			'url'          => $repo['repo_url'],
+			'package'      => $package,
+			'requires'     => '6.0',
+			'tested'       => '7.1',
+			'requires_php' => '8.0',
+		);
+	}
+
+	/**
+	 * Supply the plugin details modal for this custom update source.
+	 *
+	 * @since 1.4.0
+	 * @param false|object|array $result Current API result.
+	 * @param string             $action API action.
+	 * @param object             $args   API arguments.
+	 * @return false|object|array
+	 */
+	public function get_plugin_information( $result, $action, $args ) {
+		if ( 'plugin_information' !== $action || empty( $args->slug ) ) {
+			return $result;
+		}
+
+		$repo = $this->get_catalog_repository( sanitize_text_field( $args->slug ) );
+		if ( ! $repo ) {
+			return $result;
+		}
+
+		$package   = $this->get_github_release_download_url( $repo['name'], $repo['version'] );
+		$changelog = $this->get_github_changelog( $repo['name'], '0.0.0', $repo['version'] );
+
+		return (object) array(
+			'name'          => $repo['display_name'],
+			'slug'          => $repo['name'],
+			'version'       => $repo['version'],
+			'author'        => '<a href="https://openwpclub.com">Open WP Club</a>',
+			'homepage'      => $repo['repo_url'],
+			'requires'      => '6.0',
+			'tested'        => '7.1',
+			'requires_php'  => '8.0',
+			'download_link' => $package ? $package : '',
+			'sections'      => array(
+				'description' => wpautop( esc_html( $repo['description'] ) ),
+				'changelog'   => $changelog ? $changelog : esc_html__( 'No changelog is available.', 'plugin-hub' ),
+			),
+		);
+	}
+
+	/**
 	 * Get GitHub release download URL.
 	 *
 	 * @since  1.0.0
-	 * @param  string      $repo_name Repository name.
-	 * @param  string      $version   Version number.
+	 * @param  string $repo_name Repository name.
+	 * @param  string $version   Version number.
 	 * @return string|bool            Download URL or false on failure.
 	 */
 	public function get_github_release_download_url( $repo_name, $version ) {
-		$api_url = "https://api.github.com/repos/" . PLUGIN_HUB_ORGANIZATION . "/{$repo_name}/releases/tags/v{$version}";
+		if ( ! $this->is_valid_repo_name( $repo_name ) || ! $this->is_valid_version( $version ) || ! $this->get_catalog_repository( $repo_name ) ) {
+			return false;
+		}
 
-		$args = array(
+		$cache_key  = 'plugin_hub_release_' . md5( strtolower( $repo_name ) . ':' . $version );
+		$cached_url = get_transient( $cache_key );
+		if ( is_string( $cached_url ) && $this->is_github_url( $cached_url ) ) {
+			return $cached_url;
+		}
+
+		// Release assets follow a predictable public URL convention. Check it
+		// before using the rate-limited GitHub REST API. Keep the version in the
+		// URL so the downloaded package always matches the trusted CSV catalog.
+		$direct_url = $this->get_direct_release_asset_url( $repo_name, $version );
+		if ( $direct_url ) {
+			set_transient( $cache_key, $direct_url, HOUR_IN_SECONDS );
+			return $direct_url;
+		}
+
+		$args           = array(
 			'headers' => $this->get_github_headers(),
 			'timeout' => 15,
 		);
+		$release        = null;
+		$tag_candidates = array( 'v' . $version, $version );
 
-		$response = wp_remote_get( $api_url, $args );
-		$this->track_rate_limit( $response );
+		foreach ( $tag_candidates as $tag ) {
+			$api_url  = 'https://api.github.com/repos/' . PLUGIN_HUB_ORGANIZATION . '/' . $repo_name . '/releases/tags/' . rawurlencode( $tag );
+			$response = wp_remote_get( $api_url, $args );
+			$this->track_rate_limit( $response );
 
-		if ( is_wp_error( $response ) ) {
-			$this->log( 'Error fetching GitHub release: ' . $response->get_error_message() );
-			return false;
+			if ( is_wp_error( $response ) ) {
+				$this->log( 'Error fetching GitHub release: ' . $response->get_error_message() );
+				return false;
+			}
+
+			$status_code = wp_remote_retrieve_response_code( $response );
+			if ( 404 === $status_code ) {
+				continue;
+			}
+			if ( 200 !== $status_code ) {
+				$this->log( "Unexpected HTTP status {$status_code} fetching GitHub release for {$repo_name} {$tag}." );
+				return false;
+			}
+
+			$release = json_decode( wp_remote_retrieve_body( $response ), true );
+			break;
 		}
 
-		$status_code = wp_remote_retrieve_response_code( $response );
-		if ( 200 !== $status_code ) {
-			$this->log( "Unexpected HTTP status {$status_code} fetching GitHub release for {$repo_name} v{$version}." );
+		if ( ! is_array( $release ) || ! empty( $release['draft'] ) ) {
+			$this->log( "No valid published GitHub release found for {$repo_name} {$version}." );
 			return false;
 		}
-
-		$body    = wp_remote_retrieve_body( $response );
-		$release = json_decode( $body, true );
 
 		// Priority: asset named {repo-name}.zip > any .zip asset > zipball_url.
 		if ( ! empty( $release['assets'] ) && is_array( $release['assets'] ) ) {
 			$any_zip_url = false;
 
 			foreach ( $release['assets'] as $asset ) {
-				if ( ! empty( $asset['browser_download_url'] ) && '.zip' === substr( $asset['name'], -4 ) ) {
+				if ( ! empty( $asset['browser_download_url'] ) && ! empty( $asset['name'] ) && '.zip' === substr( $asset['name'], -4 ) && $this->is_github_url( $asset['browser_download_url'] ) ) {
 					if ( $asset['name'] === $repo_name . '.zip' ) {
-						return $asset['browser_download_url'];
+						$download_url = $asset['browser_download_url'];
+						set_transient( $cache_key, $download_url, HOUR_IN_SECONDS );
+						return $download_url;
 					}
 					if ( ! $any_zip_url ) {
 						$any_zip_url = $asset['browser_download_url'];
@@ -459,16 +648,61 @@ class API {
 			}
 
 			if ( $any_zip_url ) {
+				set_transient( $cache_key, $any_zip_url, HOUR_IN_SECONDS );
 				return $any_zip_url;
 			}
 		}
 
 		if ( isset( $release['zipball_url'] ) ) {
-			return $release['zipball_url'];
+			if ( $this->is_github_url( $release['zipball_url'] ) ) {
+				set_transient( $cache_key, $release['zipball_url'], HOUR_IN_SECONDS );
+				return $release['zipball_url'];
+			}
 		}
 
 		$this->log( "Unable to find download URL in GitHub API response for {$repo_name} v{$version}" );
 		$this->log( 'GitHub API response: ' . wp_json_encode( $release ) );
+		return false;
+	}
+
+	/**
+	 * Find a conventionally named release asset without using the GitHub API.
+	 *
+	 * Open-WP-Club releases normally publish `{repository}.zip`. GitHub returns
+	 * a redirect for an existing asset, so a HEAD request can verify the URL
+	 * without downloading the archive or consuming the REST API rate limit.
+	 *
+	 * @since  1.4.0
+	 * @param  string $repo_name Repository name.
+	 * @param  string $version   Version number.
+	 * @return string|bool       Direct asset URL or false when not found.
+	 */
+	private function get_direct_release_asset_url( $repo_name, $version ) {
+		$tag_candidates = array( $version, 'v' . $version );
+
+		foreach ( $tag_candidates as $tag ) {
+			$download_url = 'https://github.com/' . PLUGIN_HUB_ORGANIZATION . '/' . $repo_name . '/releases/download/' . rawurlencode( $tag ) . '/' . rawurlencode( $repo_name . '.zip' );
+			$response     = wp_safe_remote_head(
+				$download_url,
+				array(
+					'timeout'     => 8,
+					'redirection' => 0,
+					'headers'     => array(
+						'User-Agent' => 'Plugin-Hub/' . PLUGIN_HUB_VERSION,
+					),
+				)
+			);
+
+			if ( is_wp_error( $response ) ) {
+				continue;
+			}
+
+			$status_code = wp_remote_retrieve_response_code( $response );
+			if ( $status_code >= 200 && $status_code < 400 ) {
+				return $download_url;
+			}
+		}
+
 		return false;
 	}
 
@@ -491,6 +725,15 @@ class API {
 			wp_send_json_error( esc_html__( 'Invalid plugin information.', 'plugin-hub' ) );
 		}
 
+		$repo = $this->get_catalog_repository( $repo_name );
+		if ( ! $repo || 0 !== version_compare( $repo['version'], $version ) ) {
+			wp_send_json_error( esc_html__( 'The requested plugin version is not in the trusted catalog.', 'plugin-hub' ) );
+		}
+
+		if ( $this->is_plugin_installed( $repo_name ) ) {
+			wp_send_json_error( esc_html__( 'The plugin is already installed.', 'plugin-hub' ) );
+		}
+
 		$download_url = $this->get_github_release_download_url( $repo_name, $version );
 
 		if ( ! $download_url ) {
@@ -506,9 +749,13 @@ class API {
 		require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
 		require_once ABSPATH . 'wp-admin/includes/plugin-install.php';
 
-		$skin      = new \WP_Ajax_Upgrader_Skin();
-		$upgrader  = new \Plugin_Upgrader( $skin );
+		$skin                        = new \WP_Ajax_Upgrader_Skin();
+		$upgrader                    = new \Plugin_Upgrader( $skin );
+		$this->expected_package_slug = $repo_name;
+		add_filter( 'upgrader_source_selection', array( $this, 'normalize_package_source' ), 10, 4 );
 		$installed = $upgrader->install( $download_url );
+		remove_filter( 'upgrader_source_selection', array( $this, 'normalize_package_source' ), 10 );
+		$this->expected_package_slug = '';
 
 		if ( is_wp_error( $installed ) ) {
 			wp_send_json_error( $installed->get_error_message() );
@@ -521,6 +768,13 @@ class API {
 			wp_send_json_error( esc_html__( 'Plugin installed but file path could not be determined.', 'plugin-hub' ) );
 		}
 
+		wp_clean_plugins_cache();
+		$this->installed_plugins_cache = null;
+		$installed_version             = $this->get_installed_plugin_version( $repo_name );
+		if ( 0 !== version_compare( $installed_version, $version ) ) {
+			wp_send_json_error( esc_html__( 'Plugin installation completed but the installed version could not be verified.', 'plugin-hub' ) );
+		}
+
 		$this->github_plugins[ $repo_name ] = array(
 			'repo' => $repo_name,
 			'file' => $plugin_info,
@@ -529,6 +783,39 @@ class API {
 		$this->log_activity( 'install', $repo_name, $version );
 
 		wp_send_json_success( esc_html__( 'Plugin installed successfully.', 'plugin-hub' ) );
+	}
+
+	/**
+	 * Normalize GitHub zipball directories to the repository slug.
+	 *
+	 * GitHub-generated archives use a commit-specific root directory. WordPress
+	 * requires a stable plugin directory so future updates can find the plugin.
+	 *
+	 * @since 1.4.0
+	 * @param string       $source        Extracted source path.
+	 * @param string       $remote_source Temporary extraction parent path.
+	 * @param \WP_Upgrader $upgrader      Upgrader instance.
+	 * @param array        $hook_extra    Upgrader context.
+	 * @return string|\WP_Error
+	 */
+	public function normalize_package_source( $source, $remote_source, $upgrader, $hook_extra ) {
+		unset( $upgrader, $hook_extra );
+
+		if ( empty( $this->expected_package_slug ) ) {
+			return $source;
+		}
+
+		$desired_source = trailingslashit( $remote_source ) . $this->expected_package_slug . '/';
+		if ( untrailingslashit( $source ) === untrailingslashit( $desired_source ) ) {
+			return $source;
+		}
+
+		global $wp_filesystem;
+		if ( ! $wp_filesystem || ! $wp_filesystem->move( $source, $desired_source, true ) ) {
+			return new \WP_Error( 'plugin_hub_source_rename_failed', __( 'The downloaded plugin package could not be prepared.', 'plugin-hub' ) );
+		}
+
+		return $desired_source;
 	}
 
 	/**
@@ -592,6 +879,9 @@ class API {
 		}
 
 		$deactivated_version = $this->get_installed_plugin_version( $repo_name );
+		if ( is_multisite() && is_plugin_active_for_network( $plugin_file ) ) {
+			wp_send_json_error( esc_html__( 'Network-active plugins must be managed from Network Admin.', 'plugin-hub' ) );
+		}
 		deactivate_plugins( $plugin_file );
 		$this->log_activity( 'deactivate', $repo_name, $deactivated_version );
 
@@ -617,34 +907,29 @@ class API {
 			wp_send_json_error( esc_html__( 'Invalid plugin information.', 'plugin-hub' ) );
 		}
 
-		$download_url = $this->get_github_release_download_url( $repo_name, $version );
+		$repo        = $this->get_catalog_repository( $repo_name );
+		$is_rollback = isset( $_POST['is_rollback'] ) && '1' === sanitize_text_field( wp_unslash( $_POST['is_rollback'] ) );
 
-		if ( ! $download_url ) {
-			/* translators: %1$s: Repository name, %2$s: Version number */
-			$error_message = sprintf( esc_html__( 'Unable to fetch download URL for %1$s v%2$s. Please check the error log for more details.', 'plugin-hub' ), $repo_name, $version );
-			wp_send_json_error( $error_message );
+		if ( ! $repo ) {
+			wp_send_json_error( esc_html__( 'The requested plugin is not in the trusted catalog.', 'plugin-hub' ) );
 		}
 
-		if ( ! $this->is_github_url( $download_url ) ) {
-			wp_send_json_error( esc_html__( 'Invalid download URL.', 'plugin-hub' ) );
+		if ( ! $is_rollback && 0 !== version_compare( $repo['version'], $version ) ) {
+			wp_send_json_error( esc_html__( 'The requested update is no longer current. Refresh the plugin list and try again.', 'plugin-hub' ) );
 		}
 
-		require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
-		require_once ABSPATH . 'wp-admin/includes/plugin-install.php';
-
-		$plugin_file = $this->get_plugin_file( $repo_name );
-
-		if ( ! $plugin_file ) {
+		$current_version = $this->get_installed_plugin_version( $repo_name );
+		if ( 'Not Installed' === $current_version ) {
 			wp_send_json_error( esc_html__( 'Plugin not found.', 'plugin-hub' ) );
 		}
+		if ( ! $is_rollback && version_compare( $version, $current_version, '<=' ) ) {
+			wp_send_json_error( esc_html__( 'The installed plugin is already at this version or newer.', 'plugin-hub' ) );
+		}
+		if ( $is_rollback && 0 === version_compare( $version, $current_version ) ) {
+			wp_send_json_error( esc_html__( 'The selected version is already installed.', 'plugin-hub' ) );
+		}
 
-		$skin     = new \WP_Ajax_Upgrader_Skin();
-		$upgrader = new \Plugin_Upgrader( $skin );
-
-		// Clear the plugin update transient.
-		delete_site_transient( 'update_plugins' );
-
-		$result = $upgrader->upgrade( $plugin_file, array( 'package' => $download_url ) );
+		$result = $this->perform_plugin_upgrade( $repo, $version, false );
 
 		if ( is_wp_error( $result ) ) {
 			$this->log( 'Update failed for ' . $repo_name . '. Error: ' . $result->get_error_message() );
@@ -654,14 +939,9 @@ class API {
 			wp_send_json_error( esc_html__( 'Update failed. Please check the error log for more details.', 'plugin-hub' ) );
 		}
 
-		// Force refresh of plugin update information.
-		wp_clean_plugins_cache();
-		$this->installed_plugins_cache = null;
-
 		// Verify the update.
 		$new_version = $this->get_installed_plugin_version( $repo_name );
-		if ( version_compare( $new_version, $version, '>=' ) ) {
-			$is_rollback = ! empty( $_POST['is_rollback'] );
+		if ( 0 === version_compare( $new_version, $version ) ) {
 			$this->log_activity( $is_rollback ? 'rollback' : 'update', $repo_name, $new_version );
 			/* translators: %s: Version number */
 			wp_send_json_success( sprintf( esc_html__( 'Plugin updated successfully to version %s', 'plugin-hub' ), $new_version ) );
@@ -669,6 +949,65 @@ class API {
 			$this->log( 'Update reported success but version mismatch for ' . $repo_name . '. Expected: ' . $version . ', Actual: ' . $new_version );
 			wp_send_json_error( esc_html__( 'Update reported success but version mismatch. Please check the error log for more details.', 'plugin-hub' ) );
 		}
+	}
+
+	/**
+	 * Upgrade a plugin through WordPress core's update pipeline.
+	 *
+	 * Plugin_Upgrader::upgrade() reads its package from the update_plugins site
+	 * transient. Supplying a `package` method argument is not supported by core.
+	 *
+	 * @since 1.4.0
+	 * @param array  $repo       Validated catalog repository.
+	 * @param string $version    Release version to install.
+	 * @param bool   $background Whether this runs from cron.
+	 * @return bool|\WP_Error
+	 */
+	private function perform_plugin_upgrade( $repo, $version, $background = false ) {
+		$plugin_file = $this->get_plugin_file( $repo['name'] );
+		if ( ! $plugin_file ) {
+			return new \WP_Error( 'plugin_hub_plugin_not_found', __( 'Plugin not found.', 'plugin-hub' ) );
+		}
+
+		$download_url = $this->get_github_release_download_url( $repo['name'], $version );
+		if ( ! $download_url || ! $this->is_github_url( $download_url ) ) {
+			return new \WP_Error( 'plugin_hub_package_unavailable', __( 'Unable to fetch a trusted download URL for this release.', 'plugin-hub' ) );
+		}
+
+		require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+		require_once ABSPATH . 'wp-admin/includes/plugin-install.php';
+
+		$update_data            = $repo;
+		$update_data['version'] = $version;
+		$updates                = get_site_transient( 'update_plugins' );
+
+		if ( ! is_object( $updates ) ) {
+			$updates = new \stdClass();
+		}
+		if ( ! isset( $updates->response ) || ! is_array( $updates->response ) ) {
+			$updates->response = array();
+		}
+
+		$updates->response[ $plugin_file ] = $this->build_update_data( $update_data, $plugin_file, $download_url );
+		$filter_removed                    = remove_filter( 'pre_set_site_transient_update_plugins', array( $this, 'check_for_plugin_updates' ) );
+		set_site_transient( 'update_plugins', $updates );
+		if ( $filter_removed ) {
+			add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'check_for_plugin_updates' ) );
+		}
+
+		$skin                        = $background ? new \Automatic_Upgrader_Skin() : new \WP_Ajax_Upgrader_Skin();
+		$upgrader                    = new \Plugin_Upgrader( $skin );
+		$this->expected_package_slug = $repo['name'];
+		add_filter( 'upgrader_source_selection', array( $this, 'normalize_package_source' ), 10, 4 );
+		$result = $upgrader->upgrade( $plugin_file );
+		remove_filter( 'upgrader_source_selection', array( $this, 'normalize_package_source' ), 10 );
+		$this->expected_package_slug = '';
+
+		wp_clean_plugins_cache();
+		delete_site_transient( 'update_plugins' );
+		$this->installed_plugins_cache = null;
+
+		return $result;
 	}
 
 	/**
@@ -695,7 +1034,7 @@ class API {
 			wp_send_json_error( esc_html__( 'Plugin not found.', 'plugin-hub' ) );
 		}
 
-		if ( is_plugin_active( $plugin_file ) ) {
+		if ( $this->is_plugin_active( $repo_name ) ) {
 			wp_send_json_error( esc_html__( 'Please deactivate the plugin before deleting.', 'plugin-hub' ) );
 		}
 
@@ -707,6 +1046,7 @@ class API {
 		}
 
 		if ( $deleted ) {
+			$this->installed_plugins_cache = null;
 			$this->log_activity( 'delete', $repo_name, $deleted_version );
 			unset( $this->github_plugins[ $repo_name ] );
 			update_option( 'plugin_hub_github_plugins', $this->github_plugins );
@@ -739,7 +1079,7 @@ class API {
 
 		$installed_version = $this->get_installed_plugin_version( $repo_name );
 
-		if ( version_compare( $installed_version, $expected_version, '>=' ) ) {
+		if ( 0 === version_compare( $installed_version, $expected_version ) ) {
 			/* translators: %s: Plugin version */
 			wp_send_json_success( sprintf( esc_html__( 'Plugin version verified: %s', 'plugin-hub' ), $installed_version ) );
 		}
@@ -752,13 +1092,17 @@ class API {
 	 * Get changelog from GitHub releases.
 	 *
 	 * @since  1.0.0
-	 * @param  string      $repo_name       Repository name.
-	 * @param  string      $current_version Current version.
-	 * @param  string      $new_version     New version.
+	 * @param  string $repo_name       Repository name.
+	 * @param  string $current_version Current version.
+	 * @param  string $new_version     New version.
 	 * @return string|bool                  Changelog HTML or false on failure.
 	 */
 	public function get_github_changelog( $repo_name, $current_version, $new_version ) {
-		$api_url = "https://api.github.com/repos/" . PLUGIN_HUB_ORGANIZATION . "/{$repo_name}/releases";
+		if ( ! $this->is_valid_repo_name( $repo_name ) || ! $this->is_valid_version( $current_version ) || ! $this->is_valid_version( $new_version ) || ! $this->get_catalog_repository( $repo_name ) ) {
+			return false;
+		}
+
+		$api_url = 'https://api.github.com/repos/' . PLUGIN_HUB_ORGANIZATION . "/{$repo_name}/releases?per_page=30";
 
 		$args = array(
 			'headers' => $this->get_github_headers(),
@@ -789,7 +1133,14 @@ class API {
 
 		$changelog = '';
 		foreach ( $releases as $release ) {
+			if ( empty( $release['tag_name'] ) || ! isset( $release['body'] ) || ! empty( $release['draft'] ) ) {
+				continue;
+			}
+
 			$release_version = ltrim( $release['tag_name'], 'v' );
+			if ( ! $this->is_valid_version( $release_version ) ) {
+				continue;
+			}
 			if (
 				version_compare( $release_version, $current_version, '>' ) &&
 				version_compare( $release_version, $new_version, '<=' )
@@ -840,16 +1191,19 @@ class API {
 	 *
 	 * @since  1.3.0
 	 * @access private
-	 * @param  string $action  install|update|rollback|activate|deactivate|delete|auto_update
+	 * @param  string $action  install|update|rollback|activate|deactivate|delete|auto_update.
 	 * @param  string $plugin  Plugin slug.
 	 * @param  string $version Version involved.
 	 */
 	private function log_activity( $action, $plugin, $version = '' ) {
-		$user  = wp_get_current_user();
-		$log   = get_option( 'plugin_hub_activity_log', array() );
+		$user = wp_get_current_user();
+		$log  = get_option( 'plugin_hub_activity_log', array() );
+		if ( ! is_array( $log ) ) {
+			$log = array();
+		}
 		$log[] = array(
 			'time'    => time(),
-			'user'    => $user->display_name ?: $user->user_login,
+			'user'    => $user->exists() ? ( $user->display_name ? $user->display_name : $user->user_login ) : __( 'WordPress Cron', 'plugin-hub' ),
 			'action'  => $action,
 			'plugin'  => $plugin,
 			'version' => $version,
@@ -869,7 +1223,8 @@ class API {
 	 * @return array
 	 */
 	public function get_activity_log() {
-		return array_reverse( get_option( 'plugin_hub_activity_log', array() ) );
+		$log = get_option( 'plugin_hub_activity_log', array() );
+		return is_array( $log ) ? array_reverse( $log ) : array();
 	}
 
 	// -------------------------------------------------------------------------
@@ -892,6 +1247,10 @@ class API {
 
 		if ( empty( $repo_name ) || ! $this->is_valid_repo_name( $repo_name ) ) {
 			wp_send_json_error( esc_html__( 'Invalid plugin information.', 'plugin-hub' ) );
+		}
+
+		if ( ! $this->get_catalog_repository( $repo_name ) || ! $this->is_plugin_installed( $repo_name ) ) {
+			wp_send_json_error( esc_html__( 'The requested plugin is not available for rollback.', 'plugin-hub' ) );
 		}
 
 		$api_url = 'https://api.github.com/repos/' . PLUGIN_HUB_ORGANIZATION . "/{$repo_name}/releases?per_page=10";
@@ -919,12 +1278,15 @@ class API {
 			if ( empty( $release['tag_name'] ) || ! empty( $release['draft'] ) ) {
 				continue;
 			}
-			$version  = ltrim( $release['tag_name'], 'v' );
+			$version = ltrim( $release['tag_name'], 'v' );
+			if ( ! $this->is_valid_version( $version ) ) {
+				continue;
+			}
 			$result[] = array(
-				'version' => $version,
-				'name'    => ! empty( $release['name'] ) ? $release['name'] : $release['tag_name'],
+				'version' => sanitize_text_field( $version ),
+				'name'    => sanitize_text_field( ! empty( $release['name'] ) ? $release['name'] : $release['tag_name'] ),
 				'date'    => ! empty( $release['published_at'] ) ? substr( $release['published_at'], 0, 10 ) : '',
-				'current' => ( $version === $current_version ),
+				'current' => ( 0 === version_compare( $version, $current_version ) ),
 			);
 		}
 
@@ -959,25 +1321,13 @@ class API {
 			}
 
 			if ( in_array( $repo['name'], $autoupdate_list, true ) ) {
-				$download_url = $this->get_github_release_download_url( $repo['name'], $repo['version'] );
+					$result = $this->perform_plugin_upgrade( $repo, $repo['version'], true );
 
-				if ( $download_url && $this->is_github_url( $download_url ) ) {
-					require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
-					require_once ABSPATH . 'wp-admin/includes/plugin-install.php';
-
-					$plugin_file = $this->get_plugin_file( $repo['name'] );
-					if ( $plugin_file ) {
-						$skin     = new \WP_Ajax_Upgrader_Skin();
-						$upgrader = new \Plugin_Upgrader( $skin );
-						$result   = $upgrader->upgrade( $plugin_file, array( 'package' => $download_url ) );
-
-						if ( ! is_wp_error( $result ) && false !== $result ) {
-							// Invalidate cache so next admin load sees the new version.
-							$this->installed_plugins_cache = null;
-							$this->log_activity( 'auto_update', $repo['name'], $repo['version'] );
-							$updated[] = $repo['name'] . ' → v' . $repo['version'];
-						}
-					}
+				if ( ! is_wp_error( $result ) && false !== $result && 0 === version_compare( $this->get_installed_plugin_version( $repo['name'] ), $repo['version'] ) ) {
+					$this->log_activity( 'auto_update', $repo['name'], $repo['version'] );
+					$updated[] = $repo['name'] . ' → v' . $repo['version'];
+				} else {
+					$this->log( 'Automatic update failed for ' . $repo['name'] . ' v' . $repo['version'] . '.' );
 				}
 			} else {
 				$available[] = $repo['name'] . ' (v' . $installed_version . ' → v' . $repo['version'] . ')';

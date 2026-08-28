@@ -125,6 +125,7 @@ class Admin {
 					'whats_new'            => __( "What's new?", 'plugin-hub' ),
 					'versions'             => __( 'Versions', 'plugin-hub' ),
 					'loading_versions'     => __( 'Loading…', 'plugin-hub' ),
+					/* translators: %s: Version number. */
 					'rollback_confirm'     => __( 'Roll back to version %s?', 'plugin-hub' ),
 					'current_version'      => __( 'current', 'plugin-hub' ),
 					'rolling_back'         => __( 'Rolling back…', 'plugin-hub' ),
@@ -144,7 +145,9 @@ class Admin {
 	 * @since 1.0.0
 	 */
 	public function handle_refresh_cache() {
-		if ( isset( $_GET['action'] ) && 'refresh_cache' === $_GET['action'] ) {
+		$action = isset( $_GET['action'] ) ? sanitize_key( wp_unslash( $_GET['action'] ) ) : '';
+
+		if ( 'refresh_cache' === $action ) {
 			check_admin_referer( 'plugin_hub_refresh_cache' );
 
 			if ( ! current_user_can( 'manage_options' ) ) {
@@ -167,7 +170,8 @@ class Admin {
 			return;
 		}
 
-		if ( isset( $_GET['cache_refreshed'] ) && '1' === $_GET['cache_refreshed'] ) {
+		// The flag only controls a success notice and does not change state.
+		if ( isset( $_GET['cache_refreshed'] ) && '1' === $_GET['cache_refreshed'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			add_settings_error(
 				'plugin_hub_messages',
 				'plugin_hub_message',
@@ -179,7 +183,8 @@ class Admin {
 		$api   = $this->api;
 		$repos = $api->get_org_repos();
 
-		$filter          = isset( $_GET['filter'] ) ? sanitize_text_field( wp_unslash( $_GET['filter'] ) ) : 'all';
+		// This is a read-only view filter and does not require a nonce.
+		$filter          = isset( $_GET['filter'] ) ? sanitize_text_field( wp_unslash( $_GET['filter'] ) ) : 'all'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$allowed_filters = array( 'all', 'active', 'inactive', 'update', 'beta', 'activity' );
 		$filter          = in_array( $filter, $allowed_filters, true ) ? $filter : 'all';
 		$counts          = $this->get_plugin_counts( $repos );
@@ -214,7 +219,7 @@ class Admin {
 			$is_active         = $this->api->is_plugin_active( $repo['name'] );
 			$installed_version = $this->api->get_installed_plugin_version( $repo['name'] );
 			$update_available  = $this->api->is_update_available( $repo, $installed_version );
-			$is_beta           = version_compare( $repo['version'], '1.0.0', '<' );
+			$is_beta           = ! empty( $repo['available'] ) && version_compare( $repo['version'], '1.0.0', '<' );
 
 			if ( ! $show_beta && $is_beta ) {
 				continue;
@@ -252,13 +257,21 @@ class Admin {
 			wp_send_json_error( esc_html__( 'You do not have permission to change this setting.', 'plugin-hub' ) );
 		}
 
-		$token = isset( $_POST['token'] ) ? sanitize_text_field( wp_unslash( $_POST['token'] ) ) : '';
-		update_option( 'plugin_hub_github_token', $token );
+		$clear_token = isset( $_POST['clear'] ) && '1' === sanitize_text_field( wp_unslash( $_POST['clear'] ) );
+		$token       = isset( $_POST['token'] ) ? trim( sanitize_text_field( wp_unslash( $_POST['token'] ) ) ) : '';
+
+		if ( $clear_token ) {
+			delete_option( 'plugin_hub_github_token' );
+		} elseif ( empty( $token ) ) {
+			wp_send_json_error( esc_html__( 'Enter a token or use Remove Token.', 'plugin-hub' ) );
+		} else {
+			update_option( 'plugin_hub_github_token', $token, false );
+		}
 
 		// Clear rate limit transient so it refreshes with new auth state.
 		delete_transient( 'plugin_hub_rate_limit' );
 
-		if ( empty( $token ) ) {
+		if ( $clear_token ) {
 			wp_send_json_success( esc_html__( 'Token removed.', 'plugin-hub' ) );
 		}
 

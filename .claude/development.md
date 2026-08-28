@@ -3,7 +3,7 @@
 ## Getting Started
 
 ### Prerequisites
-- WordPress 6.0+ (tested up to 6.9)
+- WordPress 6.0+ (tested up to 7.1)
 - PHP 8.0+
 - Git
 - Code editor (VS Code recommended)
@@ -368,8 +368,8 @@ phpstan analyse includes/
 3. Update documentation
 4. Create git tag:
 ```bash
-git tag -a v1.1.0 -m "Release version 1.1.0"
-git push origin v1.1.0
+git tag -a vX.Y.Z -m "Release version X.Y.Z"
+git push origin vX.Y.Z
 ```
 
 5. Create GitHub release

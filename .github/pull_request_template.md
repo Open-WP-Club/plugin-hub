@@ -26,9 +26,9 @@ Fixes #(issue number)
 ## Testing
 <!-- Describe the tests you ran to verify your changes -->
 - [ ] Tested on WordPress 6.0
-- [ ] Tested on WordPress 6.9
+- [ ] Tested on WordPress 7.1
 - [ ] Tested with PHP 8.0
-- [ ] Tested with PHP 8.1+
+- [ ] Tested with PHP 8.3+
 - [ ] No PHP errors or warnings
 - [ ] No JavaScript console errors
 - [ ] AJAX functionality works correctly
