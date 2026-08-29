@@ -3,7 +3,7 @@
  * Plugin Name:             Plugin Hub
  * Plugin URI:              https://github.com/Open-WP-Club/plugin-hub
  * Description:             Manages WordPress plugins from GitHub repositories, focusing on Open-WP-Club
- * Version:                 1.4.0
+ * Version:                 1.4.1
  * Author:                  Open WP Club
  * Author URI:              https://openwpclub.com
  * License:                 GPL-2.0+
@@ -30,8 +30,36 @@ define( 'PLUGIN_HUB_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PLUGIN_HUB_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'PLUGIN_HUB_ORGANIZATION', 'Open-WP-Club' );
 
+/**
+ * Return the configured GitHub token.
+ *
+ * A wp-config.php constant takes precedence over the database option so
+ * production credentials do not need to be stored in wp_options.
+ *
+ * @since 1.4.0
+ * @return string
+ */
+function get_github_token() {
+	if ( defined( 'PLUGIN_HUB_GITHUB_TOKEN' ) && is_string( PLUGIN_HUB_GITHUB_TOKEN ) && '' !== trim( PLUGIN_HUB_GITHUB_TOKEN ) ) {
+		return trim( PLUGIN_HUB_GITHUB_TOKEN );
+	}
+
+	$token = get_option( 'plugin_hub_github_token', '' );
+	return is_string( $token ) ? trim( $token ) : '';
+}
+
+/**
+ * Check whether the GitHub token is managed in wp-config.php.
+ *
+ * @since 1.4.0
+ * @return bool
+ */
+function is_github_token_managed_by_config() {
+	return defined( 'PLUGIN_HUB_GITHUB_TOKEN' ) && is_string( PLUGIN_HUB_GITHUB_TOKEN ) && '' !== trim( PLUGIN_HUB_GITHUB_TOKEN );
+}
+
 // Include the main class.
-require_once PLUGIN_HUB_PLUGIN_DIR . 'includes/class-main.php';
+require_once PLUGIN_HUB_PLUGIN_DIR . 'includes/main.php';
 
 /**
  * Schedule the daily update-check cron event on activation.

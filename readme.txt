@@ -4,7 +4,7 @@ Tags: plugins, github, installer, plugin-manager, open-wp-club
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.4.0
+Stable tag: 1.4.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,6 +28,7 @@ Plugin Hub is a powerful WordPress plugin that enables you to manage and install
 * **Rollback**: Install a previous published GitHub release when needed
 * **Activity Log**: Review manual and automatic plugin-management actions
 * **GitHub Authentication**: Optionally use a token for higher API limits
+* **Quiet Notifications**: Daily update reports are sent only when their contents change
 
 = Requirements =
 
@@ -54,6 +55,10 @@ The plugin checks for updates by comparing version numbers from GitHub releases 
 = Can I use this with private repositories? =
 
 Plugin Hub installs packages from public GitHub releases. An optional GitHub token increases API rate limits, but private release assets are not currently supported.
+
+= Can I configure the GitHub token outside the database? =
+
+Yes. Define `PLUGIN_HUB_GITHUB_TOKEN` in `wp-config.php`. The constant takes precedence over the token saved in the Plugin Hub admin screen, which becomes read-only while the constant is configured.
 
 = How often is the plugin list cached? =
 

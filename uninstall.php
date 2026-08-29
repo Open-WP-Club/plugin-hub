@@ -23,6 +23,7 @@ delete_option( 'plugin_hub_github_token' );
 delete_option( 'plugin_hub_activity_log' );
 delete_option( 'plugin_hub_autoupdate_plugins' );
 delete_option( 'plugin_hub_last_known_repos' );
+delete_option( 'plugin_hub_last_notification_hash' );
 
 /**
  * Delete plugin transients.

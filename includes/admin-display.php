@@ -14,32 +14,59 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 
 <div class="wrap plugin-hub-wrap">
-	<h1 class="wp-heading-inline"><?php echo esc_html( get_admin_page_title() ); ?></h1>
+	<header class="plugin-hub-header">
+		<div>
+			<p class="plugin-hub-eyebrow"><?php esc_html_e( 'Open WP Club', 'plugin-hub' ); ?></p>
+			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
+			<p class="plugin-hub-subtitle"><?php esc_html_e( 'Install, update and maintain your GitHub plugins from one place.', 'plugin-hub' ); ?></p>
+		</div>
+		<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'plugins.php?page=plugin-hub&action=refresh_cache' ), 'plugin_hub_refresh_cache' ) ); ?>" class="button button-secondary plugin-hub-refresh">
+			<span class="dashicons dashicons-update" aria-hidden="true"></span>
+			<?php esc_html_e( 'Refresh catalog', 'plugin-hub' ); ?>
+		</a>
+	</header>
 
-	<div id="poststuff">
-		<div id="post-body" class="metabox-holder">
-			<div id="post-body-content">
+	<div class="plugin-hub-summary" aria-label="<?php esc_attr_e( 'Plugin overview', 'plugin-hub' ); ?>">
+		<a class="plugin-hub-stat" href="?page=plugin-hub&amp;filter=all">
+			<span class="plugin-hub-stat__value"><?php echo absint( $counts['all'] ); ?></span>
+			<span class="plugin-hub-stat__label"><?php esc_html_e( 'Plugins in catalog', 'plugin-hub' ); ?></span>
+		</a>
+		<a class="plugin-hub-stat plugin-hub-stat--success" href="?page=plugin-hub&amp;filter=active">
+			<span class="plugin-hub-stat__value"><?php echo absint( $counts['active'] ); ?></span>
+			<span class="plugin-hub-stat__label"><?php esc_html_e( 'Active', 'plugin-hub' ); ?></span>
+		</a>
+		<a class="plugin-hub-stat plugin-hub-stat--muted" href="?page=plugin-hub&amp;filter=inactive">
+			<span class="plugin-hub-stat__value"><?php echo absint( $counts['inactive'] ); ?></span>
+			<span class="plugin-hub-stat__label"><?php esc_html_e( 'Inactive', 'plugin-hub' ); ?></span>
+		</a>
+		<a class="plugin-hub-stat plugin-hub-stat--warning" href="?page=plugin-hub&amp;filter=update">
+			<span class="plugin-hub-stat__value"><?php echo absint( $counts['update'] ); ?></span>
+			<span class="plugin-hub-stat__label"><?php esc_html_e( 'Updates available', 'plugin-hub' ); ?></span>
+		</a>
+	</div>
 
-				<?php if ( 'activity' !== $filter ) : ?>
-				<div class="wp-filter">
-					<div class="search-form">
-						<input type="search" id="plugin-search-input" placeholder="<?php esc_attr_e( 'Search installed plugins...', 'plugin-hub' ); ?>" size="40">
-					</div>
-				</div>
-				<?php endif; ?>
+	<nav class="plugin-hub-tabs" aria-label="<?php esc_attr_e( 'Plugin views', 'plugin-hub' ); ?>">
+		<a href="?page=plugin-hub&amp;filter=all" <?php echo 'all' === $filter ? 'class="current" aria-current="page"' : ''; ?>><?php esc_html_e( 'All', 'plugin-hub' ); ?> <span><?php echo absint( $counts['all'] ); ?></span></a>
+		<a href="?page=plugin-hub&amp;filter=active" <?php echo 'active' === $filter ? 'class="current" aria-current="page"' : ''; ?>><?php esc_html_e( 'Active', 'plugin-hub' ); ?> <span><?php echo absint( $counts['active'] ); ?></span></a>
+		<a href="?page=plugin-hub&amp;filter=inactive" <?php echo 'inactive' === $filter ? 'class="current" aria-current="page"' : ''; ?>><?php esc_html_e( 'Inactive', 'plugin-hub' ); ?> <span><?php echo absint( $counts['inactive'] ); ?></span></a>
+		<a href="?page=plugin-hub&amp;filter=update" <?php echo 'update' === $filter ? 'class="current" aria-current="page"' : ''; ?>><?php esc_html_e( 'Updates', 'plugin-hub' ); ?> <span><?php echo absint( $counts['update'] ); ?></span></a>
+		<a href="?page=plugin-hub&amp;filter=beta" <?php echo 'beta' === $filter ? 'class="current" aria-current="page"' : ''; ?>><?php esc_html_e( 'Beta', 'plugin-hub' ); ?> <span><?php echo absint( $counts['beta'] ); ?></span></a>
+		<a href="?page=plugin-hub&amp;filter=activity" <?php echo 'activity' === $filter ? 'class="current" aria-current="page"' : ''; ?>><?php esc_html_e( 'Activity', 'plugin-hub' ); ?></a>
+	</nav>
 
-				<ul class="subsubsub">
-					<li><a href="?page=plugin-hub&filter=all" <?php echo 'all' === $filter ? 'class="current"' : ''; ?>><?php esc_html_e( 'All', 'plugin-hub' ); ?> <span class="count">(<?php echo absint( $counts['all'] ); ?>)</span></a> |</li>
-					<li><a href="?page=plugin-hub&filter=active" <?php echo 'active' === $filter ? 'class="current"' : ''; ?>><?php esc_html_e( 'Active', 'plugin-hub' ); ?> <span class="count">(<?php echo absint( $counts['active'] ); ?>)</span></a> |</li>
-					<li><a href="?page=plugin-hub&filter=inactive" <?php echo 'inactive' === $filter ? 'class="current"' : ''; ?>><?php esc_html_e( 'Inactive', 'plugin-hub' ); ?> <span class="count">(<?php echo absint( $counts['inactive'] ); ?>)</span></a> |</li>
-					<li><a href="?page=plugin-hub&filter=update" <?php echo 'update' === $filter ? 'class="current"' : ''; ?>><?php esc_html_e( 'Updates Available', 'plugin-hub' ); ?> <span class="count">(<?php echo absint( $counts['update'] ); ?>)</span></a> |</li>
-					<li><a href="?page=plugin-hub&filter=beta" <?php echo 'beta' === $filter ? 'class="current"' : ''; ?>><?php esc_html_e( 'Beta', 'plugin-hub' ); ?> <span class="count">(<?php echo absint( $counts['beta'] ); ?>)</span></a> |</li>
-					<li><a href="?page=plugin-hub&filter=activity" <?php echo 'activity' === $filter ? 'class="current"' : ''; ?>><?php esc_html_e( 'Activity Log', 'plugin-hub' ); ?></a></li>
-				</ul>
+	<div class="plugin-hub-layout">
+		<main class="plugin-hub-main">
 
 				<?php if ( 'activity' === $filter ) : ?>
 
 				<!-- ===== Activity Log ===== -->
+				<div class="plugin-hub-panel plugin-hub-activity">
+					<div class="plugin-hub-panel__header">
+						<div>
+							<h2><?php esc_html_e( 'Activity log', 'plugin-hub' ); ?></h2>
+							<p><?php esc_html_e( 'A history of plugin changes made from Plugin Hub.', 'plugin-hub' ); ?></p>
+						</div>
+					</div>
 				<table class="wp-list-table widefat fixed striped">
 					<thead>
 						<tr>
@@ -90,6 +117,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<?php endif; ?>
 					</tbody>
 				</table>
+				</div>
 
 				<?php else : ?>
 
@@ -97,8 +125,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<form id="plugin-hub-form" method="post">
 					<?php wp_nonce_field( 'plugin_hub_bulk_action', 'plugin_hub_nonce' ); ?>
 
-					<div class="tablenav top">
-						<div class="alignleft actions bulkactions">
+					<div class="plugin-hub-toolbar">
+						<div class="plugin-hub-search">
+							<span class="dashicons dashicons-search" aria-hidden="true"></span>
+							<label for="plugin-search-input" class="screen-reader-text"><?php esc_html_e( 'Search plugins', 'plugin-hub' ); ?></label>
+							<input type="search" id="plugin-search-input" placeholder="<?php esc_attr_e( 'Search plugins by name or description…', 'plugin-hub' ); ?>">
+						</div>
+						<div class="plugin-hub-bulk-actions">
 							<label for="bulk-action-selector-top" class="screen-reader-text"><?php esc_html_e( 'Select bulk action', 'plugin-hub' ); ?></label>
 							<select name="action" id="bulk-action-selector-top">
 								<option value="-1"><?php esc_html_e( 'Bulk Actions', 'plugin-hub' ); ?></option>
@@ -150,30 +183,40 @@ if ( ! defined( 'ABSPATH' ) ) {
 											<input type="checkbox" name="checked[]" value="<?php echo esc_attr( $repo['name'] ); ?>">
 										</td>
 										<th scope="row" class="plugin-title column-primary">
-										<strong><?php echo esc_html( $repo['display_name'] ); ?></strong>
+										<div class="plugin-title__heading">
+											<strong><?php echo esc_html( $repo['display_name'] ); ?></strong>
+											<?php if ( $is_active ) : ?>
+												<span class="plugin-status plugin-status--active"><?php esc_html_e( 'Active', 'plugin-hub' ); ?></span>
+											<?php elseif ( $is_installed ) : ?>
+												<span class="plugin-status plugin-status--inactive"><?php esc_html_e( 'Inactive', 'plugin-hub' ); ?></span>
+											<?php elseif ( $is_available ) : ?>
+												<span class="plugin-status plugin-status--available"><?php esc_html_e( 'Available', 'plugin-hub' ); ?></span>
+											<?php else : ?>
+												<span class="plugin-status plugin-status--unavailable"><?php esc_html_e( 'Unavailable', 'plugin-hub' ); ?></span>
+											<?php endif; ?>
+										</div>
 										<div class="row-actions visible">
 										<?php if ( ! $is_installed && $is_available ) : ?>
 											<span class="install">
-												<a href="#" class="install-now" data-repo="<?php echo esc_attr( $repo['name'] ); ?>" data-version="<?php echo esc_attr( $repo['version'] ); ?>"><?php esc_html_e( 'Install Now', 'plugin-hub' ); ?></a>
+												<a href="#" class="install-now plugin-action plugin-action--primary" data-repo="<?php echo esc_attr( $repo['name'] ); ?>" data-version="<?php echo esc_attr( $repo['version'] ); ?>"><?php esc_html_e( 'Install now', 'plugin-hub' ); ?></a>
 											</span>
 										<?php elseif ( ! $is_installed ) : ?>
 											<span class="unavailable"><?php esc_html_e( 'No release available', 'plugin-hub' ); ?></span>
 											<?php elseif ( $is_active ) : ?>
 												<span class="deactivate">
-													<a href="#" class="deactivate-now" data-repo="<?php echo esc_attr( $repo['name'] ); ?>"><?php esc_html_e( 'Deactivate', 'plugin-hub' ); ?></a>
+													<a href="#" class="deactivate-now plugin-action" data-repo="<?php echo esc_attr( $repo['name'] ); ?>"><?php esc_html_e( 'Deactivate', 'plugin-hub' ); ?></a>
 												</span>
 											<?php else : ?>
 												<span class="activate">
-													<a href="#" class="activate-now" data-repo="<?php echo esc_attr( $repo['name'] ); ?>"><?php esc_html_e( 'Activate', 'plugin-hub' ); ?></a>
-												</span> |
+													<a href="#" class="activate-now plugin-action plugin-action--primary" data-repo="<?php echo esc_attr( $repo['name'] ); ?>"><?php esc_html_e( 'Activate', 'plugin-hub' ); ?></a>
+												</span>
 												<span class="delete">
-													<a href="#" class="delete-now" data-repo="<?php echo esc_attr( $repo['name'] ); ?>"><?php esc_html_e( 'Delete', 'plugin-hub' ); ?></a>
+													<a href="#" class="delete-now plugin-action plugin-action--danger" data-repo="<?php echo esc_attr( $repo['name'] ); ?>"><?php esc_html_e( 'Delete', 'plugin-hub' ); ?></a>
 												</span>
 											<?php endif; ?>
 											<?php if ( $update_available ) : ?>
-												|
 												<span class="update">
-													<a href="#" class="update-now" data-repo="<?php echo esc_attr( $repo['name'] ); ?>" data-version="<?php echo esc_attr( $repo['version'] ); ?>"><?php esc_html_e( 'Update Now', 'plugin-hub' ); ?></a>
+													<a href="#" class="update-now plugin-action plugin-action--primary" data-repo="<?php echo esc_attr( $repo['name'] ); ?>" data-version="<?php echo esc_attr( $repo['version'] ); ?>"><?php esc_html_e( 'Update now', 'plugin-hub' ); ?></a>
 												</span>
 												<span class="view-changelog">
 													<a href="#" class="open-changelog"
@@ -183,11 +226,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 													><?php esc_html_e( "What's new?", 'plugin-hub' ); ?></a>
 												</span>
 											<?php endif; ?>
-											| <span class="view">
+											<span class="view">
 												<a href="<?php echo esc_url( $repo['repo_url'] ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'View on GitHub', 'plugin-hub' ); ?></a>
 											</span>
 											<?php if ( $is_installed ) : ?>
-												| <span class="rollback">
+												<span class="rollback">
 													<a href="#" class="rollback-toggle" data-repo="<?php echo esc_attr( $repo['name'] ); ?>"><?php esc_html_e( 'Versions', 'plugin-hub' ); ?></a>
 													<span class="rollback-list" style="display:none;"></span>
 												</span>
@@ -258,70 +301,93 @@ if ( ! defined( 'ABSPATH' ) ) {
 				</form>
 
 				<?php endif; ?>
+		</main>
 
-			</div><!-- /post-body-content -->
-
-			<div id="postbox-container-1" class="postbox-container">
-				<div class="postbox">
-					<h2 class="hndle"><span><?php esc_html_e( 'GitHub Repository', 'plugin-hub' ); ?></span></h2>
-					<div class="inside">
-						<a href="<?php echo esc_url( 'https://github.com/' . PLUGIN_HUB_ORGANIZATION ); ?>" target="_blank" rel="noopener noreferrer" class="button-secondary"><?php esc_html_e( 'View Organization', 'plugin-hub' ); ?></a>
+		<aside class="plugin-hub-sidebar" aria-label="<?php esc_attr_e( 'Plugin Hub settings', 'plugin-hub' ); ?>">
+			<section class="plugin-hub-panel">
+				<div class="plugin-hub-panel__header">
+					<div>
+						<p class="plugin-hub-panel__eyebrow"><?php esc_html_e( 'Connection', 'plugin-hub' ); ?></p>
+						<h2><?php esc_html_e( 'GitHub access', 'plugin-hub' ); ?></h2>
 					</div>
+					<span class="plugin-hub-connection <?php echo $has_github_token ? 'is-connected' : ''; ?>">
+						<?php echo $has_github_token ? esc_html__( 'Connected', 'plugin-hub' ) : esc_html__( 'Public API', 'plugin-hub' ); ?>
+					</span>
 				</div>
-
-				<div class="postbox">
-					<h2 class="hndle"><span><?php esc_html_e( 'Plugin Settings', 'plugin-hub' ); ?></span></h2>
-					<div class="inside">
-						<p>
-							<label for="github-token"><strong><?php esc_html_e( 'GitHub Token', 'plugin-hub' ); ?></strong></label><br>
-								<input type="password" id="github-token" class="regular-text" value="" autocomplete="new-password" placeholder="<?php echo esc_attr( get_option( 'plugin_hub_github_token', '' ) ? __( 'Token configured — enter a replacement', 'plugin-hub' ) : __( 'github_pat_…', 'plugin-hub' ) ); ?>" style="width:100%;margin-top:4px;">
-								<button type="button" id="save-github-token" class="button" style="margin-top:6px;"><?php esc_html_e( 'Save Token', 'plugin-hub' ); ?></button>
-								<?php if ( get_option( 'plugin_hub_github_token', '' ) ) : ?>
-									<button type="button" id="remove-github-token" class="button button-link-delete" style="margin-top:6px;"><?php esc_html_e( 'Remove Token', 'plugin-hub' ); ?></button>
-								<?php endif; ?>
-							<span id="token-status" style="margin-left:8px;"></span>
-						</p>
+				<div class="plugin-hub-panel__body">
+					<label class="plugin-hub-field-label" for="github-token"><?php esc_html_e( 'Personal access token', 'plugin-hub' ); ?></label>
+					<?php if ( $github_token_from_config ) : ?>
+						<p class="description"><?php esc_html_e( 'Managed by PLUGIN_HUB_GITHUB_TOKEN in wp-config.php.', 'plugin-hub' ); ?></p>
+						<input type="password" id="github-token" class="regular-text" value="" placeholder="<?php esc_attr_e( 'Configured in wp-config.php', 'plugin-hub' ); ?>" disabled>
+					<?php else : ?>
+						<p class="description"><?php esc_html_e( 'Optional. Add a token for a higher GitHub API rate limit.', 'plugin-hub' ); ?></p>
+						<input type="password" id="github-token" class="regular-text" value="" autocomplete="new-password" placeholder="<?php echo esc_attr( $has_github_token ? __( 'Token configured — enter a replacement', 'plugin-hub' ) : __( 'github_pat_…', 'plugin-hub' ) ); ?>">
+						<div class="plugin-hub-button-row">
+							<button type="button" id="save-github-token" class="button button-primary"><?php esc_html_e( 'Save token', 'plugin-hub' ); ?></button>
+						<?php if ( $has_github_token ) : ?>
+							<button type="button" id="remove-github-token" class="button button-link-delete"><?php esc_html_e( 'Remove', 'plugin-hub' ); ?></button>
+						<?php endif; ?>
+						</div>
+					<?php endif; ?>
+					<span id="token-status" role="status" aria-live="polite"></span>
 							<?php
 							$rate_limit = get_transient( 'plugin_hub_rate_limit' );
 							if ( $rate_limit ) :
-								$pct = $rate_limit['limit'] > 0 ? ( $rate_limit['remaining'] / $rate_limit['limit'] ) : 1;
+								$pct = $rate_limit['limit'] > 0 ? min( 1, max( 0, $rate_limit['remaining'] / $rate_limit['limit'] ) ) : 1;
 								/* translators: %1$d: remaining requests, %2$d: total limit. */
-								$rate_limit_message = sprintf( __( 'API Rate Limit: %1$d / %2$d remaining', 'plugin-hub' ), (int) $rate_limit['remaining'], (int) $rate_limit['limit'] );
+								$rate_limit_message = sprintf( __( '%1$d of %2$d API requests remaining', 'plugin-hub' ), (int) $rate_limit['remaining'], (int) $rate_limit['limit'] );
+								$rate_limit_reset   = ! empty( $rate_limit['reset'] ) ? wp_date( get_option( 'time_format' ), (int) $rate_limit['reset'] ) : '';
 								?>
-						<p class="description" id="rate-limit-info" <?php echo $pct < 0.1 ? 'style="color:#dc3232;font-weight:600;"' : ''; ?>>
+					<div class="plugin-hub-rate-limit <?php echo $pct < 0.1 ? 'is-low' : ''; ?>" id="rate-limit-info">
+						<div class="plugin-hub-rate-limit__track"><span style="width: <?php echo esc_attr( round( $pct * 100 ) ); ?>%"></span></div>
+						<p class="description">
 								<?php echo esc_html( $rate_limit_message ); ?>
+								<?php if ( $rate_limit_reset ) : ?>
+									<span class="plugin-hub-rate-limit__reset">
+										<?php
+										/* translators: %s: GitHub API rate-limit reset time. */
+										printf( esc_html__( 'Resets at %s.', 'plugin-hub' ), esc_html( $rate_limit_reset ) );
+										?>
+									</span>
+								<?php endif; ?>
 						</p>
+					</div>
 						<?php endif; ?>
-						<hr style="margin:12px 0;">
-						<p>
-							<label for="show-beta-plugins" class="switch">
-								<input type="checkbox" id="show-beta-plugins" name="show_beta_plugins" <?php checked( get_option( 'plugin_hub_show_beta', false ) ); ?>>
-								<?php esc_html_e( 'Show Beta Plugins (< 1.0.0)', 'plugin-hub' ); ?>
-							</label>
-						</p>
-						<p>
-							<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'plugins.php?page=plugin-hub&action=refresh_cache' ), 'plugin_hub_refresh_cache' ) ); ?>" class="button"><?php esc_html_e( 'Refresh Plugin List', 'plugin-hub' ); ?></a>
-						</p>
-						<hr style="margin:12px 0;">
-						<p>
-							<button type="button" id="clear-activity-log" class="button button-link-delete"><?php esc_html_e( 'Clear Activity Log', 'plugin-hub' ); ?></button>
-						</p>
-					</div>
 				</div>
+			</section>
 
-				<div class="postbox">
-					<h2 class="hndle"><span><?php esc_html_e( 'Quick Links', 'plugin-hub' ); ?></span></h2>
-					<div class="inside">
-						<ul>
-							<li><a href="<?php echo esc_url( 'https://github.com/' . PLUGIN_HUB_ORGANIZATION ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'GitHub Organization', 'plugin-hub' ); ?></a></li>
-							<li><a href="<?php echo esc_url( 'https://github.com/' . PLUGIN_HUB_ORGANIZATION . '/plugin-hub' ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Documentation', 'plugin-hub' ); ?></a></li>
-							<li><a href="<?php echo esc_url( 'https://github.com/' . PLUGIN_HUB_ORGANIZATION . '/plugin-hub/issues' ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Support', 'plugin-hub' ); ?></a></li>
-						</ul>
+			<section class="plugin-hub-panel">
+				<div class="plugin-hub-panel__header">
+					<div>
+						<p class="plugin-hub-panel__eyebrow"><?php esc_html_e( 'Preferences', 'plugin-hub' ); ?></p>
+						<h2><?php esc_html_e( 'Catalog settings', 'plugin-hub' ); ?></h2>
 					</div>
 				</div>
-			</div><!-- /postbox-container-1 -->
-		</div><!-- /post-body -->
-	</div><!-- /poststuff -->
+				<div class="plugin-hub-panel__body">
+					<label for="show-beta-plugins" class="plugin-hub-toggle-row">
+						<span>
+							<strong><?php esc_html_e( 'Show beta plugins', 'plugin-hub' ); ?></strong>
+							<small><?php esc_html_e( 'Include releases below version 1.0.0.', 'plugin-hub' ); ?></small>
+						</span>
+						<input type="checkbox" id="show-beta-plugins" name="show_beta_plugins" <?php checked( get_option( 'plugin_hub_show_beta', false ) ); ?>>
+					</label>
+					<div class="plugin-hub-maintenance-actions">
+						<a href="<?php echo esc_url( 'https://github.com/' . PLUGIN_HUB_ORGANIZATION ); ?>" target="_blank" rel="noopener noreferrer"><span class="dashicons dashicons-external" aria-hidden="true"></span><?php esc_html_e( 'Open GitHub organization', 'plugin-hub' ); ?></a>
+						<a href="<?php echo esc_url( 'https://github.com/' . PLUGIN_HUB_ORGANIZATION . '/plugin-hub' ); ?>" target="_blank" rel="noopener noreferrer"><span class="dashicons dashicons-book" aria-hidden="true"></span><?php esc_html_e( 'Documentation', 'plugin-hub' ); ?></a>
+						<a href="<?php echo esc_url( 'https://github.com/' . PLUGIN_HUB_ORGANIZATION . '/plugin-hub/issues' ); ?>" target="_blank" rel="noopener noreferrer"><span class="dashicons dashicons-sos" aria-hidden="true"></span><?php esc_html_e( 'Support', 'plugin-hub' ); ?></a>
+					</div>
+				</div>
+			</section>
+
+			<section class="plugin-hub-panel plugin-hub-danger-zone">
+				<div class="plugin-hub-panel__body">
+					<strong><?php esc_html_e( 'Activity history', 'plugin-hub' ); ?></strong>
+					<p class="description"><?php esc_html_e( 'Permanently remove all recorded plugin actions.', 'plugin-hub' ); ?></p>
+					<button type="button" id="clear-activity-log" class="button button-link-delete"><?php esc_html_e( 'Clear activity log', 'plugin-hub' ); ?></button>
+				</div>
+			</section>
+		</aside>
+	</div>
 </div><!-- /wrap -->
 
 <!-- Changelog modal -->

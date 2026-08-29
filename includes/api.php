@@ -180,7 +180,7 @@ class API {
 			'X-GitHub-Api-Version' => '2026-03-10',
 		);
 
-		$token = get_option( 'plugin_hub_github_token', '' );
+		$token = get_github_token();
 		if ( ! empty( $token ) ) {
 			$headers['Authorization'] = 'Bearer ' . $token;
 		}
@@ -1334,8 +1334,27 @@ class API {
 			}
 		}
 
-		if ( ! empty( $updated ) || ! empty( $available ) ) {
-			$this->send_update_notification( $updated, $available );
+		if ( empty( $updated ) && empty( $available ) ) {
+			delete_option( 'plugin_hub_last_notification_hash' );
+			return;
+		}
+
+		$notification_hash = hash(
+			'sha256',
+			(string) wp_json_encode(
+				array(
+					'updated'   => $updated,
+					'available' => $available,
+				)
+			)
+		);
+
+		if ( get_option( 'plugin_hub_last_notification_hash', '' ) === $notification_hash ) {
+			return;
+		}
+
+		if ( $this->send_update_notification( $updated, $available ) ) {
+			update_option( 'plugin_hub_last_notification_hash', $notification_hash, false );
 		}
 	}
 
@@ -1346,6 +1365,7 @@ class API {
 	 * @access private
 	 * @param  array $updated   Plugins that were auto-updated.
 	 * @param  array $available Plugins with updates pending manual action.
+	 * @return bool Whether WordPress accepted the message for delivery.
 	 */
 	private function send_update_notification( $updated, $available ) {
 		$admin_email = get_option( 'admin_email' );
@@ -1376,6 +1396,6 @@ class API {
 		/* translators: %s: Plugin Hub admin URL */
 		$body .= sprintf( __( 'Manage your plugins: %s', 'plugin-hub' ), $hub_url );
 
-		wp_mail( $admin_email, $subject, $body );
+		return wp_mail( $admin_email, $subject, $body );
 	}
 }

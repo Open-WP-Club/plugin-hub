@@ -2,6 +2,28 @@ jQuery( document ).ready( function( $ ) {
 	var i18n = pluginHubAjax.i18n;
 	var modalTrigger = null;
 
+	function isActionBusy( control ) {
+		return 'true' === control.attr( 'aria-disabled' ) || control.is( ':disabled' );
+	}
+
+	function setActionBusy( control, busy, text ) {
+		control
+			.toggleClass( 'is-busy', busy )
+			.attr( 'aria-busy', busy ? 'true' : 'false' );
+
+		if ( control.is( 'button, input, select' ) ) {
+			control.prop( 'disabled', busy );
+		} else if ( busy ) {
+			control.attr( 'aria-disabled', 'true' );
+		} else {
+			control.removeAttr( 'aria-disabled' );
+		}
+
+		if ( text ) {
+			control.text( text );
+		}
+	}
+
 	// =========================================================================
 	// Install
 	// =========================================================================
@@ -9,6 +31,9 @@ jQuery( document ).ready( function( $ ) {
 	$( '.install-now' ).on( 'click', function( e ) {
 		e.preventDefault();
 		var button = $( this );
+		if ( isActionBusy( button ) ) {
+			return;
+		}
 		performAction(
 			'install_github_plugin',
 			button,
@@ -26,6 +51,9 @@ jQuery( document ).ready( function( $ ) {
 	$( '.update-now' ).on( 'click', function( e ) {
 		e.preventDefault();
 		var button = $( this );
+		if ( isActionBusy( button ) ) {
+			return;
+		}
 		updatePlugin( button, button.data( 'repo' ), button.data( 'version' ), false );
 	} );
 
@@ -34,7 +62,7 @@ jQuery( document ).ready( function( $ ) {
 		var successText    = isRollback ? i18n.rolled_back  : i18n.updated;
 		var failText       = isRollback ? i18n.rollback_failed : i18n.update_failed;
 
-		button.text( processingText );
+		setActionBusy( button, true, processingText );
 		$.ajax( {
 			url:  pluginHubAjax.ajax_url,
 			type: 'POST',
@@ -49,20 +77,20 @@ jQuery( document ).ready( function( $ ) {
 				if ( response.success ) {
 					button.text( successText );
 					showMessage( response.data, 'success' );
-					setTimeout( function() { verifyUpdate( repo, version ); }, 500 );
+					setTimeout( function() { verifyUpdate( repo, version, button, failText ); }, 500 );
 				} else {
-					button.text( failText );
+					setActionBusy( button, false, failText );
 					showMessage( response.data, 'error' );
 				}
 			},
 			error: function() {
-				button.text( failText );
+				setActionBusy( button, false, failText );
 				showMessage( i18n.error_occurred, 'error' );
 			},
 		} );
 	}
 
-	function verifyUpdate( repo, version ) {
+	function verifyUpdate( repo, version, button, failText ) {
 		$.ajax( {
 			url:  pluginHubAjax.ajax_url,
 			type: 'POST',
@@ -76,9 +104,12 @@ jQuery( document ).ready( function( $ ) {
 				showMessage( response.data, response.success ? 'success' : 'error' );
 				if ( response.success ) {
 					setTimeout( function() { location.reload(); }, 1000 );
+				} else {
+					setActionBusy( button, false, failText );
 				}
 			},
 			error: function() {
+				setActionBusy( button, false, failText );
 				showMessage( i18n.verify_error, 'error' );
 			},
 		} );
@@ -91,12 +122,18 @@ jQuery( document ).ready( function( $ ) {
 	$( '.activate-now' ).on( 'click', function( e ) {
 		e.preventDefault();
 		var button = $( this );
+		if ( isActionBusy( button ) ) {
+			return;
+		}
 		performAction( 'activate_github_plugin', button, i18n.activating, i18n.activated, i18n.activation_failed, { repo: button.data( 'repo' ) } );
 	} );
 
 	$( '.deactivate-now' ).on( 'click', function( e ) {
 		e.preventDefault();
 		var button = $( this );
+		if ( isActionBusy( button ) ) {
+			return;
+		}
 		performAction( 'deactivate_github_plugin', button, i18n.deactivating, i18n.deactivated, i18n.deactivation_failed, { repo: button.data( 'repo' ) } );
 	} );
 
@@ -106,10 +143,13 @@ jQuery( document ).ready( function( $ ) {
 
 	$( '.delete-now' ).on( 'click', function( e ) {
 		e.preventDefault();
+		var button = $( this );
+		if ( isActionBusy( button ) ) {
+			return;
+		}
 		if ( ! window.confirm( i18n.delete_confirm ) ) {
 			return;
 		}
-		var button = $( this );
 		performAction( 'delete_github_plugin', button, i18n.deleting, i18n.deleted, i18n.delete_failed, { repo: button.data( 'repo' ) } );
 	} );
 
@@ -120,6 +160,10 @@ jQuery( document ).ready( function( $ ) {
 	$( document ).on( 'click', '.open-changelog', function( e ) {
 		e.preventDefault();
 		var link = $( this );
+		if ( isActionBusy( link ) ) {
+			return;
+		}
+		setActionBusy( link, true );
 
 		$( '#plugin-hub-modal-title' ).text( i18n.loading_changelog );
 		$( '#plugin-hub-modal-content' ).empty();
@@ -143,6 +187,9 @@ jQuery( document ).ready( function( $ ) {
 			},
 			error: function() {
 				$( '#plugin-hub-modal-content' ).text( i18n.error_occurred );
+			},
+			complete: function() {
+				setActionBusy( link, false );
 			},
 		} );
 	} );
@@ -201,6 +248,9 @@ jQuery( document ).ready( function( $ ) {
 		var link    = $( this );
 		var repo    = link.data( 'repo' );
 		var listEl  = link.siblings( '.rollback-list' );
+		if ( isActionBusy( link ) ) {
+			return;
+		}
 
 		if ( listEl.is( ':visible' ) ) {
 			listEl.hide();
@@ -212,14 +262,14 @@ jQuery( document ).ready( function( $ ) {
 			return;
 		}
 
-		link.text( i18n.loading_versions );
+		setActionBusy( link, true, i18n.loading_versions );
 
 		$.ajax( {
 			url:  pluginHubAjax.ajax_url,
 			type: 'POST',
 			data: { action: 'get_plugin_releases', nonce: pluginHubAjax.nonce, repo: repo },
 			success: function( response ) {
-				link.text( i18n.versions );
+				setActionBusy( link, false, i18n.versions );
 
 				if ( ! response.success || ! response.data.length ) {
 					showMessage( i18n.error_occurred, 'error' );
@@ -250,7 +300,7 @@ jQuery( document ).ready( function( $ ) {
 				listEl.data( 'loaded', true ).show();
 			},
 			error: function() {
-				link.text( i18n.versions );
+				setActionBusy( link, false, i18n.versions );
 				showMessage( i18n.error_occurred, 'error' );
 			},
 		} );
@@ -284,6 +334,7 @@ jQuery( document ).ready( function( $ ) {
 		var checkbox = $( this );
 		var repo     = checkbox.data( 'repo' );
 		var enabled  = checkbox.is( ':checked' );
+		setActionBusy( checkbox, true );
 
 		$.ajax( {
 			url:  pluginHubAjax.ajax_url,
@@ -299,6 +350,9 @@ jQuery( document ).ready( function( $ ) {
 				checkbox.prop( 'checked', ! enabled );
 				showMessage( i18n.error_occurred, 'error' );
 			},
+			complete: function() {
+				setActionBusy( checkbox, false );
+			},
 		} );
 	} );
 
@@ -309,13 +363,13 @@ jQuery( document ).ready( function( $ ) {
 	$( '#save-github-token' ).on( 'click', function() {
 		var button = $( this );
 		var token  = $( '#github-token' ).val();
-		button.prop( 'disabled', true ).text( i18n.saving );
+		setActionBusy( button, true, i18n.saving );
 		$.ajax( {
 			url:  pluginHubAjax.ajax_url,
 			type: 'POST',
 			data: { action: 'save_github_token', nonce: pluginHubAjax.nonce, token: token },
 			success: function( response ) {
-				button.prop( 'disabled', false ).text( i18n.save_token );
+				setActionBusy( button, false, i18n.save_token );
 				if ( response.success ) {
 					$( '#github-token' ).val( '' );
 				}
@@ -327,7 +381,7 @@ jQuery( document ).ready( function( $ ) {
 				}, 3000 );
 			},
 			error: function() {
-				button.prop( 'disabled', false ).text( i18n.save_token );
+				setActionBusy( button, false, i18n.save_token );
 				$( '#token-status' ).text( '✗ ' + i18n.error_occurred ).css( 'color', '#dc3232' );
 			},
 		} );
@@ -335,7 +389,7 @@ jQuery( document ).ready( function( $ ) {
 
 	$( '#remove-github-token' ).on( 'click', function() {
 		var button = $( this );
-		button.prop( 'disabled', true );
+		setActionBusy( button, true );
 		$.ajax( {
 			url: pluginHubAjax.ajax_url,
 			type: 'POST',
@@ -345,11 +399,11 @@ jQuery( document ).ready( function( $ ) {
 					location.reload();
 					return;
 				}
-				button.prop( 'disabled', false );
+				setActionBusy( button, false );
 				showMessage( response.data, 'error' );
 			},
 			error: function() {
-				button.prop( 'disabled', false );
+				setActionBusy( button, false );
 				showMessage( i18n.error_occurred, 'error' );
 			},
 		} );
@@ -360,10 +414,12 @@ jQuery( document ).ready( function( $ ) {
 	// =========================================================================
 
 	$( '#show-beta-plugins' ).on( 'change', function() {
+		var checkbox = $( this );
+		setActionBusy( checkbox, true );
 		$.ajax( {
 			url:  pluginHubAjax.ajax_url,
 			type: 'POST',
-			data: { action: 'toggle_beta_plugins', nonce: pluginHubAjax.nonce, show_beta: $( this ).is( ':checked' ) },
+			data: { action: 'toggle_beta_plugins', nonce: pluginHubAjax.nonce, show_beta: checkbox.is( ':checked' ) },
 			success: function( response ) {
 				if ( response.success ) {
 					location.reload();
@@ -372,6 +428,7 @@ jQuery( document ).ready( function( $ ) {
 				}
 			},
 			error: function() { showMessage( i18n.error_occurred, 'error' ); },
+			complete: function() { setActionBusy( checkbox, false ); },
 		} );
 	} );
 
@@ -384,13 +441,13 @@ jQuery( document ).ready( function( $ ) {
 			return;
 		}
 		var button = $( this );
-		button.prop( 'disabled', true ).text( i18n.clearing );
+		setActionBusy( button, true, i18n.clearing );
 		$.ajax( {
 			url:  pluginHubAjax.ajax_url,
 			type: 'POST',
 			data: { action: 'clear_activity_log', nonce: pluginHubAjax.nonce },
 			success: function( response ) {
-				button.prop( 'disabled', false ).text( i18n.clear_log );
+				setActionBusy( button, false, i18n.clear_log );
 				if ( response.success ) {
 					location.reload();
 				} else {
@@ -398,7 +455,7 @@ jQuery( document ).ready( function( $ ) {
 				}
 			},
 			error: function() {
-				button.prop( 'disabled', false ).text( i18n.clear_log );
+				setActionBusy( button, false, i18n.clear_log );
 				showMessage( i18n.error_occurred, 'error' );
 			},
 		} );
@@ -446,7 +503,7 @@ jQuery( document ).ready( function( $ ) {
 	} );
 
 	function performAction( action, button, processingText, successText, failText, data, callback ) {
-		button.text( processingText );
+		setActionBusy( button, true, processingText );
 		$.ajax( {
 			url:  pluginHubAjax.ajax_url,
 			type: 'POST',
@@ -461,7 +518,7 @@ jQuery( document ).ready( function( $ ) {
 						setTimeout( function() { location.reload(); }, 1000 );
 					}
 				} else {
-					button.text( failText );
+					setActionBusy( button, false, failText );
 					showMessage( response.data, 'error' );
 					if ( typeof callback === 'function' ) {
 						callback( false );
@@ -469,7 +526,7 @@ jQuery( document ).ready( function( $ ) {
 				}
 			},
 			error: function() {
-				button.text( failText );
+				setActionBusy( button, false, failText );
 				showMessage( i18n.error_occurred, 'error' );
 				if ( typeof callback === 'function' ) {
 					callback( false );
@@ -484,7 +541,10 @@ jQuery( document ).ready( function( $ ) {
 		var success   = 0;
 		var fail      = 0;
 
-		var statusDiv = $( '<div id="bulk-action-status" class="notice notice-info"><p></p></div>' );
+		var bulkControls = $( '#bulk-action-selector-top, .plugin-hub-bulk-actions .button' );
+		bulkControls.each( function() { setActionBusy( $( this ), true ); } );
+
+		var statusDiv = $( '<div id="bulk-action-status" class="notice notice-info" role="status" aria-live="polite"><p></p></div>' );
 		statusDiv.find( 'p' ).text( i18n.processing + ' 0/' + total );
 		statusDiv.insertBefore( '.wp-list-table' );
 
@@ -545,6 +605,10 @@ jQuery( document ).ready( function( $ ) {
 			messageDiv = $( '<div id="plugin-hub-messages"></div>' ).insertBefore( '.wp-list-table' );
 		}
 		messageDiv
+			.attr( {
+				role: 'error' === type ? 'alert' : 'status',
+				'aria-live': 'error' === type ? 'assertive' : 'polite',
+			} )
 			.removeClass( 'notice-success notice-error notice-warning notice-info' )
 			.addClass( 'notice notice-' + type )
 			.empty()
@@ -553,13 +617,47 @@ jQuery( document ).ready( function( $ ) {
 		setTimeout( function() { messageDiv.fadeOut(); }, 5000 );
 	}
 
-	// Client-side search filter.
-	$( '#plugin-search-input' ).on( 'keyup', function() {
-		var searchText = $( this ).val().toLowerCase();
-		$( '#the-list tr' ).each( function() {
+	// Select all visible plugins and keep both table controls in sync.
+	$( '#cb-select-all-1, #cb-select-all-2' ).on( 'change', function() {
+		var checked = $( this ).is( ':checked' );
+		$( '#cb-select-all-1, #cb-select-all-2' ).prop( { checked: checked, indeterminate: false } );
+		$( '#the-list input[name="checked[]"]:visible' ).prop( 'checked', checked );
+	} );
+
+	$( document ).on( 'change', '#the-list input[name="checked[]"]', function() {
+		var visibleCheckboxes = $( '#the-list input[name="checked[]"]:visible' );
+		var selectedCount     = visibleCheckboxes.filter( ':checked' ).length;
+		var allSelected       = visibleCheckboxes.length > 0 && selectedCount === visibleCheckboxes.length;
+		$( '#cb-select-all-1, #cb-select-all-2' ).prop( {
+			checked: allSelected,
+			indeterminate: selectedCount > 0 && ! allSelected,
+		} );
+	} );
+
+	// Client-side search filter with a clear empty state.
+	$( '#plugin-search-input' ).on( 'input', function() {
+		var searchText  = $( this ).val().toLowerCase().trim();
+		var visibleRows = 0;
+
+		$( '.plugin-search-empty' ).remove();
+		$( '#the-list tr' ).not( '.no-items' ).each( function() {
 			var name = $( this ).find( '.plugin-title strong' ).text().toLowerCase();
 			var desc = $( this ).find( '.plugin-description p' ).text().toLowerCase();
-			$( this ).toggle( name.indexOf( searchText ) > -1 || desc.indexOf( searchText ) > -1 );
+			var matches = name.indexOf( searchText ) > -1 || desc.indexOf( searchText ) > -1;
+			$( this ).toggle( matches );
+			if ( matches ) {
+				visibleRows++;
+			} else {
+				$( this ).find( 'input[name="checked[]"]' ).prop( 'checked', false );
+			}
 		} );
+
+		if ( searchText && 0 === visibleRows ) {
+			$( '<tr class="no-items plugin-search-empty"><td colspan="3"></td></tr>' )
+				.find( 'td' ).text( i18n.no_search_results ).end()
+				.appendTo( '#the-list' );
+		}
+
+		$( '#cb-select-all-1, #cb-select-all-2' ).prop( { checked: false, indeterminate: false } );
 	} );
 } );

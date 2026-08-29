@@ -1,0 +1,715 @@
+# Bulgarian translation for Plugin Hub.
+# Copyright (C) 2026 Open WP Club
+# This file is distributed under the same license as the Plugin Hub package.
+# Open WP Club, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Plugin Hub 1.4.0\n"
+"Report-Msgid-Bugs-To: https://github.com/Open-WP-Club/plugin-hub/issues\n"
+"POT-Creation-Date: 2026-08-29 10:10+0300\n"
+"PO-Revision-Date: 2026-08-29 09:00+0300\n"
+"Last-Translator: Open WP Club\n"
+"Language-Team: Bulgarian\n"
+"Language: bg_BG\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: includes/admin-display.php:19
+msgid "Open WP Club"
+msgstr "Open WP Club"
+
+#: includes/admin-display.php:21
+msgid "Install, update and maintain your GitHub plugins from one place."
+msgstr "Инсталирайте, обновявайте и управлявайте своите GitHub плъгини от едно място."
+
+#: includes/admin-display.php:25
+msgid "Refresh catalog"
+msgstr "Обновяване на каталога"
+
+#: includes/admin-display.php:29
+msgid "Plugin overview"
+msgstr "Обобщение на плъгините"
+
+#: includes/admin-display.php:32
+msgid "Plugins in catalog"
+msgstr "Плъгини в каталога"
+
+#: includes/admin-display.php:36 includes/admin-display.php:50
+#: includes/admin-display.php:189
+msgid "Active"
+msgstr "Активни"
+
+#: includes/admin-display.php:40 includes/admin-display.php:51
+#: includes/admin-display.php:191
+msgid "Inactive"
+msgstr "Неактивни"
+
+#: includes/admin-display.php:44
+msgid "Updates available"
+msgstr "Налични обновявания"
+
+#: includes/admin-display.php:48
+msgid "Plugin views"
+msgstr "Изгледи на плъгините"
+
+#: includes/admin-display.php:49
+msgid "All"
+msgstr "Всички"
+
+#: includes/admin-display.php:52
+msgid "Updates"
+msgstr "Обновявания"
+
+#: includes/admin-display.php:53
+msgid "Beta"
+msgstr "Бета"
+
+#: includes/admin-display.php:54
+msgid "Activity"
+msgstr "Активност"
+
+#: includes/admin-display.php:66
+msgid "Activity log"
+msgstr "Дневник на активността"
+
+#: includes/admin-display.php:67
+msgid "A history of plugin changes made from Plugin Hub."
+msgstr "История на промените по плъгините, направени чрез Plugin Hub."
+
+#: includes/admin-display.php:73
+msgid "Date / Time"
+msgstr "Дата / Час"
+
+#: includes/admin-display.php:74
+msgid "Action"
+msgstr "Действие"
+
+#: includes/admin-display.php:75 includes/admin-display.php:153
+#: includes/admin-display.php:296
+msgid "Plugin"
+msgstr "Плъгин"
+
+#: includes/admin-display.php:76
+msgid "Version"
+msgstr "Версия"
+
+#: includes/admin-display.php:77
+msgid "User"
+msgstr "Потребител"
+
+#: includes/admin-display.php:83
+msgid "No activity recorded yet."
+msgstr "Все още няма записана активност."
+
+#: includes/admin-display.php:88
+msgid "Install"
+msgstr "Инсталиране"
+
+#: includes/admin-display.php:89 includes/admin-display.php:140
+msgid "Update"
+msgstr "Обновяване"
+
+#: includes/admin-display.php:90
+msgid "Rollback"
+msgstr "Връщане на версия"
+
+#: includes/admin-display.php:91 includes/admin-display.php:138
+#: includes/admin-display.php:211
+msgid "Activate"
+msgstr "Активиране"
+
+#: includes/admin-display.php:92 includes/admin-display.php:139
+#: includes/admin-display.php:207
+msgid "Deactivate"
+msgstr "Деактивиране"
+
+#: includes/admin-display.php:93 includes/admin-display.php:141
+#: includes/admin-display.php:214
+msgid "Delete"
+msgstr "Изтриване"
+
+#: includes/admin-display.php:94
+msgid "Auto-Update"
+msgstr "Автоматично обновяване"
+
+#: includes/admin-display.php:131
+msgid "Search plugins"
+msgstr "Търсене на плъгини"
+
+#: includes/admin-display.php:132
+msgid "Search plugins by name or description…"
+msgstr "Търсене по име или описание…"
+
+#: includes/admin-display.php:135
+msgid "Select bulk action"
+msgstr "Избор на групово действие"
+
+#: includes/admin-display.php:137
+msgid "Bulk Actions"
+msgstr "Групови действия"
+
+#: includes/admin-display.php:143
+msgid "Apply"
+msgstr "Прилагане"
+
+#: includes/admin-display.php:154 includes/admin-display.php:297
+msgid "Description"
+msgstr "Описание"
+
+#: includes/admin-display.php:193
+msgid "Available"
+msgstr "Наличен"
+
+#: includes/admin-display.php:195
+msgid "Unavailable"
+msgstr "Недостъпен"
+
+#: includes/admin-display.php:201
+msgid "Install now"
+msgstr "Инсталиране сега"
+
+#: includes/admin-display.php:204
+msgid "No release available"
+msgstr "Няма налична версия"
+
+#: includes/admin-display.php:219
+msgid "Update now"
+msgstr "Обновяване сега"
+
+#: includes/admin-display.php:226 includes/admin.php:125
+msgid "What's new?"
+msgstr "Какво е новото?"
+
+#: includes/admin-display.php:230
+msgid "View on GitHub"
+msgstr "Преглед в GitHub"
+
+#: includes/admin-display.php:234 includes/admin.php:126
+msgid "Versions"
+msgstr "Версии"
+
+#: includes/admin-display.php:239
+msgid "Show more details"
+msgstr "Показване на повече подробности"
+
+#: includes/admin-display.php:248
+msgid "No published release"
+msgstr "Няма публикувана версия"
+
+#: includes/admin-display.php:250
+msgid "Beta version"
+msgstr "Бета версия"
+
+#: includes/admin-display.php:254
+#, php-format
+msgid "Latest version is %s"
+msgstr "Най-новата версия е %s"
+
+#: includes/admin-display.php:260
+#, php-format
+msgid "Version %s"
+msgstr "Версия %s"
+
+#: includes/admin-display.php:266
+#, php-format
+msgid "Update available (%s)"
+msgstr "Налично обновяване (%s)"
+
+#: includes/admin-display.php:277
+msgid "Auto-update"
+msgstr "Автоматично обновяване"
+
+#: includes/admin-display.php:286
+msgid "No plugins match the current view. Refresh the catalog or adjust the filter."
+msgstr "Няма плъгини, отговарящи на текущия изглед. Обновете каталога или променете филтъра."
+
+#: includes/admin-display.php:306
+msgid "Plugin Hub settings"
+msgstr "Настройки на Plugin Hub"
+
+#: includes/admin-display.php:310
+msgid "Connection"
+msgstr "Връзка"
+
+#: includes/admin-display.php:311
+msgid "GitHub access"
+msgstr "Достъп до GitHub"
+
+#: includes/admin-display.php:314
+msgid "Connected"
+msgstr "Свързан"
+
+#: includes/admin-display.php:314
+msgid "Public API"
+msgstr "Публичен API"
+
+#: includes/admin-display.php:318
+msgid "Personal access token"
+msgstr "Персонален токен за достъп"
+
+#: includes/admin-display.php:320
+msgid "Managed by PLUGIN_HUB_GITHUB_TOKEN in wp-config.php."
+msgstr "Управлява се чрез PLUGIN_HUB_GITHUB_TOKEN в wp-config.php."
+
+#: includes/admin-display.php:321
+msgid "Configured in wp-config.php"
+msgstr "Настроен в wp-config.php"
+
+#: includes/admin-display.php:323
+msgid "Optional. Add a token for a higher GitHub API rate limit."
+msgstr "По избор. Добавете токен за по-висок лимит на GitHub API заявките."
+
+#: includes/admin-display.php:324
+msgid "Token configured — enter a replacement"
+msgstr "Токенът е настроен — въведете нов за замяна"
+
+#: includes/admin-display.php:324
+msgid "github_pat_…"
+msgstr "github_pat_…"
+
+#: includes/admin-display.php:326 includes/admin.php:112
+msgid "Save token"
+msgstr "Запазване на токена"
+
+#: includes/admin-display.php:328
+msgid "Remove"
+msgstr "Премахване"
+
+#: includes/admin-display.php:338
+#, php-format
+msgid "%1$d of %2$d API requests remaining"
+msgstr "Остават %1$d от %2$d API заявки"
+
+#: includes/admin-display.php:349
+#, php-format
+msgid "Resets at %s."
+msgstr "Нулира се в %s."
+
+#: includes/admin-display.php:362
+msgid "Preferences"
+msgstr "Предпочитания"
+
+#: includes/admin-display.php:363
+msgid "Catalog settings"
+msgstr "Настройки на каталога"
+
+#: includes/admin-display.php:369
+msgid "Show beta plugins"
+msgstr "Показване на бета плъгини"
+
+#: includes/admin-display.php:370
+msgid "Include releases below version 1.0.0."
+msgstr "Включване на версии под 1.0.0."
+
+#: includes/admin-display.php:375
+msgid "Open GitHub organization"
+msgstr "Отваряне на GitHub организацията"
+
+#: includes/admin-display.php:376
+msgid "Documentation"
+msgstr "Документация"
+
+#: includes/admin-display.php:377
+msgid "Support"
+msgstr "Поддръжка"
+
+#: includes/admin-display.php:384
+msgid "Activity history"
+msgstr "История на активността"
+
+#: includes/admin-display.php:385
+msgid "Permanently remove all recorded plugin actions."
+msgstr "Безвъзвратно премахване на всички записани действия с плъгини."
+
+#: includes/admin-display.php:386
+msgid "Clear activity log"
+msgstr "Изчистване на дневника"
+
+#: includes/admin-display.php:398
+msgid "Close"
+msgstr "Затваряне"
+
+#: includes/admin.php:53 includes/admin.php:54
+msgid "Plugin Hub"
+msgstr "Plugin Hub"
+
+#: includes/admin.php:96
+msgid "Installing..."
+msgstr "Инсталиране..."
+
+#: includes/admin.php:97
+msgid "Installed"
+msgstr "Инсталиран"
+
+#: includes/admin.php:98
+msgid "Install Failed"
+msgstr "Неуспешно инсталиране"
+
+#: includes/admin.php:99
+msgid "Updating..."
+msgstr "Обновяване..."
+
+#: includes/admin.php:100
+msgid "Updated"
+msgstr "Обновен"
+
+#: includes/admin.php:101
+msgid "Update Failed"
+msgstr "Неуспешно обновяване"
+
+#: includes/admin.php:102
+msgid "Activating..."
+msgstr "Активиране..."
+
+#: includes/admin.php:103
+msgid "Activated"
+msgstr "Активиран"
+
+#: includes/admin.php:104
+msgid "Activation Failed"
+msgstr "Неуспешно активиране"
+
+#: includes/admin.php:105
+msgid "Deactivating..."
+msgstr "Деактивиране..."
+
+#: includes/admin.php:106
+msgid "Deactivated"
+msgstr "Деактивиран"
+
+#: includes/admin.php:107
+msgid "Deactivation Failed"
+msgstr "Неуспешно деактивиране"
+
+#: includes/admin.php:108
+msgid "Deleting..."
+msgstr "Изтриване..."
+
+#: includes/admin.php:109
+msgid "Deleted"
+msgstr "Изтрит"
+
+#: includes/admin.php:110
+msgid "Delete Failed"
+msgstr "Неуспешно изтриване"
+
+#: includes/admin.php:111
+msgid "Saving..."
+msgstr "Запазване..."
+
+#: includes/admin.php:113
+msgid "Processing..."
+msgstr "Обработване..."
+
+#: includes/admin.php:114
+msgid "Done"
+msgstr "Готово"
+
+#: includes/admin.php:115
+msgid "Failed"
+msgstr "Неуспешно"
+
+#: includes/admin.php:116
+msgid "An error occurred. Please try again."
+msgstr "Възникна грешка. Моля, опитайте отново."
+
+#: includes/admin.php:117
+msgid "Are you sure you want to delete this plugin?"
+msgstr "Сигурни ли сте, че искате да изтриете този плъгин?"
+
+#: includes/admin.php:118
+msgid "Are you sure you want to delete the selected plugins?"
+msgstr "Сигурни ли сте, че искате да изтриете избраните плъгини?"
+
+#: includes/admin.php:119
+msgid "Please select an action and at least one plugin."
+msgstr "Изберете действие и поне един плъгин."
+
+#: includes/admin.php:120
+msgid "No inactive plugins selected for deletion. Active plugins cannot be deleted."
+msgstr "Не са избрани неактивни плъгини за изтриване. Активните плъгини не могат да бъдат изтрити."
+
+#: includes/admin.php:121
+msgid "Failed to verify update. Please refresh the page and check the plugin version."
+msgstr "Обновяването не можа да бъде потвърдено. Обновете страницата и проверете версията на плъгина."
+
+#: includes/admin.php:122
+msgid "Loading changelog…"
+msgstr "Зареждане на списъка с промени…"
+
+#: includes/admin.php:123
+msgid "Changelog"
+msgstr "Списък с промени"
+
+#: includes/admin.php:124
+msgid "No changelog available for this version."
+msgstr "За тази версия няма списък с промени."
+
+#: includes/admin.php:127
+msgid "Loading…"
+msgstr "Зареждане…"
+
+#: includes/admin.php:129
+#, php-format
+msgid "Roll back to version %s?"
+msgstr "Връщане към версия %s?"
+
+#: includes/admin.php:130
+msgid "current"
+msgstr "текуща"
+
+#: includes/admin.php:131
+msgid "Rolling back…"
+msgstr "Връщане на версия…"
+
+#: includes/admin.php:132
+msgid "Rolled back"
+msgstr "Версията е върната"
+
+#: includes/admin.php:133
+msgid "Rollback Failed"
+msgstr "Неуспешно връщане на версия"
+
+#: includes/admin.php:134
+msgid "Clear the entire activity log?"
+msgstr "Да се изчисти ли целият дневник на активността?"
+
+#: includes/admin.php:135
+msgid "Clearing…"
+msgstr "Изчистване…"
+
+#: includes/admin.php:136
+msgid "Clear Log"
+msgstr "Изчистване на дневника"
+
+#: includes/admin.php:137
+msgid "No plugins match your search."
+msgstr "Няма плъгини, отговарящи на търсенето."
+
+#: includes/admin.php:155
+msgid "You do not have permission to refresh the cache."
+msgstr "Нямате права да обновявате кеша."
+
+#: includes/admin.php:179
+msgid "Plugin list refreshed successfully."
+msgstr "Списъкът с плъгини е обновен успешно."
+
+#: includes/admin.php:260 includes/admin.php:297 includes/admin.php:315
+msgid "You do not have permission to change this setting."
+msgstr "Нямате права да променяте тази настройка."
+
+#: includes/admin.php:264
+msgid "The GitHub token is managed in wp-config.php and cannot be changed here."
+msgstr "GitHub токенът се управлява в wp-config.php и не може да бъде променен оттук."
+
+#: includes/admin.php:273
+msgid "Enter a token or use Remove Token."
+msgstr "Въведете токен или използвайте „Премахване“."
+
+#: includes/admin.php:282
+msgid "Token removed."
+msgstr "Токенът е премахнат."
+
+#: includes/admin.php:285
+msgid "Token saved successfully."
+msgstr "Токенът е запазен успешно."
+
+#: includes/admin.php:303
+msgid "Setting updated successfully."
+msgstr "Настройката е обновена успешно."
+
+#: includes/admin.php:322 includes/api.php:725 includes/api.php:836
+#: includes/api.php:872 includes/api.php:907 includes/api.php:1028
+#: includes/api.php:1077 includes/api.php:1173 includes/api.php:1249
+msgid "Invalid plugin information."
+msgstr "Невалидна информация за плъгина."
+
+#: includes/admin.php:335
+msgid "Setting updated."
+msgstr "Настройката е обновена."
+
+#: includes/admin.php:347 includes/api.php:1243
+msgid "You do not have permission."
+msgstr "Нямате необходимите права."
+
+#: includes/admin.php:351
+msgid "Activity log cleared."
+msgstr "Дневникът на активността е изчистен."
+
+#: includes/api.php:565
+msgid "No changelog is available."
+msgstr "Няма наличен списък с промени."
+
+#: includes/api.php:718
+msgid "You do not have permission to install plugins."
+msgstr "Нямате права да инсталирате плъгини."
+
+#: includes/api.php:730
+msgid "The requested plugin version is not in the trusted catalog."
+msgstr "Заявената версия на плъгина не е в доверения каталог."
+
+#: includes/api.php:734
+msgid "The plugin is already installed."
+msgstr "Плъгинът вече е инсталиран."
+
+#: includes/api.php:741
+#, php-format
+msgid "Unable to fetch download URL for %1$s v%2$s. Please check the error log for more details."
+msgstr "Адресът за изтегляне на %1$s v%2$s не може да бъде получен. Проверете дневника за грешки за повече подробности."
+
+#: includes/api.php:746
+msgid "Invalid download URL."
+msgstr "Невалиден адрес за изтегляне."
+
+#: includes/api.php:763
+msgid "Installation failed. Please check the error log for more details."
+msgstr "Инсталирането е неуспешно. Проверете дневника за грешки за повече подробности."
+
+#: includes/api.php:768
+msgid "Plugin installed but file path could not be determined."
+msgstr "Плъгинът е инсталиран, но пътят до файла не можа да бъде определен."
+
+#: includes/api.php:775
+msgid "Plugin installation completed but the installed version could not be verified."
+msgstr "Инсталирането приключи, но инсталираната версия не можа да бъде потвърдена."
+
+#: includes/api.php:785
+msgid "Plugin installed successfully."
+msgstr "Плъгинът е инсталиран успешно."
+
+#: includes/api.php:815
+msgid "The downloaded plugin package could not be prepared."
+msgstr "Изтегленият пакет на плъгина не можа да бъде подготвен."
+
+#: includes/api.php:830
+msgid "You do not have permission to activate plugins."
+msgstr "Нямате права да активирате плъгини."
+
+#: includes/api.php:842 includes/api.php:878 includes/api.php:923
+#: includes/api.php:969 includes/api.php:1034
+msgid "Plugin not found."
+msgstr "Плъгинът не е намерен."
+
+#: includes/api.php:854
+msgid "Plugin activated successfully."
+msgstr "Плъгинът е активиран успешно."
+
+#: includes/api.php:866
+msgid "You do not have permission to deactivate plugins."
+msgstr "Нямате права да деактивирате плъгини."
+
+#: includes/api.php:883
+msgid "Network-active plugins must be managed from Network Admin."
+msgstr "Активните за мрежата плъгини трябва да се управляват от администрацията на мрежата."
+
+#: includes/api.php:888
+msgid "Plugin deactivated successfully."
+msgstr "Плъгинът е деактивиран успешно."
+
+#: includes/api.php:900
+msgid "You do not have permission to update plugins."
+msgstr "Нямате права да обновявате плъгини."
+
+#: includes/api.php:914
+msgid "The requested plugin is not in the trusted catalog."
+msgstr "Заявеният плъгин не е в доверения каталог."
+
+#: includes/api.php:918
+msgid "The requested update is no longer current. Refresh the plugin list and try again."
+msgstr "Заявеното обновяване вече не е актуално. Обновете списъка с плъгини и опитайте отново."
+
+#: includes/api.php:926
+msgid "The installed plugin is already at this version or newer."
+msgstr "Инсталираният плъгин вече е с тази или по-нова версия."
+
+#: includes/api.php:929
+msgid "The selected version is already installed."
+msgstr "Избраната версия вече е инсталирана."
+
+#: includes/api.php:939
+msgid "Update failed. Please check the error log for more details."
+msgstr "Обновяването е неуспешно. Проверете дневника за грешки за повече подробности."
+
+#: includes/api.php:947
+#, php-format
+msgid "Plugin updated successfully to version %s"
+msgstr "Плъгинът е обновен успешно до версия %s"
+
+#: includes/api.php:950
+msgid "Update reported success but version mismatch. Please check the error log for more details."
+msgstr "Обновяването е отчетено като успешно, но версията не съвпада. Проверете дневника за грешки за повече подробности."
+
+#: includes/api.php:974
+msgid "Unable to fetch a trusted download URL for this release."
+msgstr "Не може да бъде получен доверен адрес за изтегляне на тази версия."
+
+#: includes/api.php:1022
+msgid "You do not have permission to delete plugins."
+msgstr "Нямате права да изтривате плъгини."
+
+#: includes/api.php:1038
+msgid "Please deactivate the plugin before deleting."
+msgstr "Деактивирайте плъгина, преди да го изтриете."
+
+#: includes/api.php:1055
+msgid "Plugin deleted successfully."
+msgstr "Плъгинът е изтрит успешно."
+
+#: includes/api.php:1058
+msgid "Failed to delete the plugin."
+msgstr "Плъгинът не можа да бъде изтрит."
+
+#: includes/api.php:1070
+msgid "You do not have permission to verify plugin updates."
+msgstr "Нямате права да потвърждавате обновявания на плъгини."
+
+#: includes/api.php:1084
+#, php-format
+msgid "Plugin version verified: %s"
+msgstr "Версията на плъгина е потвърдена: %s"
+
+#: includes/api.php:1088
+#, php-format
+msgid "Plugin version mismatch. Expected: %1$s, Found: %2$s"
+msgstr "Версията на плъгина не съвпада. Очаквана: %1$s, намерена: %2$s"
+
+#: includes/api.php:1165
+msgid "You do not have permission to view changelogs."
+msgstr "Нямате права да преглеждате списъци с промени."
+
+#: includes/api.php:1182
+msgid "Unable to fetch changelog."
+msgstr "Списъкът с промени не може да бъде зареден."
+
+#: includes/api.php:1206
+msgid "WordPress Cron"
+msgstr "WordPress Cron"
+
+#: includes/api.php:1253
+msgid "The requested plugin is not available for rollback."
+msgstr "Заявената версия на плъгина не е налична за възстановяване."
+
+#: includes/api.php:1266 includes/api.php:1271
+msgid "Unable to fetch releases."
+msgstr "Версиите не могат да бъдат заредени."
+
+#: includes/api.php:1376
+#, php-format
+msgid "[%s] Plugin Hub Update Report"
+msgstr "[%s] Отчет за обновяванията от Plugin Hub"
+
+#: includes/api.php:1381
+msgid "The following plugins were automatically updated:"
+msgstr "Следните плъгини бяха обновени автоматично:"
+
+#: includes/api.php:1389
+msgid "The following plugins have updates available:"
+msgstr "За следните плъгини има налични обновявания:"
+
+#: includes/api.php:1397
+#, php-format
+msgid "Manage your plugins: %s"
+msgstr "Управление на плъгините: %s"

@@ -91,7 +91,7 @@ class Admin {
 				'ajax_url'   => admin_url( 'admin-ajax.php' ),
 				'nonce'      => wp_create_nonce( 'plugin-hub-nonce' ),
 				'rate_limit' => $rate_limit ? $rate_limit : array(),
-				'has_token'  => ! empty( get_option( 'plugin_hub_github_token', '' ) ),
+				'has_token'  => '' !== get_github_token(),
 				'i18n'       => array(
 					'installing'           => __( 'Installing...', 'plugin-hub' ),
 					'installed'            => __( 'Installed', 'plugin-hub' ),
@@ -109,7 +109,7 @@ class Admin {
 					'deleted'              => __( 'Deleted', 'plugin-hub' ),
 					'delete_failed'        => __( 'Delete Failed', 'plugin-hub' ),
 					'saving'               => __( 'Saving...', 'plugin-hub' ),
-					'save_token'           => __( 'Save Token', 'plugin-hub' ),
+					'save_token'           => __( 'Save token', 'plugin-hub' ),
 					'processing'           => __( 'Processing...', 'plugin-hub' ),
 					'done'                 => __( 'Done', 'plugin-hub' ),
 					'failed'               => __( 'Failed', 'plugin-hub' ),
@@ -134,6 +134,7 @@ class Admin {
 					'clear_log_confirm'    => __( 'Clear the entire activity log?', 'plugin-hub' ),
 					'clearing'             => __( 'Clearing…', 'plugin-hub' ),
 					'clear_log'            => __( 'Clear Log', 'plugin-hub' ),
+					'no_search_results'    => __( 'No plugins match your search.', 'plugin-hub' ),
 				),
 			)
 		);
@@ -189,8 +190,10 @@ class Admin {
 		$filter          = in_array( $filter, $allowed_filters, true ) ? $filter : 'all';
 		$counts          = $this->get_plugin_counts( $repos );
 
-		$autoupdate_plugins = get_option( 'plugin_hub_autoupdate_plugins', array() );
-		$activity_log       = $api->get_activity_log();
+		$autoupdate_plugins       = get_option( 'plugin_hub_autoupdate_plugins', array() );
+		$activity_log             = $api->get_activity_log();
+		$github_token_from_config = is_github_token_managed_by_config();
+		$has_github_token         = '' !== get_github_token();
 
 		include PLUGIN_HUB_PLUGIN_DIR . 'includes/admin-display.php';
 	}
@@ -255,6 +258,10 @@ class Admin {
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( esc_html__( 'You do not have permission to change this setting.', 'plugin-hub' ) );
+		}
+
+		if ( is_github_token_managed_by_config() ) {
+			wp_send_json_error( esc_html__( 'The GitHub token is managed in wp-config.php and cannot be changed here.', 'plugin-hub' ) );
 		}
 
 		$clear_token = isset( $_POST['clear'] ) && '1' === sanitize_text_field( wp_unslash( $_POST['clear'] ) );

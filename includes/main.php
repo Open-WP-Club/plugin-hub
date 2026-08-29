@@ -49,8 +49,31 @@ class Main {
 	 */
 	public function __construct() {
 		$this->load_dependencies();
+		$this->define_localization_hooks();
 		$this->define_admin_hooks();
 		$this->define_api_hooks();
+	}
+
+	/**
+	 * Register the plugin translation files.
+	 *
+	 * @since 1.4.0
+	 */
+	private function define_localization_hooks() {
+		add_action( 'init', array( $this, 'load_textdomain' ) );
+	}
+
+	/**
+	 * Load translations from the bundled languages directory.
+	 *
+	 * @since 1.4.0
+	 */
+	public function load_textdomain() {
+		load_plugin_textdomain(
+			'plugin-hub',
+			false,
+			dirname( plugin_basename( PLUGIN_HUB_PLUGIN_DIR . 'plugin-hub.php' ) ) . '/languages/'
+		);
 	}
 
 	/**
@@ -60,8 +83,8 @@ class Main {
 	 * @access private
 	 */
 	private function load_dependencies() {
-		require_once plugin_dir_path( __DIR__ ) . 'includes/class-admin.php';
-		require_once plugin_dir_path( __DIR__ ) . 'includes/class-api.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/admin.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/api.php';
 
 		$this->api   = new API();
 		$this->admin = new Admin( $this->api );
