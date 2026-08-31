@@ -928,6 +928,9 @@ class API {
 		if ( $is_rollback && 0 === version_compare( $version, $current_version ) ) {
 			wp_send_json_error( esc_html__( 'The selected version is already installed.', 'plugin-hub' ) );
 		}
+		if ( $is_rollback && version_compare( $version, $current_version, '>' ) ) {
+			wp_send_json_error( esc_html__( 'Rollback only supports installing an older version. Use Update instead.', 'plugin-hub' ) );
+		}
 
 		$result = $this->perform_plugin_upgrade( $repo, $version, false );
 
@@ -1280,6 +1283,10 @@ class API {
 			}
 			$version = ltrim( $release['tag_name'], 'v' );
 			if ( ! $this->is_valid_version( $version ) ) {
+				continue;
+			}
+			// Rollback only offers the current version (for context) and older releases.
+			if ( version_compare( $version, $current_version, '>' ) ) {
 				continue;
 			}
 			$result[] = array(
