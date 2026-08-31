@@ -8,15 +8,15 @@ Stable tag: 1.4.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Manage WordPress plugins directly from GitHub repositories with easy installation, updates, and management.
+Install, update, and manage plugins published by Open WP Club through GitHub.
 
 == Description ==
 
-Plugin Hub is a powerful WordPress plugin that enables you to manage and install plugins directly from GitHub repositories, with a focus on the Open-WP-Club organization. It provides a seamless interface for browsing, installing, updating, and managing GitHub-hosted plugins without leaving your WordPress admin area.
+Plugin Hub provides a WordPress admin interface for browsing, installing, updating, and managing the curated plugins published by Open WP Club and distributed through GitHub.
 
 = Features =
 
-* **Browse GitHub Repositories**: View all available plugins from the Open-WP-Club organization
+* **Open WP Club Catalog**: Browse the curated plugins published by Open WP Club
 * **Easy Installation**: Install plugins directly from GitHub with one click
 * **Automatic Updates**: Check for and install updates from GitHub releases
 * **Plugin Management**: Activate, deactivate, and delete plugins from a centralized interface

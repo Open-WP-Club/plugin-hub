@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Plugin Hub 1.4.0\n"
 "Report-Msgid-Bugs-To: https://github.com/Open-WP-Club/plugin-hub/issues\n"
-"POT-Creation-Date: 2026-08-29 10:10+0300\n"
+"POT-Creation-Date: 2026-08-29 16:16+0300\n"
 "PO-Revision-Date: 2026-08-29 09:00+0300\n"
 "Last-Translator: Open WP Club\n"
 "Language-Team: Bulgarian\n"
@@ -18,317 +18,291 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: includes/admin-display.php:19
-msgid "Open WP Club"
-msgstr "Open WP Club"
+msgid "Refresh Open WP Club catalog"
+msgstr "Обновяване на каталога на Open WP Club"
 
 #: includes/admin-display.php:21
-msgid "Install, update and maintain your GitHub plugins from one place."
-msgstr "Инсталирайте, обновявайте и управлявайте своите GitHub плъгини от едно място."
+msgid "Install, update and manage plugins published by Open WP Club."
+msgstr "Инсталирайте, обновявайте и управлявайте плъгините, публикувани от Open WP Club."
 
-#: includes/admin-display.php:25
-msgid "Refresh catalog"
-msgstr "Обновяване на каталога"
+#: includes/admin-display.php:24
+msgid "Open WP Club plugin views"
+msgstr "Изгледи на плъгините на Open WP Club"
 
-#: includes/admin-display.php:29
-msgid "Plugin overview"
-msgstr "Обобщение на плъгините"
-
-#: includes/admin-display.php:32
-msgid "Plugins in catalog"
-msgstr "Плъгини в каталога"
-
-#: includes/admin-display.php:36 includes/admin-display.php:50
-#: includes/admin-display.php:189
-msgid "Active"
-msgstr "Активни"
-
-#: includes/admin-display.php:40 includes/admin-display.php:51
-#: includes/admin-display.php:191
-msgid "Inactive"
-msgstr "Неактивни"
-
-#: includes/admin-display.php:44
-msgid "Updates available"
-msgstr "Налични обновявания"
-
-#: includes/admin-display.php:48
-msgid "Plugin views"
-msgstr "Изгледи на плъгините"
-
-#: includes/admin-display.php:49
+#: includes/admin-display.php:26
 msgid "All"
 msgstr "Всички"
 
-#: includes/admin-display.php:52
+#: includes/admin-display.php:27
+msgid "Active"
+msgstr "Активни"
+
+#: includes/admin-display.php:28
+msgid "Inactive"
+msgstr "Неактивни"
+
+#: includes/admin-display.php:29
 msgid "Updates"
 msgstr "Обновявания"
 
-#: includes/admin-display.php:53
+#: includes/admin-display.php:30
 msgid "Beta"
 msgstr "Бета"
 
-#: includes/admin-display.php:54
+#: includes/admin-display.php:31
 msgid "Activity"
 msgstr "Активност"
 
-#: includes/admin-display.php:66
+#: includes/admin-display.php:44
 msgid "Activity log"
 msgstr "Дневник на активността"
 
-#: includes/admin-display.php:67
+#: includes/admin-display.php:45
 msgid "A history of plugin changes made from Plugin Hub."
 msgstr "История на промените по плъгините, направени чрез Plugin Hub."
 
-#: includes/admin-display.php:73
+#: includes/admin-display.php:51
 msgid "Date / Time"
 msgstr "Дата / Час"
 
-#: includes/admin-display.php:74
+#: includes/admin-display.php:52
 msgid "Action"
 msgstr "Действие"
 
-#: includes/admin-display.php:75 includes/admin-display.php:153
-#: includes/admin-display.php:296
+#: includes/admin-display.php:53 includes/admin-display.php:130
+#: includes/admin-display.php:262
 msgid "Plugin"
 msgstr "Плъгин"
 
-#: includes/admin-display.php:76
+#: includes/admin-display.php:54
 msgid "Version"
 msgstr "Версия"
 
-#: includes/admin-display.php:77
+#: includes/admin-display.php:55
 msgid "User"
 msgstr "Потребител"
 
-#: includes/admin-display.php:83
+#: includes/admin-display.php:61
 msgid "No activity recorded yet."
 msgstr "Все още няма записана активност."
 
-#: includes/admin-display.php:88
+#: includes/admin-display.php:66
 msgid "Install"
 msgstr "Инсталиране"
 
-#: includes/admin-display.php:89 includes/admin-display.php:140
+#: includes/admin-display.php:67 includes/admin-display.php:113
 msgid "Update"
 msgstr "Обновяване"
 
-#: includes/admin-display.php:90
+#: includes/admin-display.php:68
 msgid "Rollback"
 msgstr "Връщане на версия"
 
-#: includes/admin-display.php:91 includes/admin-display.php:138
-#: includes/admin-display.php:211
+#: includes/admin-display.php:69 includes/admin-display.php:111
+#: includes/admin-display.php:177
 msgid "Activate"
 msgstr "Активиране"
 
-#: includes/admin-display.php:92 includes/admin-display.php:139
-#: includes/admin-display.php:207
+#: includes/admin-display.php:70 includes/admin-display.php:112
+#: includes/admin-display.php:173
 msgid "Deactivate"
 msgstr "Деактивиране"
 
-#: includes/admin-display.php:93 includes/admin-display.php:141
-#: includes/admin-display.php:214
+#: includes/admin-display.php:71 includes/admin-display.php:114
+#: includes/admin-display.php:180
 msgid "Delete"
 msgstr "Изтриване"
 
-#: includes/admin-display.php:94
+#: includes/admin-display.php:72
 msgid "Auto-Update"
 msgstr "Автоматично обновяване"
 
-#: includes/admin-display.php:131
-msgid "Search plugins"
-msgstr "Търсене на плъгини"
-
-#: includes/admin-display.php:132
-msgid "Search plugins by name or description…"
-msgstr "Търсене по име или описание…"
-
-#: includes/admin-display.php:135
+#: includes/admin-display.php:108
 msgid "Select bulk action"
 msgstr "Избор на групово действие"
 
-#: includes/admin-display.php:137
+#: includes/admin-display.php:110
 msgid "Bulk Actions"
 msgstr "Групови действия"
 
-#: includes/admin-display.php:143
+#: includes/admin-display.php:116
 msgid "Apply"
 msgstr "Прилагане"
 
-#: includes/admin-display.php:154 includes/admin-display.php:297
+#: includes/admin-display.php:119
+msgid "Search plugins"
+msgstr "Търсене на плъгини"
+
+#: includes/admin-display.php:120
+msgid "Search Open WP Club plugins…"
+msgstr "Търсене в плъгините на Open WP Club…"
+
+#: includes/admin-display.php:131 includes/admin-display.php:263
 msgid "Description"
 msgstr "Описание"
 
-#: includes/admin-display.php:193
-msgid "Available"
-msgstr "Наличен"
-
-#: includes/admin-display.php:195
-msgid "Unavailable"
-msgstr "Недостъпен"
-
-#: includes/admin-display.php:201
+#: includes/admin-display.php:167
 msgid "Install now"
 msgstr "Инсталиране сега"
 
-#: includes/admin-display.php:204
+#: includes/admin-display.php:170
 msgid "No release available"
 msgstr "Няма налична версия"
 
-#: includes/admin-display.php:219
+#: includes/admin-display.php:185
 msgid "Update now"
 msgstr "Обновяване сега"
 
-#: includes/admin-display.php:226 includes/admin.php:125
+#: includes/admin-display.php:192 includes/admin.php:125
 msgid "What's new?"
 msgstr "Какво е новото?"
 
-#: includes/admin-display.php:230
+#: includes/admin-display.php:196
 msgid "View on GitHub"
 msgstr "Преглед в GitHub"
 
-#: includes/admin-display.php:234 includes/admin.php:126
+#: includes/admin-display.php:200 includes/admin.php:126
 msgid "Versions"
 msgstr "Версии"
 
-#: includes/admin-display.php:239
+#: includes/admin-display.php:205
 msgid "Show more details"
 msgstr "Показване на повече подробности"
 
-#: includes/admin-display.php:248
+#: includes/admin-display.php:214
 msgid "No published release"
 msgstr "Няма публикувана версия"
 
-#: includes/admin-display.php:250
+#: includes/admin-display.php:216
 msgid "Beta version"
 msgstr "Бета версия"
 
-#: includes/admin-display.php:254
+#: includes/admin-display.php:220
 #, php-format
 msgid "Latest version is %s"
 msgstr "Най-новата версия е %s"
 
-#: includes/admin-display.php:260
+#: includes/admin-display.php:226
 #, php-format
 msgid "Version %s"
 msgstr "Версия %s"
 
-#: includes/admin-display.php:266
+#: includes/admin-display.php:232
 #, php-format
 msgid "Update available (%s)"
 msgstr "Налично обновяване (%s)"
 
-#: includes/admin-display.php:277
+#: includes/admin-display.php:243
 msgid "Auto-update"
 msgstr "Автоматично обновяване"
 
-#: includes/admin-display.php:286
+#: includes/admin-display.php:252
 msgid "No plugins match the current view. Refresh the catalog or adjust the filter."
 msgstr "Няма плъгини, отговарящи на текущия изглед. Обновете каталога или променете филтъра."
 
-#: includes/admin-display.php:306
+#: includes/admin-display.php:272
 msgid "Plugin Hub settings"
 msgstr "Настройки на Plugin Hub"
 
-#: includes/admin-display.php:310
+#: includes/admin-display.php:276
 msgid "Connection"
 msgstr "Връзка"
 
-#: includes/admin-display.php:311
+#: includes/admin-display.php:277
 msgid "GitHub access"
 msgstr "Достъп до GitHub"
 
-#: includes/admin-display.php:314
+#: includes/admin-display.php:280
 msgid "Connected"
 msgstr "Свързан"
 
-#: includes/admin-display.php:314
+#: includes/admin-display.php:280
 msgid "Public API"
 msgstr "Публичен API"
 
-#: includes/admin-display.php:318
+#: includes/admin-display.php:284
 msgid "Personal access token"
 msgstr "Персонален токен за достъп"
 
-#: includes/admin-display.php:320
+#: includes/admin-display.php:286
 msgid "Managed by PLUGIN_HUB_GITHUB_TOKEN in wp-config.php."
 msgstr "Управлява се чрез PLUGIN_HUB_GITHUB_TOKEN в wp-config.php."
 
-#: includes/admin-display.php:321
+#: includes/admin-display.php:287
 msgid "Configured in wp-config.php"
 msgstr "Настроен в wp-config.php"
 
-#: includes/admin-display.php:323
+#: includes/admin-display.php:289
 msgid "Optional. Add a token for a higher GitHub API rate limit."
 msgstr "По избор. Добавете токен за по-висок лимит на GitHub API заявките."
 
-#: includes/admin-display.php:324
+#: includes/admin-display.php:290
 msgid "Token configured — enter a replacement"
 msgstr "Токенът е настроен — въведете нов за замяна"
 
-#: includes/admin-display.php:324
+#: includes/admin-display.php:290
 msgid "github_pat_…"
 msgstr "github_pat_…"
 
-#: includes/admin-display.php:326 includes/admin.php:112
+#: includes/admin-display.php:292 includes/admin.php:112
 msgid "Save token"
 msgstr "Запазване на токена"
 
-#: includes/admin-display.php:328
+#: includes/admin-display.php:294
 msgid "Remove"
 msgstr "Премахване"
 
-#: includes/admin-display.php:338
+#: includes/admin-display.php:304
 #, php-format
 msgid "%1$d of %2$d API requests remaining"
 msgstr "Остават %1$d от %2$d API заявки"
 
-#: includes/admin-display.php:349
+#: includes/admin-display.php:315
 #, php-format
 msgid "Resets at %s."
 msgstr "Нулира се в %s."
 
-#: includes/admin-display.php:362
+#: includes/admin-display.php:328
 msgid "Preferences"
 msgstr "Предпочитания"
 
-#: includes/admin-display.php:363
+#: includes/admin-display.php:329
 msgid "Catalog settings"
 msgstr "Настройки на каталога"
 
-#: includes/admin-display.php:369
+#: includes/admin-display.php:335
 msgid "Show beta plugins"
 msgstr "Показване на бета плъгини"
 
-#: includes/admin-display.php:370
+#: includes/admin-display.php:336
 msgid "Include releases below version 1.0.0."
 msgstr "Включване на версии под 1.0.0."
 
-#: includes/admin-display.php:375
+#: includes/admin-display.php:341
 msgid "Open GitHub organization"
 msgstr "Отваряне на GitHub организацията"
 
-#: includes/admin-display.php:376
+#: includes/admin-display.php:342
 msgid "Documentation"
 msgstr "Документация"
 
-#: includes/admin-display.php:377
+#: includes/admin-display.php:343
 msgid "Support"
 msgstr "Поддръжка"
 
-#: includes/admin-display.php:384
+#: includes/admin-display.php:350
 msgid "Activity history"
 msgstr "История на активността"
 
-#: includes/admin-display.php:385
+#: includes/admin-display.php:351
 msgid "Permanently remove all recorded plugin actions."
 msgstr "Безвъзвратно премахване на всички записани действия с плъгини."
 
-#: includes/admin-display.php:386
+#: includes/admin-display.php:352
 msgid "Clear activity log"
 msgstr "Изчистване на дневника"
 
-#: includes/admin-display.php:398
+#: includes/admin-display.php:364
 msgid "Close"
 msgstr "Затваряне"
 
@@ -713,3 +687,24 @@ msgstr "За следните плъгини има налични обновя�
 #, php-format
 msgid "Manage your plugins: %s"
 msgstr "Управление на плъгините: %s"
+
+#~ msgid "Plugin overview"
+#~ msgstr "Обобщение на плъгините"
+
+#~ msgid "Plugins in catalog"
+#~ msgstr "Плъгини в каталога"
+
+#~ msgid "Updates available"
+#~ msgstr "Налични обновявания"
+
+#~ msgid "Plugin views"
+#~ msgstr "Изгледи на плъгините"
+
+#~ msgid "Search plugins by name or description…"
+#~ msgstr "Търсене по име или описание…"
+
+#~ msgid "Available"
+#~ msgstr "Наличен"
+
+#~ msgid "Unavailable"
+#~ msgstr "Недостъпен"

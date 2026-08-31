@@ -633,31 +633,4 @@ jQuery( document ).ready( function( $ ) {
 			indeterminate: selectedCount > 0 && ! allSelected,
 		} );
 	} );
-
-	// Client-side search filter with a clear empty state.
-	$( '#plugin-search-input' ).on( 'input', function() {
-		var searchText  = $( this ).val().toLowerCase().trim();
-		var visibleRows = 0;
-
-		$( '.plugin-search-empty' ).remove();
-		$( '#the-list tr' ).not( '.no-items' ).each( function() {
-			var name = $( this ).find( '.plugin-title strong' ).text().toLowerCase();
-			var desc = $( this ).find( '.plugin-description p' ).text().toLowerCase();
-			var matches = name.indexOf( searchText ) > -1 || desc.indexOf( searchText ) > -1;
-			$( this ).toggle( matches );
-			if ( matches ) {
-				visibleRows++;
-			} else {
-				$( this ).find( 'input[name="checked[]"]' ).prop( 'checked', false );
-			}
-		} );
-
-		if ( searchText && 0 === visibleRows ) {
-			$( '<tr class="no-items plugin-search-empty"><td colspan="3"></td></tr>' )
-				.find( 'td' ).text( i18n.no_search_results ).end()
-				.appendTo( '#the-list' );
-		}
-
-		$( '#cb-select-all-1, #cb-select-all-2' ).prop( { checked: false, indeterminate: false } );
-	} );
 } );

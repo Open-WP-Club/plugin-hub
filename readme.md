@@ -1,10 +1,10 @@
 # Plugin Hub
 
-Plugin Hub is a WordPress plugin that manages and installs plugins directly from GitHub repositories, focusing on the Open-WP-Club organization.
+Plugin Hub installs, updates, and manages WordPress plugins published by Open WP Club and distributed through GitHub.
 
 ## Features
 
-- List plugins from a specified GitHub organization
+- Browse the curated Open WP Club plugin catalog
 - Install, update, activate, and deactivate plugins directly from the WordPress admin
 - Bulk actions for managing multiple plugins at once
 - Cache plugin information for improved performance

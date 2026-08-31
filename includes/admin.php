@@ -134,7 +134,6 @@ class Admin {
 					'clear_log_confirm'    => __( 'Clear the entire activity log?', 'plugin-hub' ),
 					'clearing'             => __( 'Clearing…', 'plugin-hub' ),
 					'clear_log'            => __( 'Clear Log', 'plugin-hub' ),
-					'no_search_results'    => __( 'No plugins match your search.', 'plugin-hub' ),
 				),
 			)
 		);
@@ -189,6 +188,20 @@ class Admin {
 		$allowed_filters = array( 'all', 'active', 'inactive', 'update', 'beta', 'activity' );
 		$filter          = in_array( $filter, $allowed_filters, true ) ? $filter : 'all';
 		$counts          = $this->get_plugin_counts( $repos );
+
+		// This is a read-only search query and does not require a nonce.
+		$search = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+		$per_page       = 25;
+		$filtered_repos = 'activity' === $filter ? array() : $this->get_filtered_sorted_repos( $repos, $filter, $search );
+		$total_items    = count( $filtered_repos );
+		$total_pages    = max( 1, (int) ceil( $total_items / $per_page ) );
+
+		// This is a read-only pagination cursor and does not require a nonce.
+		$paged = isset( $_GET['paged'] ) ? absint( $_GET['paged'] ) : 1; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$paged = min( max( $paged, 1 ), $total_pages );
+
+		$repos = array_slice( $filtered_repos, ( $paged - 1 ) * $per_page, $per_page );
 
 		$autoupdate_plugins       = get_option( 'plugin_hub_autoupdate_plugins', array() );
 		$activity_log             = $api->get_activity_log();
@@ -246,6 +259,58 @@ class Admin {
 		}
 
 		return $counts;
+	}
+
+	/**
+	 * Filter repositories by the active tab and search term, then sort alphabetically.
+	 *
+	 * @since  1.4.2
+	 * @access private
+	 * @param  array  $repos  Array of repository data.
+	 * @param  string $filter Active filter/tab.
+	 * @param  string $search Search term to match against name/description.
+	 * @return array          Filtered, alphabetically sorted repository data.
+	 */
+	private function get_filtered_sorted_repos( $repos, $filter, $search = '' ) {
+		$show_beta   = get_option( 'plugin_hub_show_beta', false );
+		$search_term = strtolower( trim( $search ) );
+		$filtered    = array();
+
+		foreach ( $repos as $repo ) {
+			$is_installed      = $this->api->is_plugin_installed( $repo['name'] );
+			$is_active         = $this->api->is_plugin_active( $repo['name'] );
+			$installed_version = $this->api->get_installed_plugin_version( $repo['name'] );
+			$update_available  = $this->api->is_update_available( $repo, $installed_version );
+			$is_beta           = ! empty( $repo['available'] ) && version_compare( $repo['version'], '1.0.0', '<' );
+
+			if (
+				( 'active' === $filter && ! $is_active ) ||
+				( 'inactive' === $filter && ( ! $is_installed || $is_active ) ) ||
+				( 'update' === $filter && ! $update_available ) ||
+				( 'beta' === $filter && ! $is_beta ) ||
+				( ! $show_beta && $is_beta )
+			) {
+				continue;
+			}
+
+			if ( '' !== $search_term
+				&& false === stripos( $repo['display_name'], $search_term )
+				&& false === stripos( $repo['description'], $search_term )
+			) {
+				continue;
+			}
+
+			$filtered[] = $repo;
+		}
+
+		usort(
+			$filtered,
+			static function ( $a, $b ) {
+				return strcasecmp( $a['display_name'], $b['display_name'] );
+			}
+		);
+
+		return $filtered;
 	}
 
 	/**
