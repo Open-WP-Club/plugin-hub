@@ -82,8 +82,8 @@ plugin-hub/
 ## Key Concepts
 
 ### GitHub Integration
-- Reads plugin metadata from CSV file: `https://raw.githubusercontent.com/Open-WP-Club/.github/main/plugins.csv`
-- CSV format: `name,display_name,description,version,repo_url`
+- Reads plugin metadata from the product catalog: `https://raw.githubusercontent.com/Open-WP-Club/.github/main/catalog.json`
+- Only entries with `"type": "plugin"` are installable through Plugin Hub
 - Uses GitHub Releases API for downloads
 - Downloads zipball from release tags
 

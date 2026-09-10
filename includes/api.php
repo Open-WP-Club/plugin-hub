@@ -25,13 +25,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 class API {
 
 	/**
-	 * The CSV URL for plugin data.
+	 * The catalog URL for plugin data.
 	 *
 	 * @since  1.0.0
 	 * @access private
 	 * @var    string
 	 */
-	private $csv_url = '';
+	private $catalog_url = '';
 
 	/**
 	 * GitHub plugins array.
@@ -66,7 +66,7 @@ class API {
 	 * @access private
 	 * @var    string
 	 */
-	private $cache_key = 'plugin_hub_csv_cache_v2';
+	private $cache_key = 'plugin_hub_catalog_cache_v1';
 
 	/**
 	 * Cache expiration time in seconds.
@@ -223,7 +223,7 @@ class API {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		$this->csv_url = 'https://raw.githubusercontent.com/' . PLUGIN_HUB_ORGANIZATION . '/.github/main/plugins.csv';
+		$this->catalog_url = 'https://raw.githubusercontent.com/' . PLUGIN_HUB_ORGANIZATION . '/.github/main/catalog.json';
 		$this->load_github_plugins();
 	}
 
@@ -238,7 +238,7 @@ class API {
 	}
 
 	/**
-	 * Get organization repositories from CSV.
+	 * Get organization repositories from the product catalog.
 	 *
 	 * @since  1.0.0
 	 * @return array Array of repository data.
@@ -250,7 +250,7 @@ class API {
 		}
 
 		$response = wp_safe_remote_get(
-			$this->csv_url,
+			$this->catalog_url,
 			array(
 				'timeout'             => 15,
 				'redirection'         => 3,
@@ -258,18 +258,18 @@ class API {
 			)
 		);
 		if ( is_wp_error( $response ) ) {
-			$this->log( 'Error fetching CSV file: ' . $response->get_error_message() );
+			$this->log( 'Error fetching catalog file: ' . $response->get_error_message() );
 			return $this->get_last_known_repos();
 		}
 
 		$status_code = wp_remote_retrieve_response_code( $response );
 		if ( 200 !== $status_code ) {
-			$this->log( 'Unexpected HTTP status ' . $status_code . ' fetching plugin CSV.' );
+			$this->log( 'Unexpected HTTP status ' . $status_code . ' fetching plugin catalog.' );
 			return $this->get_last_known_repos();
 		}
 
-		$csv_content = wp_remote_retrieve_body( $response );
-		$repos       = $this->parse_csv_content( $csv_content );
+		$catalog_content = wp_remote_retrieve_body( $response );
+		$repos           = $this->parse_catalog_content( $catalog_content );
 
 		if ( empty( $repos ) ) {
 			$this->log( 'The plugin catalog was empty or invalid; using the last known catalog.' );
@@ -283,31 +283,32 @@ class API {
 	}
 
 	/**
-	 * Parse CSV content into repository array.
+	 * Parse catalog.json content into repository array.
+	 *
+	 * Only entries of type "plugin" are installable through Plugin Hub;
+	 * apps, websites, and internal tooling in the catalog are ignored.
 	 *
 	 * @since  1.0.0
 	 * @access private
-	 * @param  string $csv_content The CSV content to parse.
-	 * @return array               Array of repository data.
+	 * @param  string $catalog_content The catalog.json body to parse.
+	 * @return array                   Array of repository data.
 	 */
-	private function parse_csv_content( $csv_content ) {
-		// Normalize line endings so Windows-formatted (\r\n) and old Mac (\r) CSVs parse correctly.
-		$csv_content = str_replace( array( "\r\n", "\r" ), "\n", $csv_content );
-		$lines       = explode( "\n", trim( $csv_content ) );
-		$repos       = array();
+	private function parse_catalog_content( $catalog_content ) {
+		$catalog = json_decode( $catalog_content, true );
+		if ( ! is_array( $catalog ) || empty( $catalog['products'] ) || ! is_array( $catalog['products'] ) ) {
+			return array();
+		}
 
-		// Remove the header row.
-		array_shift( $lines );
+		$repos = array();
 
-		foreach ( $lines as $line ) {
-			$data = str_getcsv( $line );
-			if ( count( $data ) < 5 ) {
+		foreach ( $catalog['products'] as $product ) {
+			if ( ! is_array( $product ) || 'plugin' !== ( $product['type'] ?? '' ) ) {
 				continue;
 			}
 
-			$name     = trim( $data[0] );
-			$version  = trim( $data[3] );
-			$repo_url = esc_url_raw( trim( $data[4] ), array( 'https' ) );
+			$name     = trim( (string) ( $product['repo_name'] ?? '' ) );
+			$version  = trim( (string) ( $product['version'] ?? '' ) );
+			$repo_url = esc_url_raw( trim( (string) ( $product['repo_url'] ?? '' ) ), array( 'https' ) );
 
 			if ( ! $this->is_valid_repo_name( $name ) || ! $this->is_catalog_repo_url( $repo_url, $name ) ) {
 				$this->log( 'Skipped invalid catalog entry for repository: ' . sanitize_text_field( $name ) );
@@ -316,8 +317,8 @@ class API {
 
 			$repos[ strtolower( $name ) ] = array(
 				'name'         => $name,
-				'display_name' => sanitize_text_field( trim( $data[1] ) ),
-				'description'  => sanitize_textarea_field( trim( $data[2] ) ),
+				'display_name' => sanitize_text_field( trim( (string) ( $product['display_name'] ?? '' ) ) ),
+				'description'  => sanitize_textarea_field( trim( (string) ( $product['description'] ?? '' ) ) ),
 				'version'      => sanitize_text_field( $version ),
 				'repo_url'     => $repo_url,
 				'available'    => $this->is_valid_version( $version ),

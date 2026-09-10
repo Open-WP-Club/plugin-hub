@@ -329,9 +329,9 @@ For maintainers releasing new versions:
    - Include changelog
    - Attach zip file
 
-6. **Update CSV**
-   - Update version in plugins.csv
-   - Push to GitHub repository
+6. **Catalog sync**
+   - `catalog.json` in `Open-WP-Club/.github` picks up the new version
+     automatically from the GitHub release; no manual edit needed
 
 ## Questions?
 

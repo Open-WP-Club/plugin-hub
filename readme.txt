@@ -4,7 +4,7 @@ Tags: plugins, github, installer, plugin-manager, open-wp-club
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.4.1
+Stable tag: 1.4.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -75,6 +75,10 @@ Beta plugins are those with version numbers less than 1.0.0. You can toggle thei
 3. Settings panel with beta plugin toggle
 
 == Changelog ==
+
+= 1.4.3 =
+* Switched the catalog source from plugins.csv to catalog.json
+* Catalog entries are now filtered to type "plugin", so apps and websites in the catalog can no longer appear as installable plugins
 
 = 1.4.0 =
 * Tested with WordPress 7.1 and updated custom admin list-table markup

@@ -3,7 +3,7 @@
  * Plugin Name:             Plugin Hub
  * Plugin URI:              https://github.com/Open-WP-Club/plugin-hub
  * Description:             Installs, updates, and manages plugins published by Open WP Club through GitHub.
- * Version:                 1.4.2
+ * Version:                 1.4.3
  * Author:                  Open WP Club
  * Author URI:              https://openwpclub.com
  * License:                 GPL-2.0+
@@ -25,7 +25,7 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-define( 'PLUGIN_HUB_VERSION', '1.4.2' );
+define( 'PLUGIN_HUB_VERSION', '1.4.3' );
 define( 'PLUGIN_HUB_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PLUGIN_HUB_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'PLUGIN_HUB_ORGANIZATION', 'Open-WP-Club' );
