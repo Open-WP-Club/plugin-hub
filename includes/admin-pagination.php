@@ -3,7 +3,7 @@
  * Pagination controls for the plugin list table.
  *
  * Expects $filter, $search, $paged, $total_pages and $total_items to be set
- * by the including template.
+ * by the including template. Invalid or missing context is not rendered.
  *
  * @package    PluginHub
  * @subpackage PluginHub/includes
@@ -13,6 +13,14 @@
 // Check if this file is being accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
+}
+
+// Validate the include context rather than relying on undefined variables.
+if ( ! isset( $filter, $search, $paged, $total_pages, $total_items )
+	|| ! is_string( $filter ) || ! is_string( $search )
+	|| ! is_int( $paged ) || ! is_int( $total_pages ) || ! is_int( $total_items )
+	|| $total_pages < 1 || $paged < 1 || $paged > $total_pages || $total_items < 0 ) {
+	return;
 }
 
 $pagination_base = admin_url( 'plugins.php?page=plugin-hub&filter=' . $filter );

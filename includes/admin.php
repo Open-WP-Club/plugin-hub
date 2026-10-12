@@ -180,6 +180,12 @@ class Admin {
 			);
 		}
 
+		if ( isset( $_POST['plugin_hub_supporters_visibility'] ) && is_string( $_POST['plugin_hub_supporters_visibility'] ) ) {
+			check_admin_referer( 'plugin_hub_supporters_visibility' );
+			$hidden = 'hide' === sanitize_key( wp_unslash( $_POST['plugin_hub_supporters_visibility'] ) );
+			update_user_meta( get_current_user_id(), 'plugin_hub_hide_supporters', $hidden ? '1' : '0' );
+		}
+
 		$api   = $this->api;
 		$repos = $api->get_org_repos();
 
@@ -207,6 +213,10 @@ class Admin {
 		$activity_log             = $api->get_activity_log();
 		$github_token_from_config = is_github_token_managed_by_config();
 		$has_github_token         = '' !== get_github_token();
+
+		$supporters_feed = array( 'schemaVersion' => 1, 'maxPositions' => 3, 'supporters' => get_option( 'plugin_hub_supporters', array() ) );
+		$supporters = Sponsorship::active( Sponsorship::validate( $supporters_feed ) ?? array(), time() );
+		$hide_supporters = '1' === get_user_meta( get_current_user_id(), 'plugin_hub_hide_supporters', true ) || ( defined( 'PLUGIN_HUB_HIDE_SUPPORTERS' ) && PLUGIN_HUB_HIDE_SUPPORTERS );
 
 		include PLUGIN_HUB_PLUGIN_DIR . 'includes/admin-display.php';
 	}

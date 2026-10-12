@@ -23,6 +23,8 @@ delete_option( 'plugin_hub_github_token' );
 delete_option( 'plugin_hub_activity_log' );
 delete_option( 'plugin_hub_autoupdate_plugins' );
 delete_option( 'plugin_hub_last_known_repos' );
+delete_option( 'plugin_hub_supporters' );
+delete_metadata( 'user', 0, 'plugin_hub_hide_supporters', '', true );
 delete_option( 'plugin_hub_last_notification_hash' );
 
 /**

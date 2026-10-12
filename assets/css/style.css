@@ -422,3 +422,17 @@
     min-width: 660px;
   }
 }
+
+/* Supporter recognition stays inside Plugin Hub and never blocks plugin actions. */
+.plugin-hub-supporter {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin: 12px 0;
+	padding: 10px;
+	border: 1px solid #dcdcde;
+	border-radius: 6px;
+	text-decoration: none;
+}
+.plugin-hub-supporter img { object-fit: contain; background: #fff; border-radius: 4px; flex-shrink: 0; }
+.plugin-hub-supporter small { display: block; margin-top: 4px; color: #646970; }

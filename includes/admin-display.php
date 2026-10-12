@@ -350,6 +350,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 				</div>
 			</div>
 
+			<?php require PLUGIN_HUB_PLUGIN_DIR . 'includes/sponsorship-display.php'; ?>
+
 			<div class="postbox plugin-hub-danger-zone">
 				<div class="inside">
 					<strong><?php esc_html_e( 'Activity history', 'plugin-hub' ); ?></strong>

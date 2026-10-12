@@ -22,6 +22,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.0.0
  */
+require_once __DIR__ . '/sponsorship.php';
+
 class API {
 
 	/**
@@ -274,6 +276,12 @@ class API {
 		if ( empty( $repos ) ) {
 			$this->log( 'The plugin catalog was empty or invalid; using the last known catalog.' );
 			return $this->get_last_known_repos();
+		}
+
+		$catalog = json_decode( $catalog_content, true );
+		$supporters = Sponsorship::validate( $catalog['sponsorship'] ?? null );
+		if ( null !== $supporters ) {
+			update_option( 'plugin_hub_supporters', $supporters, false );
 		}
 
 		set_transient( $this->cache_key, $repos, $this->cache_expiration );

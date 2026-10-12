@@ -37,6 +37,22 @@ Plugin Hub installs, updates, and manages WordPress plugins published by Open WP
 - Daily update reports are only sent when the set of updated or available plugins changes.
 - Requires WordPress 6.0 or later (tested through 7.1) and PHP 8.0 or later.
 
+<!-- OPENWPCLUB_SPONSORS_START -->
+## Open-source supporters
+
+These companies help keep Open WP Club plugins free and maintained.
+
+[![Open WP Club supporters](https://openwpclub.com/sponsorship/supporters.png)](https://openwpclub.com/sponsors/)
+
+## Sponsored placements
+
+Clearly labelled promotional campaigns, separate from our supporters.
+
+[![Open WP Club sponsored placements](https://openwpclub.com/sponsorship/repos/plugin-hub/campaigns.png)](https://openwpclub.com/advertise/)
+
+[Support our work](https://openwpclub.com/sponsors/) · [Discuss a campaign](https://openwpclub.com/advertise/)
+<!-- OPENWPCLUB_SPONSORS_END -->
+
 ## Development
 
 To contribute to this plugin or modify it for your needs:
@@ -53,3 +69,18 @@ This project is licensed under the GPL2 License.
 ## Support
 
 For support or feature requests, please open an issue on the GitHub repository.
+
+### Supporter recognition and privacy
+
+Plugin Hub receives up to three open-source supporter credits inside its existing
+Open WP Club catalog request to GitHub. The authoritative registry is maintained
+at https://openwpclub.com/sponsorship.json. Credits are cached locally and refresh
+with the catalog (normally daily). Embedded PNG logos do not contact advertisers
+or external image servers, and there are no impression counters, tracking pixels,
+referral parameters or additional sponsorship HTTP requests from WordPress.
+
+Thanks appear only on the Plugin Hub page. Use **Hide supporter thanks** to save
+your preference across updates, or define `PLUGIN_HUB_HIDE_SUPPORTERS` as `true`
+in `wp-config.php` to hide them for the entire site. Scheduled campaigns are not
+shown in the WordPress admin; they have separate positions in READMEs and on the
+website. Sponsor data never controls installation, updates or access to features.
