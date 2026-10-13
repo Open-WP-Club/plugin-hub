@@ -4,6 +4,7 @@ namespace PluginHub {
 	function get_option( $key, $default = false ) { return $GLOBALS['hub_test_options'][ $key ] ?? $default; }
 	function update_option( $key, $value, $autoload = null ) { $GLOBALS['hub_test_options'][ $key ] = $value; return true; }
 	function get_transient( $key ) { return $GLOBALS['hub_test_transients'][ $key ] ?? false; }
+	function delete_transient( $key ) { unset( $GLOBALS['hub_test_transients'][ $key ] ); return true; }
 	function set_transient( $key, $value, $expiration = 0 ) { $GLOBALS['hub_test_transients'][ $key ] = $value; return true; }
 	function wp_safe_remote_get( $url, $args ) { $GLOBALS['hub_test_requests'][] = $url; return $GLOBALS['hub_test_response']; }
 	function wp_remote_retrieve_response_code( $response ) { return $response['status']; }
@@ -58,5 +59,27 @@ namespace PluginHub\Tests {
 			$this->assertSame( array( array( 'name' => 'plugin-hub' ) ), ( new API() )->get_org_repos() );
 			$this->assertSame( array( 'last validated supporter' ), $GLOBALS['hub_test_options']['plugin_hub_supporters'] );
 		}
+		public function test_failed_catalog_is_not_requested_on_every_page_or_operation() {
+			$GLOBALS['hub_test_options']['plugin_hub_last_known_repos'] = array( array( 'name' => 'plugin-hub' ) );
+			$GLOBALS['hub_test_response'] = array( 'status' => 503, 'body' => '' );
+			$api = new API();
+			$api->get_org_repos();
+			( new API() )->get_org_repos();
+			$this->assertCount( 1, $GLOBALS['hub_test_requests'] );
+			$this->assertTrue( $GLOBALS['hub_test_transients']['plugin_hub_catalog_retry_v1'] );
+			// Simulate expiry without sleeping. The next visit retries normally.
+			unset( $GLOBALS['hub_test_transients']['plugin_hub_catalog_retry_v1'] );
+			$api->get_org_repos();
+			$this->assertCount( 2, $GLOBALS['hub_test_requests'] );
+		}
+		public function test_manual_refresh_bypasses_failure_backoff_and_recovers() {
+			$GLOBALS['hub_test_response'] = array( 'status' => 503, 'body' => '' );
+			$api = new API(); $api->get_org_repos();
+			$this->response( $this->empty_feed() );
+			$this->assertCount( 1, $api->refresh_csv_cache() );
+			$this->assertArrayNotHasKey( 'plugin_hub_catalog_retry_v1', $GLOBALS['hub_test_transients'] );
+			$this->assertCount( 2, $GLOBALS['hub_test_requests'] );
+		}
+
 	}
 }

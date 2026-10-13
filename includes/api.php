@@ -14,6 +14,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+require_once __DIR__ . '/sponsorship.php';
+
 /**
  * API class.
  *
@@ -22,8 +24,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.0.0
  */
-require_once __DIR__ . '/sponsorship.php';
-
 class API {
 
 	/**
@@ -69,6 +69,13 @@ class API {
 	 * @var    string
 	 */
 	private $cache_key = 'plugin_hub_catalog_cache_v1';
+
+	/**
+	 * Short backoff after an unavailable or invalid catalog.
+	 *
+	 * @var string
+	 */
+	private $catalog_retry_key = 'plugin_hub_catalog_retry_v1';
 
 	/**
 	 * Cache expiration time in seconds.
@@ -251,6 +258,10 @@ class API {
 			return $cached_data;
 		}
 
+		if ( false !== get_transient( $this->catalog_retry_key ) ) {
+			return $this->get_last_known_repos();
+		}
+
 		$response = wp_safe_remote_get(
 			$this->catalog_url,
 			array(
@@ -261,12 +272,14 @@ class API {
 		);
 		if ( is_wp_error( $response ) ) {
 			$this->log( 'Error fetching catalog file: ' . $response->get_error_message() );
+			set_transient( $this->catalog_retry_key, true, 5 * MINUTE_IN_SECONDS );
 			return $this->get_last_known_repos();
 		}
 
 		$status_code = wp_remote_retrieve_response_code( $response );
 		if ( 200 !== $status_code ) {
 			$this->log( 'Unexpected HTTP status ' . $status_code . ' fetching plugin catalog.' );
+			set_transient( $this->catalog_retry_key, true, 5 * MINUTE_IN_SECONDS );
 			return $this->get_last_known_repos();
 		}
 
@@ -275,15 +288,17 @@ class API {
 
 		if ( empty( $repos ) ) {
 			$this->log( 'The plugin catalog was empty or invalid; using the last known catalog.' );
+			set_transient( $this->catalog_retry_key, true, 5 * MINUTE_IN_SECONDS );
 			return $this->get_last_known_repos();
 		}
 
-		$catalog = json_decode( $catalog_content, true );
+		$catalog    = json_decode( $catalog_content, true );
 		$supporters = Sponsorship::validate( $catalog['sponsorship'] ?? null );
 		if ( null !== $supporters ) {
 			update_option( 'plugin_hub_supporters', $supporters, false );
 		}
 
+		delete_transient( $this->catalog_retry_key );
 		set_transient( $this->cache_key, $repos, $this->cache_expiration );
 		update_option( 'plugin_hub_last_known_repos', $repos, false );
 
@@ -387,6 +402,7 @@ class API {
 	 */
 	public function refresh_csv_cache() {
 		delete_transient( $this->cache_key );
+		delete_transient( $this->catalog_retry_key );
 		return $this->get_org_repos();
 	}
 

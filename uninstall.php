@@ -30,6 +30,8 @@ delete_option( 'plugin_hub_last_notification_hash' );
 /**
  * Delete plugin transients.
  */
+delete_transient( 'plugin_hub_catalog_cache_v1' );
+delete_transient( 'plugin_hub_catalog_retry_v1' );
 delete_transient( 'plugin_hub_csv_cache' );
 delete_transient( 'plugin_hub_csv_cache_v2' );
 delete_transient( 'plugin_hub_rate_limit' );

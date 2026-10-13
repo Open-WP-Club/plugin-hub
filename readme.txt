@@ -4,7 +4,7 @@ Tags: plugins, github, installer, plugin-manager, open-wp-club
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.5.0
+Stable tag: 1.5.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -76,6 +76,11 @@ Beta plugins are those with version numbers less than 1.0.0. You can toggle thei
 
 == Changelog ==
 
+= 1.5.1 =
+* Back off for five minutes when the catalog is unavailable, preserving the last known catalog.
+* Let explicit Refresh retry immediately and clear failure backoff after recovery.
+* Remove current catalog and retry transients during uninstall.
+
 = 1.5.0 =
 * Add up to three Partner/Champion supporter credits from the existing first-party catalog.
 * Enforce package placement rights and prioritize Champion recognition.
@@ -83,7 +88,7 @@ Beta plugins are those with version numbers less than 1.0.0. You can toggle thei
 * Allow users to persistently hide thanks, or disable them site-wide with PLUGIN_HUB_HIDE_SUPPORTERS.
 
 
-= 1.5.0 =
+= 1.5.1 =
 * Switched the catalog source from plugins.csv to catalog.json
 * Catalog entries are now filtered to type "plugin", so apps and websites in the catalog can no longer appear as installable plugins
 
