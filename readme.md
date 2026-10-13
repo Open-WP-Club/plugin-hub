@@ -42,13 +42,13 @@ Plugin Hub installs, updates, and manages WordPress plugins published by Open WP
 
 These companies help keep Open WP Club plugins free and maintained.
 
-[![Open WP Club supporters](https://openwpclub.com/sponsorship/supporters.png)](https://openwpclub.com/sponsors/)
+<a href="https://openwpclub.com/sponsors/"><picture><source media="(prefers-color-scheme: dark)" srcset="https://openwpclub.com/sponsorship/supporters-dark.png"><img src="https://openwpclub.com/sponsorship/supporters.png" alt="Open WP Club supporters" width="960"></picture></a>
 
 ## Sponsored placements
 
 Clearly labelled promotional campaigns, separate from our supporters.
 
-[![Open WP Club sponsored placements](https://openwpclub.com/sponsorship/repos/plugin-hub/campaigns.png)](https://openwpclub.com/advertise/)
+<a href="https://openwpclub.com/advertise/"><picture><source media="(prefers-color-scheme: dark)" srcset="https://openwpclub.com/sponsorship/repos/plugin-hub/campaigns-dark.png"><img src="https://openwpclub.com/sponsorship/repos/plugin-hub/campaigns.png" alt="Open WP Club sponsored placements" width="960"></picture></a>
 
 [Support our work](https://openwpclub.com/sponsors/) · [Discuss a campaign](https://openwpclub.com/advertise/)
 <!-- OPENWPCLUB_SPONSORS_END -->
@@ -72,7 +72,7 @@ For support or feature requests, please open an issue on the GitHub repository.
 
 ### Supporter recognition and privacy
 
-Plugin Hub receives up to three open-source supporter credits inside its existing
+Plugin Hub receives up to three Partner/Champion open-source supporter credits inside its existing
 Open WP Club catalog request to GitHub. The authoritative registry is maintained
 at https://openwpclub.com/sponsorship.json. Credits are cached locally and refresh
 with the catalog (normally daily). Embedded PNG logos do not contact advertisers

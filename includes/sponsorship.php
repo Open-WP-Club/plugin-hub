@@ -43,6 +43,11 @@ class Sponsorship {
 					return null;
 				}
 			}
+			// Legacy catalogs without a tier cannot grant company placement rights.
+			$entry['tier'] = $entry['tier'] ?? 'supporter';
+			if ( ! in_array( $entry['tier'], array( 'supporter', 'partner', 'champion' ), true ) ) {
+				return null;
+			}
 			$url = wp_parse_url( $entry['url'] );
 			if ( ! filter_var( $entry['url'], FILTER_VALIDATE_URL ) || ! is_array( $url ) || 'https' !== ( $url['scheme'] ?? '' ) || empty( $url['host'] ) || isset( $url['user'] ) || isset( $url['pass'] ) ) {
 				return null;
@@ -65,7 +70,7 @@ class Sponsorship {
 			if ( false === $png || substr( $png, 0, 8 ) !== "\x89PNG\r\n\x1a\n" ) {
 				return null;
 			}
-			$entries[] = array_intersect_key( $entry, array_flip( array( 'id', 'name', 'url', 'description', 'logoData', 'active', 'priority', 'startsAt', 'endsAt' ) ) );
+			$entries[] = array_intersect_key( $entry, array_flip( array( 'id', 'name', 'url', 'description', 'logoData', 'active', 'priority', 'startsAt', 'endsAt', 'tier' ) ) );
 		}
 		return $entries;
 	}
@@ -81,12 +86,21 @@ class Sponsorship {
 		$entries = array_filter(
 			$entries,
 			static function ( $entry ) use ( $now ) {
-				return $entry['active'] && strtotime( $entry['startsAt'] ) <= $now && ( null === $entry['endsAt'] || strtotime( $entry['endsAt'] ) > $now );
+				return in_array( $entry['tier'], array( 'partner', 'champion' ), true ) && $entry['active'] && strtotime( $entry['startsAt'] ) <= $now && ( null === $entry['endsAt'] || strtotime( $entry['endsAt'] ) > $now );
 			}
 		);
 		usort(
 			$entries,
 			static function ( $a, $b ) {
+				$ranks      = array(
+					'supporter' => 0,
+					'partner'   => 1,
+					'champion'  => 2,
+				);
+				$tier_order = $ranks[ $b['tier'] ] <=> $ranks[ $a['tier'] ];
+				if ( 0 !== $tier_order ) {
+					return $tier_order;
+				}
 				$order = $b['priority'] <=> $a['priority'];
 				return 0 !== $order ? $order : strcmp( $a['id'], $b['id'] );
 			}

@@ -8,7 +8,7 @@ use PluginHub\Sponsorship;
 final class SponsorshipTest extends TestCase {
 	private function entry( $id = 'test' ) {
 		return array(
-			'id' => $id, 'name' => 'Test', 'url' => 'https://example.com/',
+			'tier' => 'partner', 'id' => $id, 'name' => 'Test', 'url' => 'https://example.com/',
 			'description' => 'Open-source supporter', 'active' => true, 'priority' => 10,
 			'logoData' => 'data:image/png;base64,' . base64_encode( "\x89PNG\r\n\x1a\n" ),
 			'startsAt' => '2026-10-01T00:00:00Z', 'endsAt' => null,
@@ -40,4 +40,13 @@ final class SponsorshipTest extends TestCase {
 		$this->assertCount( 3, Sponsorship::active( Sponsorship::validate( $feed ), strtotime( '2026-10-15T00:00:00Z' ) ) );
 		$this->assertNotContains( 'advertiser', array_column( Sponsorship::validate( $feed ), 'id' ) );
 	}
+	public function test_supporter_and_legacy_catalogs_do_not_receive_company_placements() {
+		$basic = $this->entry( 'basic' ); $basic['tier'] = 'supporter';
+		$legacy = $this->entry( 'legacy' ); unset( $legacy['tier'] );
+		$champion = $this->entry( 'champion' ); $champion['tier'] = 'champion'; $champion['priority'] = 0;
+		$entries = Sponsorship::validate( $this->feed( array( $basic, $legacy, $this->entry( 'partner' ), $champion ) ) );
+		$active = Sponsorship::active( $entries, strtotime( '2026-10-15T00:00:00Z' ) );
+		$this->assertSame( array( 'champion', 'partner' ), array_column( $active, 'id' ) );
+	}
+
 }

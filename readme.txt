@@ -77,7 +77,8 @@ Beta plugins are those with version numbers less than 1.0.0. You can toggle thei
 == Changelog ==
 
 = 1.5.0 =
-* Add up to three open-source supporter credits from the existing first-party catalog.
+* Add up to three Partner/Champion supporter credits from the existing first-party catalog.
+* Enforce package placement rights and prioritize Champion recognition.
 * Embed logos locally without advertiser requests or impression tracking.
 * Allow users to persistently hide thanks, or disable them site-wide with PLUGIN_HUB_HIDE_SUPPORTERS.
 
@@ -137,4 +138,4 @@ Repository: https://github.com/Open-WP-Club/plugin-hub
 
 == Privacy Policy ==
 
-Plugin Hub does not collect or store any personal data. It only communicates with GitHub's public API to fetch plugin information.
+Plugin Hub contacts GitHub for the published Open WP Club catalog and plugin management. The catalog includes Partner/Champion supporter credits with bounded embedded PNG logos. Displaying credits does not contact advertisers, track impressions or send referral identifiers. Hide/show is stored locally as a user preference. Plugin management records local user IDs in its local activity log. No advertising telemetry is sent to Open WP Club or advertisers.
