@@ -6,7 +6,7 @@ Plugin Hub is a WordPress plugin that manages and installs plugins directly from
 
 ## Current Version
 
-- **Version**: 1.4.0
+- **Version**: 1.6.0
 - **WordPress Compatibility**: 6.0 - 7.1
 - **PHP Requirement**: 8.0+
 - **License**: GPL-2.0+
@@ -19,7 +19,8 @@ Plugin Hub is a WordPress plugin that manages and installs plugins directly from
 4. **Beta Support**: Toggle visibility of beta plugins (< 1.0.0)
 5. **Caching**: 24-hour cache with manual refresh option
 6. **Bulk Actions**: Perform actions on multiple plugins at once
-7. **Security**: Nonce verification, capability checks, proper escaping
+7. **MU Plugins**: Installs/updates Open-WP-Club/mu-plugin files into `wp-content/mu-plugins/` (`includes/class-mu-plugins.php`, `PluginHub\MU_Plugins`)
+8. **Security**: Nonce verification, capability checks, proper escaping
 
 ## Architecture
 

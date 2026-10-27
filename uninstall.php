@@ -26,6 +26,9 @@ delete_option( 'plugin_hub_last_known_repos' );
 delete_option( 'plugin_hub_supporters' );
 delete_metadata( 'user', 0, 'plugin_hub_hide_supporters', '', true );
 delete_option( 'plugin_hub_last_notification_hash' );
+delete_option( 'plugin_hub_mu_autoupdate' );
+delete_option( 'plugin_hub_mu_last_known' );
+delete_option( 'plugin_hub_mu_versions' );
 
 /**
  * Delete plugin transients.
@@ -35,6 +38,10 @@ delete_transient( 'plugin_hub_catalog_retry_v1' );
 delete_transient( 'plugin_hub_csv_cache' );
 delete_transient( 'plugin_hub_csv_cache_v2' );
 delete_transient( 'plugin_hub_rate_limit' );
+delete_transient( 'plugin_hub_mu_catalog_v1' );
+delete_transient( 'plugin_hub_mu_retry_v1' );
+delete_transient( 'plugin_hub_mu_fetch_retry_v1' );
+delete_transient( 'plugin_hub_mu_lock_v1' );
 wp_clear_scheduled_hook( 'plugin_hub_daily_update_check' );
 
 /**

@@ -29,6 +29,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<li><a href="?page=plugin-hub&amp;filter=inactive<?php echo $search_suffix; ?>" <?php echo 'inactive' === $filter ? 'class="current" aria-current="page"' : ''; ?>><?php esc_html_e( 'Inactive', 'plugin-hub' ); ?> <span class="count">(<?php echo absint( $counts['inactive'] ); ?>)</span></a> |</li>
 			<li><a href="?page=plugin-hub&amp;filter=update<?php echo $search_suffix; ?>" <?php echo 'update' === $filter ? 'class="current" aria-current="page"' : ''; ?>><?php esc_html_e( 'Updates', 'plugin-hub' ); ?> <span class="count">(<?php echo absint( $counts['update'] ); ?>)</span></a> |</li>
 			<li><a href="?page=plugin-hub&amp;filter=beta<?php echo $search_suffix; ?>" <?php echo 'beta' === $filter ? 'class="current" aria-current="page"' : ''; ?>><?php esc_html_e( 'Beta', 'plugin-hub' ); ?> <span class="count">(<?php echo absint( $counts['beta'] ); ?>)</span></a> |</li>
+			<li><a href="?page=plugin-hub&amp;filter=mu" <?php echo 'mu' === $filter ? 'class="current" aria-current="page"' : ''; ?>><?php esc_html_e( 'MU', 'plugin-hub' ); ?> <span class="count">(<?php echo absint( $counts['mu'] ); ?>)</span></a> |</li>
 			<li><a href="?page=plugin-hub&amp;filter=activity" <?php echo 'activity' === $filter ? 'class="current" aria-current="page"' : ''; ?>><?php esc_html_e( 'Activity', 'plugin-hub' ); ?></a></li>
 		</ul>
 	</nav>
@@ -66,6 +67,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 								'deactivate'  => __( 'Deactivate', 'plugin-hub' ),
 								'delete'      => __( 'Delete', 'plugin-hub' ),
 								'auto_update' => __( 'Auto-Update', 'plugin-hub' ),
+								'mu_install'     => __( 'MU Install', 'plugin-hub' ),
+								'mu_update'      => __( 'MU Update', 'plugin-hub' ),
+								'mu_auto_update' => __( 'MU Auto-Update', 'plugin-hub' ),
 							);
 							$action_classes = array(
 								'install'     => 'activity-install',
@@ -75,6 +79,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 								'deactivate'  => 'activity-deactivate',
 								'delete'      => 'activity-delete',
 								'auto_update' => 'activity-auto-update',
+								'mu_install'     => 'activity-install',
+								'mu_update'      => 'activity-update',
+								'mu_auto_update' => 'activity-auto-update',
 							);
 							foreach ( $activity_log as $entry ) :
 								$label = isset( $action_labels[ $entry['action'] ] ) ? $action_labels[ $entry['action'] ] : esc_html( $entry['action'] );
@@ -91,6 +98,107 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<?php endif; ?>
 					</tbody>
 				</table>
+				</div>
+
+				<?php elseif ( 'mu' === $filter ) : ?>
+
+				<!-- ===== MU plugins ===== -->
+				<div class="plugin-hub-mu">
+					<p class="description">
+						<?php
+						printf(
+							/* translators: %s: MU plugin directory path. */
+							esc_html__( 'Must-use plugins from the Open WP Club mu-plugin repository, managed in %s. Only files whose name matches a catalog file are updated.', 'plugin-hub' ),
+							'<code>' . esc_html( $mu_data['dir'] ) . '</code>'
+						);
+						?>
+					</p>
+
+					<?php if ( ! $mu_data['file_mods'] ) : ?>
+						<div class="notice notice-warning inline"><p><?php esc_html_e( 'File modifications are disabled on this site, so MU plugins cannot be installed or updated here.', 'plugin-hub' ); ?></p></div>
+					<?php elseif ( 'missing' === $mu_data['dir_state'] ) : ?>
+						<div class="notice notice-warning inline"><p><?php esc_html_e( 'The MU plugin directory does not exist yet. It will be created on the first install if the parent directory is writable.', 'plugin-hub' ); ?></p></div>
+					<?php elseif ( 'unwritable' === $mu_data['dir_state'] ) : ?>
+						<div class="notice notice-error inline"><p><?php esc_html_e( 'The MU plugin directory is not writable. Fix its permissions to install or update MU plugins.', 'plugin-hub' ); ?></p></div>
+					<?php endif; ?>
+
+					<?php if ( ! $mu_data['catalog_ok'] ) : ?>
+						<div class="notice notice-error inline"><p><?php esc_html_e( 'The MU plugin catalog could not be loaded from GitHub. Try again in a few minutes.', 'plugin-hub' ); ?></p></div>
+					<?php endif; ?>
+
+					<div class="plugin-hub-mu-toolbar">
+						<h2><?php esc_html_e( 'Installed MU plugins', 'plugin-hub' ); ?></h2>
+						<?php if ( $mu_data['update_count'] > 0 && $mu_data['file_mods'] ) : ?>
+							<button type="button" id="mu-update-all" class="button button-primary"><?php esc_html_e( 'Update all', 'plugin-hub' ); ?> (<?php echo absint( $mu_data['update_count'] ); ?>)</button>
+						<?php endif; ?>
+					</div>
+
+					<table class="wp-list-table widefat fixed striped plugin-hub-mu-table">
+						<thead>
+							<tr>
+								<th><?php esc_html_e( 'MU plugin', 'plugin-hub' ); ?></th>
+								<th><?php esc_html_e( 'Category', 'plugin-hub' ); ?></th>
+								<th><?php esc_html_e( 'Version', 'plugin-hub' ); ?></th>
+								<th><?php esc_html_e( 'New version', 'plugin-hub' ); ?></th>
+								<th><?php esc_html_e( 'Auto-update', 'plugin-hub' ); ?></th>
+								<th><?php esc_html_e( 'Action', 'plugin-hub' ); ?></th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php if ( empty( $mu_data['installed'] ) ) : ?>
+								<tr><td colspan="6"><?php esc_html_e( 'No catalog MU plugins are installed.', 'plugin-hub' ); ?></td></tr>
+							<?php endif; ?>
+							<?php foreach ( $mu_data['installed'] as $mu_row ) : ?>
+								<tr>
+									<td><strong><?php echo esc_html( $mu_row['name'] ); ?></strong><br><code><?php echo esc_html( $mu_row['file'] ); ?></code></td>
+									<td><?php echo esc_html( '' !== $mu_row['category'] ? $mu_row['category'] : __( 'shared', 'plugin-hub' ) ); ?></td>
+									<td><?php echo esc_html( $mu_row['local_version'] ); ?></td>
+									<td><?php echo $mu_row['update'] ? esc_html( $mu_row['remote_version'] ) : '&mdash;'; ?></td>
+									<td>
+										<input type="checkbox" class="mu-autoupdate-toggle" data-file="<?php echo esc_attr( $mu_row['file'] ); ?>" aria-label="<?php esc_attr_e( 'Auto-update', 'plugin-hub' ); ?>" <?php checked( $mu_row['autoupdate'] ); ?>>
+									</td>
+									<td>
+										<?php if ( $mu_row['update'] && $mu_data['file_mods'] ) : ?>
+											<button type="button" class="button mu-update-now" data-file="<?php echo esc_attr( $mu_row['file'] ); ?>"><?php esc_html_e( 'Update', 'plugin-hub' ); ?></button>
+										<?php else : ?>
+											<span class="description"><?php esc_html_e( 'Up to date', 'plugin-hub' ); ?></span>
+										<?php endif; ?>
+									</td>
+								</tr>
+							<?php endforeach; ?>
+						</tbody>
+					</table>
+
+					<div class="plugin-hub-mu-toolbar">
+						<h2><?php esc_html_e( 'Available MU plugins', 'plugin-hub' ); ?></h2>
+					</div>
+					<p class="description"><?php esc_html_e( 'Installed flat into the MU directory. Shared helpers (000-helpers.php) are installed automatically when a plugin needs them.', 'plugin-hub' ); ?></p>
+
+					<table class="wp-list-table widefat fixed striped plugin-hub-mu-table">
+						<thead>
+							<tr>
+								<th><?php esc_html_e( 'MU plugin', 'plugin-hub' ); ?></th>
+								<th><?php esc_html_e( 'Category', 'plugin-hub' ); ?></th>
+								<th><?php esc_html_e( 'Action', 'plugin-hub' ); ?></th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php if ( empty( $mu_data['available'] ) ) : ?>
+								<tr><td colspan="3"><?php esc_html_e( 'Every catalog MU plugin is already installed.', 'plugin-hub' ); ?></td></tr>
+							<?php endif; ?>
+							<?php foreach ( $mu_data['available'] as $mu_row ) : ?>
+								<tr>
+									<td><strong><?php echo esc_html( $mu_row['name'] ); ?></strong><?php if ( $mu_row['name'] !== $mu_row['file'] ) : ?><br><code><?php echo esc_html( $mu_row['file'] ); ?></code><?php endif; ?></td>
+									<td><?php echo esc_html( $mu_row['category'] ); ?></td>
+									<td>
+										<?php if ( $mu_data['file_mods'] ) : ?>
+											<button type="button" class="button mu-install-now" data-file="<?php echo esc_attr( $mu_row['file'] ); ?>"><?php esc_html_e( 'Install', 'plugin-hub' ); ?></button>
+										<?php endif; ?>
+									</td>
+								</tr>
+							<?php endforeach; ?>
+						</tbody>
+					</table>
 				</div>
 
 				<?php else : ?>

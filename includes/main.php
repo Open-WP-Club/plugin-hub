@@ -43,6 +43,15 @@ class Main {
 	private $api;
 
 	/**
+	 * The MU plugin manager instance.
+	 *
+	 * @since  1.6.0
+	 * @access private
+	 * @var    MU_Plugins
+	 */
+	private $mu_plugins;
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since 1.0.0
@@ -85,9 +94,12 @@ class Main {
 	private function load_dependencies() {
 		require_once plugin_dir_path( __DIR__ ) . 'includes/admin.php';
 		require_once plugin_dir_path( __DIR__ ) . 'includes/api.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-mu-plugins.php';
 
-		$this->api   = new API();
-		$this->admin = new Admin( $this->api );
+		$this->api        = new API();
+		$this->mu_plugins = new MU_Plugins( $this->api );
+		$this->api->set_mu_plugins( $this->mu_plugins );
+		$this->admin = new Admin( $this->api, $this->mu_plugins );
 	}
 
 	/**
@@ -124,6 +136,7 @@ class Main {
 		add_action( 'wp_ajax_save_github_token', array( $this->admin, 'ajax_save_github_token' ) );
 		add_action( 'wp_ajax_save_autoupdate_setting', array( $this->admin, 'ajax_save_autoupdate_setting' ) );
 		add_action( 'wp_ajax_clear_activity_log', array( $this->admin, 'ajax_clear_activity_log' ) );
+		$this->mu_plugins->register_hooks();
 		add_action( 'plugin_hub_daily_update_check', array( $this->api, 'do_auto_updates_and_notify' ) );
 	}
 }

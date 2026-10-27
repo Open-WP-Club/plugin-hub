@@ -42,7 +42,36 @@
 
 .plugin-hub-sidebar {
   display: grid;
-  gap: 12px;
+  gap: 16px;
+}
+
+.plugin-hub-sidebar .postbox {
+  min-width: 0;
+  margin: 0;
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
+}
+
+.plugin-hub-sidebar .postbox .hndle {
+  margin: 0;
+  padding: 12px 16px;
+  border-bottom: 1px solid #dcdcde;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.plugin-hub-sidebar .postbox .inside {
+  margin: 0;
+  padding: 12px 16px 16px;
+}
+
+.plugin-hub-main {
+  overflow-x: auto;
+}
+
+.plugin-hub-main .wp-list-table {
+  box-sizing: border-box;
+  max-width: 100%;
 }
 
 .plugin-hub-connection {
@@ -124,9 +153,14 @@
 .plugin-hub-toggle-row {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
+  gap: 10px;
   cursor: pointer;
+}
+
+.plugin-hub-toggle-row input[type="checkbox"] {
+  flex-shrink: 0;
+  order: -1;
+  margin: 2px 0 0;
 }
 
 .plugin-hub-toggle-row strong,
@@ -177,6 +211,10 @@
 .plugin-hub-toolbar::before,
 .plugin-hub-toolbar::after {
   display: none;
+}
+
+.plugin-hub-toolbar .alignright {
+  margin-left: auto;
 }
 
 .plugin-hub-toolbar--pagination {
@@ -384,6 +422,7 @@
   .plugin-hub-toolbar .alignleft,
   .plugin-hub-toolbar .alignright {
     float: none;
+    margin-left: 0;
   }
 
   .plugin-hub-bulk-actions select {
@@ -436,3 +475,21 @@
 }
 .plugin-hub-supporter img { object-fit: contain; background: #fff; border-radius: 4px; flex-shrink: 0; }
 .plugin-hub-supporter small { display: block; margin-top: 4px; color: #646970; }
+
+/* >>> Plugin Hub MU plugins (begin) */
+.plugin-hub-mu .plugin-hub-mu-toolbar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	margin: 18px 0 8px;
+}
+.plugin-hub-mu .plugin-hub-mu-toolbar h2 { margin: 0; }
+.plugin-hub-mu .notice.inline { margin: 12px 0; }
+.plugin-hub-mu-table code { font-size: 12px; word-break: break-all; }
+.plugin-hub-mu-table td { vertical-align: middle; }
+@media screen and (max-width: 782px) {
+	.plugin-hub-mu { overflow-x: auto; }
+	.plugin-hub-mu-table { min-width: 620px; }
+}
+/* <<< Plugin Hub MU plugins (end) */

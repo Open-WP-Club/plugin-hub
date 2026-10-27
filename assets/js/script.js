@@ -357,6 +357,59 @@ jQuery( document ).ready( function( $ ) {
 	} );
 
 	// =========================================================================
+	// MU plugins
+	// =========================================================================
+
+	$( '.mu-install-now' ).on( 'click', function() {
+		var button = $( this );
+		if ( isActionBusy( button ) || ! window.confirm( i18n.mu_install_confirm ) ) {
+			return;
+		}
+		performAction( 'install_mu_plugin', button, i18n.mu_installing, i18n.installed, i18n.install_failed, { file: button.data( 'file' ) } );
+	} );
+
+	$( '.mu-update-now' ).on( 'click', function() {
+		var button = $( this );
+		if ( isActionBusy( button ) ) {
+			return;
+		}
+		performAction( 'update_mu_plugin', button, i18n.updating, i18n.updated, i18n.update_failed, { file: button.data( 'file' ) } );
+	} );
+
+	$( '#mu-update-all' ).on( 'click', function() {
+		var button = $( this );
+		if ( isActionBusy( button ) || ! window.confirm( i18n.mu_update_all_confirm ) ) {
+			return;
+		}
+		performAction( 'update_all_mu_plugins', button, i18n.updating, i18n.updated, i18n.update_failed, {} );
+	} );
+
+	$( document ).on( 'change', '.mu-autoupdate-toggle', function() {
+		var checkbox = $( this );
+		var enabled  = checkbox.is( ':checked' );
+		setActionBusy( checkbox, true );
+
+		$.ajax( {
+			url:  pluginHubAjax.ajax_url,
+			type: 'POST',
+			data: { action: 'save_mu_autoupdate', nonce: pluginHubAjax.nonce, file: checkbox.data( 'file' ), enabled: enabled ? 1 : 0 },
+			success: function( response ) {
+				if ( ! response.success ) {
+					checkbox.prop( 'checked', ! enabled );
+					showMessage( response.data, 'error' );
+				}
+			},
+			error: function() {
+				checkbox.prop( 'checked', ! enabled );
+				showMessage( i18n.error_occurred, 'error' );
+			},
+			complete: function() {
+				setActionBusy( checkbox, false );
+			},
+		} );
+	} );
+
+	// =========================================================================
 	// GitHub token
 	// =========================================================================
 

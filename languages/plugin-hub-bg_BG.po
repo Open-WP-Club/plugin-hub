@@ -5,7 +5,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Plugin Hub 1.4.0\n"
+"Project-Id-Version: Plugin Hub 1.6.0\n"
 "Report-Msgid-Bugs-To: https://github.com/Open-WP-Club/plugin-hub/issues\n"
 "POT-Creation-Date: 2026-08-29 16:16+0300\n"
 "PO-Revision-Date: 2026-08-29 09:00+0300\n"
@@ -708,3 +708,244 @@ msgstr "Управление на плъгините: %s"
 
 #~ msgid "Unavailable"
 #~ msgstr "Недостъпен"
+
+#: includes/admin-display.php:32
+msgid "MU"
+msgstr "MU"
+
+#: includes/admin-display.php:70
+msgid "MU Install"
+msgstr "MU инсталиране"
+
+#: includes/admin-display.php:71
+msgid "MU Update"
+msgstr "MU обновяване"
+
+#: includes/admin-display.php:72
+msgid "MU Auto-Update"
+msgstr "MU автоматично обновяване"
+
+#: includes/admin-display.php:111
+msgid "Must-use plugins from the Open WP Club mu-plugin repository, managed in %s. Only files whose name matches a catalog file are updated."
+msgstr "Задължителни плъгини (MU) от хранилището mu-plugin на Open WP Club, управлявани в %s. Обновяват се само файлове, чието име съвпада с файл от каталога."
+
+#: includes/admin-display.php:118
+msgid "File modifications are disabled on this site, so MU plugins cannot be installed or updated here."
+msgstr "Промените по файловете са забранени на този сайт, затова MU плъгините не могат да се инсталират или обновяват оттук."
+
+#: includes/admin-display.php:120
+msgid "The MU plugin directory does not exist yet. It will be created on the first install if the parent directory is writable."
+msgstr "Директорията за MU плъгини още не съществува. Тя ще бъде създадена при първото инсталиране, ако родителската директория е записваема."
+
+#: includes/admin-display.php:122
+msgid "The MU plugin directory is not writable. Fix its permissions to install or update MU plugins."
+msgstr "Директорията за MU плъгини не е записваема. Коригирайте правата ѝ, за да инсталирате или обновявате MU плъгини."
+
+#: includes/admin-display.php:126
+msgid "The MU plugin catalog could not be loaded from GitHub. Try again in a few minutes."
+msgstr "Каталогът с MU плъгини не можа да бъде зареден от GitHub. Опитайте отново след няколко минути."
+
+#: includes/admin-display.php:130
+msgid "Installed MU plugins"
+msgstr "Инсталирани MU плъгини"
+
+#: includes/admin-display.php:132
+msgid "Update all"
+msgstr "Обнови всички"
+
+#: includes/admin-display.php:139
+msgid "MU plugin"
+msgstr "MU плъгин"
+
+#: includes/admin-display.php:140
+msgid "Category"
+msgstr "Категория"
+
+#: includes/admin-display.php:142
+msgid "New version"
+msgstr "Нова версия"
+
+#: includes/admin-display.php:149
+msgid "No catalog MU plugins are installed."
+msgstr "Няма инсталирани MU плъгини от каталога."
+
+#: includes/admin-display.php:154
+msgid "shared"
+msgstr "споделени"
+
+#: includes/admin-display.php:164
+msgid "Up to date"
+msgstr "Актуален"
+
+#: includes/admin-display.php:173
+msgid "Available MU plugins"
+msgstr "Налични MU плъгини"
+
+#: includes/admin-display.php:175
+msgid "Installed flat into the MU directory. Shared helpers (000-helpers.php) are installed automatically when a plugin needs them."
+msgstr "Инсталират се директно в MU директорията. Споделените помощни функции (000-helpers.php) се инсталират автоматично, когато плъгин се нуждае от тях."
+
+#: includes/admin-display.php:187
+msgid "Every catalog MU plugin is already installed."
+msgstr "Всички MU плъгини от каталога вече са инсталирани."
+
+#: includes/admin.php:152
+msgid "Update all MU plugins that have a newer version? Each replaced file is backed up with a .bak copy."
+msgstr "Да се обновят ли всички MU плъгини с по-нова версия? За всеки заменен файл се запазва резервно копие .bak."
+
+#: includes/admin.php:153
+msgid "Install this MU plugin? MU plugins load automatically on every request."
+msgstr "Да се инсталира ли този MU плъгин? MU плъгините се зареждат автоматично при всяка заявка."
+
+#: includes/class-mu-plugins.php:555
+msgid "Invalid MU plugin path."
+msgstr "Невалиден път на MU плъгин."
+
+#: includes/class-mu-plugins.php:570
+msgid "Could not download the MU plugin from GitHub."
+msgstr "MU плъгинът не можа да бъде изтеглен от GitHub."
+
+#: includes/class-mu-plugins.php:575
+msgid "GitHub did not return the MU plugin file."
+msgstr "GitHub не върна файла на MU плъгина."
+
+#: includes/class-mu-plugins.php:580
+msgid "The MU plugin changed on GitHub while downloading. Refresh the catalog and try again."
+msgstr "MU плъгинът е променен в GitHub по време на изтеглянето. Обновете каталога и опитайте отново."
+
+#: includes/class-mu-plugins.php:814
+msgid "The MU plugin directory does not exist and could not be created."
+msgstr "Директорията за MU плъгини не съществува и не можа да бъде създадена."
+
+#: includes/class-mu-plugins.php:818
+msgid "The directory %s is not writable."
+msgstr "Директорията %s не е записваема."
+
+#: includes/class-mu-plugins.php:822
+msgid "The file %s is not writable."
+msgstr "Файлът %s не е записваем."
+
+#: includes/class-mu-plugins.php:832
+msgid "Could not write the MU plugin file."
+msgstr "Файлът на MU плъгина не можа да бъде записан."
+
+#: includes/class-mu-plugins.php:838
+msgid "Could not back up the existing MU plugin file."
+msgstr "Не можа да се направи резервно копие на съществуващия файл на MU плъгина."
+
+#: includes/class-mu-plugins.php:843
+msgid "Could not replace the MU plugin file."
+msgstr "Файлът на MU плъгина не можа да бъде заменен."
+
+#: includes/class-mu-plugins.php:853
+msgid "The written MU plugin file did not match the download and was rolled back."
+msgstr "Записаният файл на MU плъгина не съвпада с изтегления и промяната беше върната."
+
+#: includes/class-mu-plugins.php:881
+msgid "The downloaded file is not a PHP file."
+msgstr "Изтегленият файл не е PHP файл."
+
+#: includes/class-mu-plugins.php:882
+msgid "The downloaded file has no Plugin Name header."
+msgstr "Изтегленият файл няма заглавие Plugin Name."
+
+#: includes/class-mu-plugins.php:883
+msgid "The downloaded file has no valid Version header."
+msgstr "Изтегленият файл няма валидно заглавие Version."
+
+#: includes/class-mu-plugins.php:884
+msgid "The downloaded file has a PHP syntax error and was not installed."
+msgstr "Изтегленият файл съдържа PHP синтактична грешка и не беше инсталиран."
+
+#: includes/class-mu-plugins.php:891
+msgid "The installed MU plugin is already at this version or newer."
+msgstr "Инсталираният MU плъгин вече е в тази версия или по-нова."
+
+#: includes/class-mu-plugins.php:921
+msgid "This MU plugin needs 000-helpers.php, which is not in the catalog."
+msgstr "Този MU плъгин се нуждае от 000-helpers.php, който не е в каталога."
+
+#: includes/class-mu-plugins.php:942
+msgid "Could not install the shared helpers: %s"
+msgstr "Споделените помощни функции не можаха да бъдат инсталирани: %s"
+
+#: includes/class-mu-plugins.php:959
+msgid "Another MU plugin operation is in progress. Try again in a moment."
+msgstr "В момента тече друга операция с MU плъгини. Опитайте отново след малко."
+
+#: includes/class-mu-plugins.php:978
+msgid "File modifications are disabled on this site."
+msgstr "Промените по файловете са забранени на този сайт."
+
+#: includes/class-mu-plugins.php:985
+msgid "The requested MU plugin is not in the trusted catalog."
+msgstr "Заявеният MU плъгин не е в доверения каталог."
+
+#: includes/class-mu-plugins.php:988
+msgid "This MU plugin is already installed."
+msgstr "Този MU плъгин вече е инсталиран."
+
+#: includes/class-mu-plugins.php:1037
+msgid "This MU plugin is not installed."
+msgstr "Този MU плъгин не е инсталиран."
+
+#: includes/class-mu-plugins.php:1040
+msgid "The installed MU plugin is already up to date."
+msgstr "Инсталираният MU плъгин вече е актуален."
+
+#: includes/class-mu-plugins.php:1170
+msgid "You do not have permission to manage MU plugins."
+msgstr "Нямате право да управлявате MU плъгини."
+
+#: includes/class-mu-plugins.php:1186
+msgid "Invalid MU plugin information."
+msgstr "Невалидна информация за MU плъгин."
+
+#: includes/class-mu-plugins.php:1204
+msgid "%1$s installed (version %2$s)."
+msgstr "%1$s е инсталиран (версия %2$s)."
+
+#: includes/class-mu-plugins.php:1220
+msgid "%1$s updated to version %2$s."
+msgstr "%1$s е обновен до версия %2$s."
+
+#: includes/class-mu-plugins.php:1238
+msgid "All MU plugins are up to date."
+msgstr "Всички MU плъгини са актуални."
+
+#: includes/class-mu-plugins.php:1242
+msgid "%d MU plugin(s) updated."
+msgstr "Обновени MU плъгини: %d."
+
+msgid "%1$s of %2$s"
+msgstr "%1$s от %2$s"
+
+msgid "All supporters and sponsorship options"
+msgstr "Всички поддръжници и възможности за спонсорство"
+
+msgid "Hide supporter thanks"
+msgstr "Скриване на благодарностите към поддръжниците"
+
+msgid "Show supporter thanks"
+msgstr "Показване на благодарностите към поддръжниците"
+
+msgid "Next page"
+msgstr "Следваща страница"
+
+msgid "Previous page"
+msgstr "Предишна страница"
+
+msgid "Open-source supporters"
+msgstr "Поддръжници на отворения код"
+
+msgid "Rollback only supports installing an older version. Use Update instead."
+msgstr "Връщането поддържа само инсталиране на по-стара версия. Използвайте Обновяване."
+
+msgid "Search Plugins"
+msgstr "Търсене на плъгини"
+
+msgid "Search results for \"%s\""
+msgstr "Резултати от търсенето за „%s“"
+
+msgid "Their support helps keep our plugins free and maintained."
+msgstr "Тяхната подкрепа помага плъгините ни да остават безплатни и поддържани."

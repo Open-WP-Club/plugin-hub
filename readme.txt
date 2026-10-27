@@ -4,7 +4,7 @@ Tags: plugins, github, installer, plugin-manager, open-wp-club
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.5.1
+Stable tag: 1.6.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -25,6 +25,7 @@ Plugin Hub provides a WordPress admin interface for browsing, installing, updati
 * **Plugin Filtering**: Filter plugins by status (active, inactive, updates available, beta)
 * **Cache Management**: Built-in caching for improved performance with manual refresh option
 * **Secure**: Implements WordPress security best practices with nonce verification and capability checks
+* **MU Plugins**: Install and update Open WP Club must-use plugins from the mu-plugin repository, with optional automatic updates
 * **Rollback**: Install a previous published GitHub release when needed
 * **Activity Log**: Review manual and automatic plugin-management actions
 * **GitHub Authentication**: Optionally use a token for higher API limits
@@ -75,6 +76,14 @@ Beta plugins are those with version numbers less than 1.0.0. You can toggle thei
 3. Settings panel with beta plugin toggle
 
 == Changelog ==
+
+= 1.6.0 =
+* Add an MU plugins tab to install and update Open WP Club must-use plugins from the mu-plugin repository.
+* Detect installed MU plugins by file name, compare Version headers and replace only the changed file with a backup and syntax check.
+* Install the shared 000-helpers.php automatically when an MU plugin needs it.
+* Add optional automatic updates for MU plugins to the daily update report.
+* Fix the admin layout: sidebar card spacing, the beta toggle and table overflow.
+* Complete Bulgarian translations.
 
 = 1.5.1 =
 * Back off for five minutes when the catalog is unavailable, preserving the last known catalog.

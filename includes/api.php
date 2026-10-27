@@ -54,6 +54,15 @@ class API {
 	private $installed_plugins_cache = null;
 
 	/**
+	 * MU plugin manager, set by Main so cron can include MU plugins.
+	 *
+	 * @since  1.6.0
+	 * @access private
+	 * @var    MU_Plugins|null
+	 */
+	private $mu_plugins = null;
+
+	/**
 	 * Expected extraction directory while installing a GitHub package.
 	 *
 	 * @since 1.4.0
@@ -98,10 +107,9 @@ class API {
 	 * Log a debug message if WP_DEBUG is enabled.
 	 *
 	 * @since  1.2.0
-	 * @access private
 	 * @param  string $message The message to log.
 	 */
-	private function log( $message ) {
+	public function log( $message ) {
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 			error_log( 'Plugin Hub: ' . $message ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Intentionally gated by WP_DEBUG.
 		}
@@ -179,10 +187,9 @@ class API {
 	 * Includes Authorization header when a token is configured.
 	 *
 	 * @since  1.3.0
-	 * @access private
 	 * @return array Headers array for wp_remote_get().
 	 */
-	private function get_github_headers() {
+	public function get_github_headers() {
 		$headers = array(
 			'Accept'               => 'application/vnd.github+json',
 			'User-Agent'           => 'Plugin-Hub/' . PLUGIN_HUB_VERSION . '; ' . home_url( '/' ),
@@ -201,10 +208,9 @@ class API {
 	 * Track GitHub API rate limit from response headers.
 	 *
 	 * @since  1.3.0
-	 * @access private
 	 * @param  array|\WP_Error $response The wp_remote_get() response.
 	 */
-	private function track_rate_limit( $response ) {
+	public function track_rate_limit( $response ) {
 		if ( is_wp_error( $response ) ) {
 			return;
 		}
@@ -224,6 +230,16 @@ class API {
 				5 * MINUTE_IN_SECONDS
 			);
 		}
+	}
+
+	/**
+	 * Attach the MU plugin manager used by the daily update check.
+	 *
+	 * @since 1.6.0
+	 * @param MU_Plugins $mu_plugins MU plugin manager.
+	 */
+	public function set_mu_plugins( MU_Plugins $mu_plugins ) {
+		$this->mu_plugins = $mu_plugins;
 	}
 
 	/**
@@ -1218,12 +1234,11 @@ class API {
 	 * Append an entry to the activity log.
 	 *
 	 * @since  1.3.0
-	 * @access private
-	 * @param  string $action  install|update|rollback|activate|deactivate|delete|auto_update.
-	 * @param  string $plugin  Plugin slug.
+	 * @param  string $action  install|update|rollback|activate|deactivate|delete|auto_update|mu_install|mu_update|mu_auto_update.
+	 * @param  string $plugin  Plugin slug (or MU plugin file name).
 	 * @param  string $version Version involved.
 	 */
-	private function log_activity( $action, $plugin, $version = '' ) {
+	public function log_activity( $action, $plugin, $version = '' ) {
 		$user = wp_get_current_user();
 		$log  = get_option( 'plugin_hub_activity_log', array() );
 		if ( ! is_array( $log ) ) {
@@ -1364,6 +1379,12 @@ class API {
 			} else {
 				$available[] = $repo['name'] . ' (v' . $installed_version . ' → v' . $repo['version'] . ')';
 			}
+		}
+
+		if ( $this->mu_plugins ) {
+			$mu_summary = $this->mu_plugins->run_auto_updates();
+			$updated    = array_merge( $updated, $mu_summary['updated'] );
+			$available  = array_merge( $available, $mu_summary['available'] );
 		}
 
 		if ( empty( $updated ) && empty( $available ) ) {

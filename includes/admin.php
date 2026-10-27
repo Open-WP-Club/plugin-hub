@@ -34,13 +34,24 @@ class Admin {
 	private $api;
 
 	/**
+	 * The MU plugin manager instance.
+	 *
+	 * @since  1.6.0
+	 * @access private
+	 * @var    MU_Plugins
+	 */
+	private $mu;
+
+	/**
 	 * Initialize the class.
 	 *
 	 * @since 1.2.0
-	 * @param API|null $api Optional API instance for dependency injection.
+	 * @param API|null        $api Optional API instance for dependency injection.
+	 * @param MU_Plugins|null $mu  Optional MU plugin manager for dependency injection.
 	 */
-	public function __construct( $api = null ) {
+	public function __construct( $api = null, $mu = null ) {
 		$this->api = $api ?? new API();
+		$this->mu  = $mu ?? new MU_Plugins( $this->api );
 	}
 
 	/**
@@ -134,6 +145,12 @@ class Admin {
 					'clear_log_confirm'    => __( 'Clear the entire activity log?', 'plugin-hub' ),
 					'clearing'             => __( 'Clearing…', 'plugin-hub' ),
 					'clear_log'            => __( 'Clear Log', 'plugin-hub' ),
+					'mu_installing'        => __( 'Installing...', 'plugin-hub' ),
+					'mu_install'           => __( 'Install', 'plugin-hub' ),
+					'mu_update'            => __( 'Update', 'plugin-hub' ),
+					'mu_update_all'        => __( 'Update all', 'plugin-hub' ),
+					'mu_update_all_confirm' => __( 'Update all MU plugins that have a newer version? Each replaced file is backed up with a .bak copy.', 'plugin-hub' ),
+					'mu_install_confirm'   => __( 'Install this MU plugin? MU plugins load automatically on every request.', 'plugin-hub' ),
 				),
 			)
 		);
@@ -155,6 +172,7 @@ class Admin {
 			}
 
 			$this->api->refresh_csv_cache();
+			$this->mu->refresh_catalog();
 			wp_safe_redirect( admin_url( 'plugins.php?page=plugin-hub&cache_refreshed=1' ) );
 			exit;
 		}
@@ -187,11 +205,12 @@ class Admin {
 		}
 
 		$api   = $this->api;
+		$mu    = $this->mu;
 		$repos = $api->get_org_repos();
 
 		// This is a read-only view filter and does not require a nonce.
 		$filter          = isset( $_GET['filter'] ) ? sanitize_text_field( wp_unslash( $_GET['filter'] ) ) : 'all'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$allowed_filters = array( 'all', 'active', 'inactive', 'update', 'beta', 'activity' );
+		$allowed_filters = array( 'all', 'active', 'inactive', 'update', 'beta', 'mu', 'activity' );
 		$filter          = in_array( $filter, $allowed_filters, true ) ? $filter : 'all';
 		$counts          = $this->get_plugin_counts( $repos );
 
@@ -199,7 +218,7 @@ class Admin {
 		$search = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 		$per_page       = 25;
-		$filtered_repos = 'activity' === $filter ? array() : $this->get_filtered_sorted_repos( $repos, $filter, $search );
+		$filtered_repos = in_array( $filter, array( 'activity', 'mu' ), true ) ? array() : $this->get_filtered_sorted_repos( $repos, $filter, $search );
 		$total_items    = count( $filtered_repos );
 		$total_pages    = max( 1, (int) ceil( $total_items / $per_page ) );
 
@@ -209,6 +228,7 @@ class Admin {
 
 		$repos = array_slice( $filtered_repos, ( $paged - 1 ) * $per_page, $per_page );
 
+		$mu_data                  = 'mu' === $filter ? $mu->get_view_data() : array();
 		$autoupdate_plugins       = get_option( 'plugin_hub_autoupdate_plugins', array() );
 		$activity_log             = $api->get_activity_log();
 		$github_token_from_config = is_github_token_managed_by_config();
@@ -236,6 +256,7 @@ class Admin {
 			'inactive' => 0,
 			'update'   => 0,
 			'beta'     => 0,
+			'mu'       => $this->mu->count_installed(),
 		);
 
 		$show_beta = get_option( 'plugin_hub_show_beta', false );
