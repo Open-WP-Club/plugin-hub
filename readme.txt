@@ -4,7 +4,7 @@ Tags: plugins, github, installer, plugin-manager, open-wp-club
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.6.1
+Stable tag: 1.7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -76,6 +76,13 @@ Beta plugins are those with version numbers less than 1.0.0. You can toggle thei
 3. Settings panel with beta plugin toggle
 
 == Changelog ==
+
+= 1.7.0 =
+* Add a Rollback button for MU plugins. The previous version of an updated file is kept in the uploads folder instead of next to the plugin.
+* Switch auto-update off for an MU plugin after a rollback.
+* Show the version and WordPress/PHP requirements of available MU plugins.
+* Warn before installing MU plugins that they load on every request.
+* Add CI that runs PHPUnit and PHPStan, and many more tests for the catalog, install, update, rollback and cron flows.
 
 = 1.6.1 =
 * Show a description for every MU plugin in the available list.

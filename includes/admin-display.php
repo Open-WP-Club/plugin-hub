@@ -69,6 +69,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 								'auto_update' => __( 'Auto-Update', 'plugin-hub' ),
 								'mu_install'     => __( 'MU Install', 'plugin-hub' ),
 								'mu_update'      => __( 'MU Update', 'plugin-hub' ),
+								'mu_rollback'    => __( 'MU Rollback', 'plugin-hub' ),
 								'mu_auto_update' => __( 'MU Auto-Update', 'plugin-hub' ),
 							);
 							$action_classes = array(
@@ -81,6 +82,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 								'auto_update' => 'activity-auto-update',
 								'mu_install'     => 'activity-install',
 								'mu_update'      => 'activity-update',
+								'mu_rollback'    => 'activity-rollback',
 								'mu_auto_update' => 'activity-auto-update',
 							);
 							foreach ( $activity_log as $entry ) :
@@ -163,6 +165,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 										<?php else : ?>
 											<span class="description"><?php esc_html_e( 'Up to date', 'plugin-hub' ); ?></span>
 										<?php endif; ?>
+										<?php if ( ! empty( $mu_row['has_backup'] ) && $mu_data['file_mods'] ) : ?>
+											<button type="button" class="button mu-rollback-now" data-file="<?php echo esc_attr( $mu_row['file'] ); ?>"><?php esc_html_e( 'Rollback', 'plugin-hub' ); ?></button>
+										<?php endif; ?>
 									</td>
 								</tr>
 							<?php endforeach; ?>
@@ -172,6 +177,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<div class="plugin-hub-mu-toolbar">
 						<h2><?php esc_html_e( 'Available MU plugins', 'plugin-hub' ); ?></h2>
 					</div>
+					<?php if ( ! empty( $mu_data['multisite'] ) ) : ?>
+						<div class="notice notice-info inline"><p><?php esc_html_e( 'This is a multisite network: MU plugins are shared by every site, and only network administrators can change them.', 'plugin-hub' ); ?></p></div>
+					<?php endif; ?>
+					<div class="notice notice-warning inline"><p><?php esc_html_e( 'MU plugins load automatically on every request and cannot be deactivated from the admin. Some change core behaviour, for example blocking plugin installs, comments, search or email. Read the description before installing and test on a staging site first.', 'plugin-hub' ); ?></p></div>
 					<p class="description"><?php esc_html_e( 'Installed flat into the MU directory. Shared helpers (000-helpers.php) are installed automatically when a plugin needs them.', 'plugin-hub' ); ?></p>
 
 					<?php $mu_categories = array_values( array_unique( array_filter( array_column( $mu_data['available'], 'category' ) ) ) ); ?>
@@ -193,18 +202,36 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<tr>
 								<th><?php esc_html_e( 'MU plugin', 'plugin-hub' ); ?></th>
 								<th><?php esc_html_e( 'Category', 'plugin-hub' ); ?></th>
+								<th><?php esc_html_e( 'Version', 'plugin-hub' ); ?></th>
 								<th><?php esc_html_e( 'Action', 'plugin-hub' ); ?></th>
 							</tr>
 						</thead>
 						<tbody>
 							<?php if ( empty( $mu_data['available'] ) ) : ?>
-								<tr><td colspan="3"><?php esc_html_e( 'Every catalog MU plugin is already installed.', 'plugin-hub' ); ?></td></tr>
+								<tr><td colspan="4"><?php esc_html_e( 'Every catalog MU plugin is already installed.', 'plugin-hub' ); ?></td></tr>
 							<?php endif; ?>
-							<tr class="plugin-hub-mu-no-results" hidden><td colspan="3"><?php esc_html_e( 'No MU plugins match your filters.', 'plugin-hub' ); ?></td></tr>
+							<tr class="plugin-hub-mu-no-results" hidden><td colspan="4"><?php esc_html_e( 'No MU plugins match your filters.', 'plugin-hub' ); ?></td></tr>
 							<?php foreach ( $mu_data['available'] as $mu_row ) : ?>
 								<tr class="plugin-hub-mu-row" data-category="<?php echo esc_attr( $mu_row['category'] ); ?>">
 									<td><strong><?php echo esc_html( $mu_row['name'] ); ?></strong><?php if ( $mu_row['name'] !== $mu_row['file'] ) : ?><br><code><?php echo esc_html( $mu_row['file'] ); ?></code><?php endif; ?><?php if ( '' !== $mu_row['description'] ) : ?><p class="description plugin-hub-mu-description"><?php echo esc_html( $mu_row['description'] ); ?></p><?php endif; ?></td>
 									<td><?php echo esc_html( $mu_row['category'] ); ?></td>
+									<td>
+										<?php echo esc_html( $mu_row['version'] ); ?>
+										<?php if ( '' !== $mu_row['wp'] || '' !== $mu_row['php'] ) : ?>
+											<br><span class="description"><?php
+											$mu_requirements = array();
+											if ( '' !== $mu_row['wp'] ) {
+												/* translators: %s: WordPress version. */
+												$mu_requirements[] = sprintf( __( 'WP %s', 'plugin-hub' ), $mu_row['wp'] );
+											}
+											if ( '' !== $mu_row['php'] ) {
+												/* translators: %s: PHP version. */
+												$mu_requirements[] = sprintf( __( 'PHP %s', 'plugin-hub' ), $mu_row['php'] );
+											}
+											echo esc_html( implode( ' · ', $mu_requirements ) );
+											?></span>
+										<?php endif; ?>
+									</td>
 									<td>
 										<?php if ( $mu_data['file_mods'] ) : ?>
 											<button type="button" class="button mu-install-now" data-file="<?php echo esc_attr( $mu_row['file'] ); ?>"><?php esc_html_e( 'Install', 'plugin-hub' ); ?></button>

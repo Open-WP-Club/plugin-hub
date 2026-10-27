@@ -6,33 +6,7 @@
  */
 
 namespace PluginHub {
-	if ( ! function_exists( __NAMESPACE__ . '\\untrailingslashit' ) ) {
-		function untrailingslashit( $value ) {
-			return rtrim( $value, '/\\' );
-		}
-	}
-	if ( ! function_exists( __NAMESPACE__ . '\\wp_mkdir_p' ) ) {
-		function wp_mkdir_p( $dir ) {
-			return is_dir( $dir ) || mkdir( $dir, 0755, true );
-		}
-		function wp_is_writable( $path ) {
-			return is_writable( $path );
-		}
-		function wp_delete_file( $file ) {
-			if ( is_file( $file ) ) {
-				unlink( $file );
-			}
-		}
-		function wp_generate_password( $length = 12, $special = true ) {
-			return substr( md5( uniqid( '', true ) ), 0, $length );
-		}
-		function wp_strip_all_tags( $text ) {
-			return trim( strip_tags( $text ) );
-		}
-		function __( $text, $domain = 'default' ) {
-			return $text;
-		}
-	}
+	require_once __DIR__ . '/stubs.php';
 }
 
 namespace PluginHub\Tests {
@@ -214,10 +188,16 @@ namespace PluginHub\Tests {
 					'404-logger.php'         => array(
 						'name'        => '404 Logger',
 						'description' => 'Logs 404 errors.',
+						'version'     => '1.1.0',
+						'wp'          => '6.6+',
+						'php'         => '7.4+',
 					),
 					'admin-bar-cleanup.php' => array(
 						'name'        => 'Admin Bar Cleanup',
 						'description' => 'Removes the logo.',
+						'version'     => '1.0.0',
+						'wp'          => '6.6+',
+						'php'         => '7.4+',
 					),
 				),
 				$result

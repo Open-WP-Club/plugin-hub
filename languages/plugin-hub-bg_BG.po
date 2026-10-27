@@ -5,7 +5,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Plugin Hub 1.6.1\n"
+"Project-Id-Version: Plugin Hub 1.7.0\n"
 "Report-Msgid-Bugs-To: https://github.com/Open-WP-Club/plugin-hub/issues\n"
 "POT-Creation-Date: 2026-08-29 16:16+0300\n"
 "PO-Revision-Date: 2026-08-29 09:00+0300\n"
@@ -789,10 +789,6 @@ msgstr "Инсталират се директно в MU директорият�
 msgid "Every catalog MU plugin is already installed."
 msgstr "Всички MU плъгини от каталога вече са инсталирани."
 
-#: includes/admin.php:152
-msgid "Update all MU plugins that have a newer version? Each replaced file is backed up with a .bak copy."
-msgstr "Да се обновят ли всички MU плъгини с по-нова версия? За всеки заменен файл се запазва резервно копие .bak."
-
 #: includes/admin.php:153
 msgid "Install this MU plugin? MU plugins load automatically on every request."
 msgstr "Да се инсталира ли този MU плъгин? MU плъгините се зареждат автоматично при всяка заявка."
@@ -964,3 +960,36 @@ msgstr "Търсене на MU плъгини…"
 
 msgid "No MU plugins match your filters."
 msgstr "Няма MU плъгини, отговарящи на филтрите."
+
+msgid "MU plugins load automatically on every request and cannot be deactivated from the admin. Some change core behaviour, for example blocking plugin installs, comments, search or email. Read the description before installing and test on a staging site first."
+msgstr "MU плъгините се зареждат автоматично при всяка заявка и не могат да се деактивират от админа. Някои променят поведението на WordPress, например блокират инсталиране на плъгини, коментари, търсене или имейли. Прочетете описанието преди инсталиране и първо тествайте на staging сайт."
+
+msgid "WP %s"
+msgstr "WP %s"
+
+msgid "PHP %s"
+msgstr "PHP %s"
+
+msgid "MU Rollback"
+msgstr "MU връщане на версия"
+
+msgid "Restoring..."
+msgstr "Възстановяване..."
+
+msgid "Restored"
+msgstr "Възстановено"
+
+msgid "Restore the previous version of this MU plugin? Automatic updates will be switched off for it."
+msgstr "Да се възстанови ли предишната версия на този MU плъгин? Автоматичните обновявания за него ще бъдат изключени."
+
+msgid "%1$s restored to version %2$s. Automatic updates were switched off for it."
+msgstr "%1$s е върнат до версия %2$s. Автоматичните обновявания за него са изключени."
+
+msgid "There is no previous version to restore."
+msgstr "Няма предишна версия за възстановяване."
+
+msgid "The stored previous version is not a valid MU plugin."
+msgstr "Запазената предишна версия не е валиден MU плъгин."
+
+msgid "Update all MU plugins that have a newer version? The previous version of each replaced file is kept so you can roll it back."
+msgstr "Да се обновят ли всички MU плъгини с по-нова версия? Предишната версия на всеки заменен файл се пази, за да можете да я върнете."

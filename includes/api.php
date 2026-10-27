@@ -1234,7 +1234,7 @@ class API {
 	 * Append an entry to the activity log.
 	 *
 	 * @since  1.3.0
-	 * @param  string $action  install|update|rollback|activate|deactivate|delete|auto_update|mu_install|mu_update|mu_auto_update.
+	 * @param  string $action  install|update|rollback|activate|deactivate|delete|auto_update|mu_install|mu_update|mu_rollback|mu_auto_update.
 	 * @param  string $plugin  Plugin slug (or MU plugin file name).
 	 * @param  string $version Version involved.
 	 */
@@ -1356,6 +1356,7 @@ class API {
 		$autoupdate_list = get_option( 'plugin_hub_autoupdate_plugins', array() );
 		$updated         = array();
 		$available       = array();
+		$failed          = array();
 
 		foreach ( $repos as $repo ) {
 			if ( ! $this->is_plugin_installed( $repo['name'] ) ) {
@@ -1375,6 +1376,7 @@ class API {
 					$updated[] = $repo['name'] . ' → v' . $repo['version'];
 				} else {
 					$this->log( 'Automatic update failed for ' . $repo['name'] . ' v' . $repo['version'] . '.' );
+					$failed[] = $repo['name'] . ' (v' . $installed_version . ' → v' . $repo['version'] . ')';
 				}
 			} else {
 				$available[] = $repo['name'] . ' (v' . $installed_version . ' → v' . $repo['version'] . ')';
@@ -1385,9 +1387,10 @@ class API {
 			$mu_summary = $this->mu_plugins->run_auto_updates();
 			$updated    = array_merge( $updated, $mu_summary['updated'] );
 			$available  = array_merge( $available, $mu_summary['available'] );
+			$failed     = array_merge( $failed, $mu_summary['failed'] ?? array() );
 		}
 
-		if ( empty( $updated ) && empty( $available ) ) {
+		if ( empty( $updated ) && empty( $available ) && empty( $failed ) ) {
 			delete_option( 'plugin_hub_last_notification_hash' );
 			return;
 		}
@@ -1398,6 +1401,7 @@ class API {
 				array(
 					'updated'   => $updated,
 					'available' => $available,
+					'failed'    => $failed,
 				)
 			)
 		);
@@ -1406,7 +1410,7 @@ class API {
 			return;
 		}
 
-		if ( $this->send_update_notification( $updated, $available ) ) {
+		if ( $this->send_update_notification( $updated, $available, $failed ) ) {
 			update_option( 'plugin_hub_last_notification_hash', $notification_hash, false );
 		}
 	}
@@ -1418,9 +1422,10 @@ class API {
 	 * @access private
 	 * @param  array $updated   Plugins that were auto-updated.
 	 * @param  array $available Plugins with updates pending manual action.
+	 * @param  array $failed    Plugins whose automatic update failed.
 	 * @return bool Whether WordPress accepted the message for delivery.
 	 */
-	private function send_update_notification( $updated, $available ) {
+	private function send_update_notification( $updated, $available, $failed = array() ) {
 		$admin_email = get_option( 'admin_email' );
 		$site_name   = get_bloginfo( 'name' );
 		$hub_url     = admin_url( 'plugins.php?page=plugin-hub' );
@@ -1433,6 +1438,14 @@ class API {
 		if ( ! empty( $updated ) ) {
 			$body .= __( 'The following plugins were automatically updated:', 'plugin-hub' ) . "\n";
 			foreach ( $updated as $item ) {
+				$body .= '  - ' . $item . "\n";
+			}
+			$body .= "\n";
+		}
+
+		if ( ! empty( $failed ) ) {
+			$body .= __( 'The automatic update of the following plugins failed. Update them manually from Plugin Hub:', 'plugin-hub' ) . "\n";
+			foreach ( $failed as $item ) {
 				$body .= '  - ' . $item . "\n";
 			}
 			$body .= "\n";

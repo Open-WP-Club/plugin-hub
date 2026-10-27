@@ -1,17 +1,7 @@
 <?php
 /** Tests the catalog-to-supporter boundary without adding an HTTP client. @package PluginHub */
 namespace PluginHub {
-	function get_option( $key, $default = false ) { return $GLOBALS['hub_test_options'][ $key ] ?? $default; }
-	function update_option( $key, $value, $autoload = null ) { $GLOBALS['hub_test_options'][ $key ] = $value; return true; }
-	function get_transient( $key ) { return $GLOBALS['hub_test_transients'][ $key ] ?? false; }
-	function delete_transient( $key ) { unset( $GLOBALS['hub_test_transients'][ $key ] ); return true; }
-	function set_transient( $key, $value, $expiration = 0 ) { $GLOBALS['hub_test_transients'][ $key ] = $value; return true; }
-	function wp_safe_remote_get( $url, $args ) { $GLOBALS['hub_test_requests'][] = $url; return $GLOBALS['hub_test_response']; }
-	function wp_remote_retrieve_response_code( $response ) { return $response['status']; }
-	function wp_remote_retrieve_body( $response ) { return $response['body']; }
-	function sanitize_text_field( $value ) { return trim( strip_tags( $value ) ); }
-	function sanitize_textarea_field( $value ) { return trim( strip_tags( $value ) ); }
-	function esc_url_raw( $value, $protocols = null ) { return $value; }
+	require_once __DIR__ . '/stubs.php';
 }
 
 namespace PluginHub\Tests {

@@ -101,6 +101,18 @@ ajax_toggle_beta_plugins()    // Toggle beta visibility
 - Uses `admin-display.php` for UI rendering
 - Passes `$api`, `$repos`, `$filter`, `$counts` variables
 
+### PluginHub\MU_Plugins (`includes/class-mu-plugins.php`)
+**Purpose**: Install, update and roll back Open WP Club must-use plugins from `Open-WP-Club/mu-plugin` (branch `main`).
+
+- **Catalog**: one git trees API call (`recursive=1`), cached for a day with a 5 minute failure back-off, a rate-limit aware delay and a last-known option. Only `mu-plugins/<category>/<file>.php` and `000-helpers.php` are accepted.
+- **Descriptions**: parsed from the generated table in the repository `README.MD` (one cached request, last-known fallback). Gives description, version and WP/PHP requirements.
+- **"Ours"**: a file in `WPMU_PLUGIN_DIR` (up to 3 levels deep) whose basename is in the catalog. Updates compare git blob SHAs first, then the `Version` header, and never downgrade.
+- **Writing**: download is verified against the tree SHA, must pass `check_source()` (PHP tag, headers, `token_get_all` syntax), then is written atomically (temp file + rename) and read back. The replaced file moves to `uploads/plugin-hub-mu-backups/<file>.prev` for `rollback()`.
+- **Helpers**: `000-helpers.php` is installed or updated first when a file calls `mu_*` functions it does not declare. `000-autoloader.php` is never installed.
+- **AJAX**: `install_mu_plugin`, `update_mu_plugin`, `update_all_mu_plugins`, `rollback_mu_plugin`, `save_mu_autoupdate`. All check the nonce and a capability, and writes also check `wp_is_file_mod_allowed()`. Operations share a 60 second lock.
+- **Cron**: `API::do_auto_updates_and_notify` calls `run_auto_updates()`. Auto-update is opt-in per file and is switched off for a file after a rollback.
+- **Tests**: `tests/MuPluginsTest.php` (pure logic) and `tests/MuPluginsNetworkTest.php` (HTTP and filesystem flows with stubs from `tests/stubs.php`).
+
 ### PluginHub\API
 **Purpose**: GitHub integration and plugin management
 
@@ -400,8 +412,8 @@ do_action( 'plugin_hub_after_cache_refresh', $repos );
 - **GitHub API**: Release data
   - No authentication (public repos only)
   - Rate limit: 60/hour
-- **GitHub Raw Content**: CSV file
-  - No rate limit
+- **GitHub Raw Content**: `catalog.json` (plugin catalog), and for MU plugins the plugin files and `README.MD` of `mu-plugin`
+  - No API rate limit
   - Public repository required
 
 ### JavaScript Dependencies

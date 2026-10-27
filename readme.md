@@ -12,7 +12,7 @@ Plugin Hub installs, updates, and manages WordPress plugins published by Open WP
 - Refresh plugin list manually
 - Roll back to a previous published release
 - Opt selected plugins into daily automatic updates
-- Install and update Open WP Club must-use (MU) plugins from the mu-plugin repository, with optional automatic updates
+- Install and update Open WP Club must-use (MU) plugins from the mu-plugin repository, with descriptions, category filters, rollback and optional automatic updates
 - Review an activity log of plugin-management actions
 - Use an optional GitHub token for higher API rate limits
 - Resolve standard versioned release ZIPs directly, without spending GitHub REST API quota

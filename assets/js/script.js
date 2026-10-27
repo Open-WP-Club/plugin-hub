@@ -397,6 +397,14 @@ jQuery( document ).ready( function( $ ) {
 		performAction( 'update_mu_plugin', button, i18n.updating, i18n.updated, i18n.update_failed, { file: button.data( 'file' ) } );
 	} );
 
+	$( '.mu-rollback-now' ).on( 'click', function() {
+		var button = $( this );
+		if ( isActionBusy( button ) || ! window.confirm( i18n.mu_rollback_confirm ) ) {
+			return;
+		}
+		performAction( 'rollback_mu_plugin', button, i18n.mu_rolling_back, i18n.mu_restored, i18n.update_failed, { file: button.data( 'file' ) } );
+	} );
+
 	$( '#mu-update-all' ).on( 'click', function() {
 		var button = $( this );
 		if ( isActionBusy( button ) || ! window.confirm( i18n.mu_update_all_confirm ) ) {

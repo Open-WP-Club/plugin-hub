@@ -148,8 +148,12 @@ class Admin {
 					'mu_installing'        => __( 'Installing...', 'plugin-hub' ),
 					'mu_install'           => __( 'Install', 'plugin-hub' ),
 					'mu_update'            => __( 'Update', 'plugin-hub' ),
+					'mu_rollback'          => __( 'Rollback', 'plugin-hub' ),
+					'mu_rolling_back'      => __( 'Restoring...', 'plugin-hub' ),
+					'mu_rollback_confirm'  => __( 'Restore the previous version of this MU plugin? Automatic updates will be switched off for it.', 'plugin-hub' ),
+					'mu_restored'          => __( 'Restored', 'plugin-hub' ),
 					'mu_update_all'        => __( 'Update all', 'plugin-hub' ),
-					'mu_update_all_confirm' => __( 'Update all MU plugins that have a newer version? Each replaced file is backed up with a .bak copy.', 'plugin-hub' ),
+					'mu_update_all_confirm' => __( 'Update all MU plugins that have a newer version? The previous version of each replaced file is kept so you can roll it back.', 'plugin-hub' ),
 					'mu_install_confirm'   => __( 'Install this MU plugin? MU plugins load automatically on every request.', 'plugin-hub' ),
 				),
 			)

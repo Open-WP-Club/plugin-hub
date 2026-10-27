@@ -768,10 +768,6 @@ msgstr ""
 msgid "Every catalog MU plugin is already installed."
 msgstr ""
 
-#: includes/admin.php:152
-msgid "Update all MU plugins that have a newer version? Each replaced file is backed up with a .bak copy."
-msgstr ""
-
 #: includes/admin.php:153
 msgid "Install this MU plugin? MU plugins load automatically on every request."
 msgstr ""
@@ -948,4 +944,37 @@ msgid "Search MU plugins…"
 msgstr ""
 
 msgid "No MU plugins match your filters."
+msgstr ""
+
+msgid "MU plugins load automatically on every request and cannot be deactivated from the admin. Some change core behaviour, for example blocking plugin installs, comments, search or email. Read the description before installing and test on a staging site first."
+msgstr ""
+
+msgid "WP %s"
+msgstr ""
+
+msgid "PHP %s"
+msgstr ""
+
+msgid "MU Rollback"
+msgstr ""
+
+msgid "Restoring..."
+msgstr ""
+
+msgid "Restored"
+msgstr ""
+
+msgid "Restore the previous version of this MU plugin? Automatic updates will be switched off for it."
+msgstr ""
+
+msgid "%1$s restored to version %2$s. Automatic updates were switched off for it."
+msgstr ""
+
+msgid "There is no previous version to restore."
+msgstr ""
+
+msgid "The stored previous version is not a valid MU plugin."
+msgstr ""
+
+msgid "Update all MU plugins that have a newer version? The previous version of each replaced file is kept so you can roll it back."
 msgstr ""

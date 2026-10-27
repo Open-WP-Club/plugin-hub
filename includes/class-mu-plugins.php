@@ -129,6 +129,7 @@ class MU_Plugins {
 	public function register_hooks() {
 		add_action( 'wp_ajax_install_mu_plugin', array( $this, 'ajax_install' ) );
 		add_action( 'wp_ajax_update_mu_plugin', array( $this, 'ajax_update' ) );
+		add_action( 'wp_ajax_rollback_mu_plugin', array( $this, 'ajax_rollback' ) );
 		add_action( 'wp_ajax_update_all_mu_plugins', array( $this, 'ajax_update_all' ) );
 		add_action( 'wp_ajax_save_mu_autoupdate', array( $this, 'ajax_save_autoupdate' ) );
 	}
@@ -620,7 +621,7 @@ class MU_Plugins {
 
 		$result = array();
 		foreach ( preg_split( '/\R/', substr( $markdown, $start, $end - $start ) ) as $line ) {
-			if ( ! preg_match( '/^\|\s*\[([^\]]+)\]\(([^)\s]+)\)\s*\|(.*)\|[^|]*\|[^|]*\|[^|]*\|\s*$/', $line, $match ) ) {
+			if ( ! preg_match( '/^\|\s*\[([^\]]+)\]\(([^)\s]+)\)\s*\|(.*)\|\s*([^|]*?)\s*\|\s*([^|]*?)\s*\|\s*([^|]*?)\s*\|\s*$/', $line, $match ) ) {
 				continue;
 			}
 
@@ -638,10 +639,24 @@ class MU_Plugins {
 			$result[ $parsed['file'] ] = array(
 				'name'        => trim( $match[1] ),
 				'description' => $description,
+				'version'     => self::is_valid_version( $match[4] ) ? $match[4] : '',
+				'wp'          => self::clean_requirement( $match[5] ),
+				'php'         => self::clean_requirement( $match[6] ),
 			);
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Normalise a "6.6+" style requirement cell.
+	 *
+	 * @param string $value Raw table cell.
+	 * @return string Requirement, or '' when it does not look like a version.
+	 */
+	private static function clean_requirement( $value ) {
+		$value = trim( (string) $value );
+		return 1 === preg_match( '/^\d+(?:\.\d+){0,2}\+?$/', $value ) ? $value : '';
 	}
 
 	/**
@@ -832,6 +847,7 @@ class MU_Plugins {
 				'update'         => $local['sha'] !== $entry['sha'] && self::is_update_available( $local['version'], $remote_version ),
 				'autoupdate'     => $this->is_autoupdate_enabled( $file ),
 				'is_helper'      => self::HELPERS_FILE === $file,
+				'has_backup'     => self::HELPERS_FILE !== $file && is_file( $this->get_backup_path( $file ) ),
 			);
 		}
 
@@ -871,8 +887,10 @@ class MU_Plugins {
 				'file'        => $file,
 				'category'    => $entry['category'],
 				'name'        => $versions[ $entry['sha'] ]['name'] ?? ( $descriptions[ $file ]['name'] ?? $file ),
-				'version'     => $versions[ $entry['sha'] ]['version'] ?? '',
+				'version'     => $versions[ $entry['sha'] ]['version'] ?? ( $descriptions[ $file ]['version'] ?? '' ),
 				'description' => $descriptions[ $file ]['description'] ?? '',
+				'wp'          => $descriptions[ $file ]['wp'] ?? '',
+				'php'         => $descriptions[ $file ]['php'] ?? '',
 			);
 		}
 
@@ -889,7 +907,8 @@ class MU_Plugins {
 			'dir'          => $dir,
 			'dir_state'    => $dir_state,
 			'catalog_ok'   => ! empty( $catalog ),
-			'file_mods'    => $this->file_mods_allowed(),
+			'file_mods'    => $this->file_mods_allowed() && ( ! is_multisite() || is_super_admin() ),
+			'multisite'    => is_multisite(),
 			'installed'    => $installed,
 			'available'    => $available,
 			'update_count' => count( array_filter( array_column( $installed, 'update' ) ) ),
@@ -910,16 +929,98 @@ class MU_Plugins {
 	// -------------------------------------------------------------------------
 
 	/**
+	 * Directory that keeps the previous version of replaced MU plugins.
+	 *
+	 * It lives in the uploads folder (never in the MU directory), so a stored
+	 * copy can never be loaded as code.
+	 *
+	 * @return string
+	 */
+	public function get_backup_dir() {
+		$uploads = wp_upload_dir( null, false );
+		$base    = is_array( $uploads ) && ! empty( $uploads['basedir'] ) ? $uploads['basedir'] : WP_CONTENT_DIR . '/uploads';
+		return untrailingslashit( wp_normalize_path( $base ) ) . '/plugin-hub-mu-backups';
+	}
+
+	/**
+	 * First line of every stored backup.
+	 *
+	 * The backup is a .php file that exits immediately, so even a web server
+	 * that ignores .htaccess (Nginx) neither shows the source nor runs it.
+	 */
+	const BACKUP_GUARD = "<?php exit; // Plugin Hub backup. Not loadable. ?>\n";
+
+	/**
+	 * Path of the stored previous version of a catalog file.
+	 *
+	 * @param string $file Catalog basename.
+	 * @return string Empty string for an invalid name.
+	 */
+	public function get_backup_path( $file ) {
+		return self::is_valid_file_name( $file ) ? $this->get_backup_dir() . '/' . $file . '.prev.php' : '';
+	}
+
+	/**
+	 * Move a verified backup into the backup directory (or delete it).
+	 *
+	 * @param string $backup Temporary backup next to the replaced file.
+	 * @param string $dest   Replaced file.
+	 */
+	private function store_previous( $backup, $dest ) {
+		$target = $this->get_backup_path( basename( $dest ) );
+		$dir    = $this->get_backup_dir();
+
+		if ( '' === $target || ( ! is_dir( $dir ) && ! wp_mkdir_p( $dir ) ) || ! wp_is_writable( $dir ) ) {
+			wp_delete_file( $backup );
+			return;
+		}
+
+		// Keep the folder private and non-browsable.
+		if ( ! is_file( $dir . '/index.php' ) ) {
+			file_put_contents( $dir . '/index.php', "<?php\n// Silence is golden.\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- Local backup folder.
+		}
+		if ( ! is_file( $dir . '/.htaccess' ) ) {
+			file_put_contents( $dir . '/.htaccess', "Require all denied\nDeny from all\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- Local backup folder.
+		}
+
+		$previous = file_get_contents( $backup ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local filesystem read.
+		wp_delete_file( $backup );
+		if ( false === $previous ) {
+			return;
+		}
+
+		wp_delete_file( $target );
+		file_put_contents( $target, self::BACKUP_GUARD . $previous, LOCK_EX ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- Local backup folder.
+	}
+
+	/**
+	 * Read a stored backup, removing the guard line.
+	 *
+	 * @param string $path Backup path.
+	 * @return string|false Original contents, or false when missing or malformed.
+	 */
+	private function read_backup( $path ) {
+		$raw = is_file( $path ) ? file_get_contents( $path ) : false; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local filesystem read.
+		if ( false === $raw || 0 !== strpos( $raw, self::BACKUP_GUARD ) ) {
+			return false;
+		}
+
+		return substr( $raw, strlen( self::BACKUP_GUARD ) );
+	}
+
+	/**
 	 * Atomically write a file (temp file + rename) with a .bak backup.
 	 *
-	 * Restores the backup if the replacement cannot be verified, and removes it
-	 * once the replacement is verified.
+	 * Restores the backup if the replacement cannot be verified. Once the
+	 * replacement is verified the backup moves to the backup directory so the
+	 * update can be rolled back (or is deleted when $keep_previous is false).
 	 *
-	 * @param string $dest     Destination path.
-	 * @param string $contents New contents.
+	 * @param string $dest          Destination path.
+	 * @param string $contents      New contents.
+	 * @param bool   $keep_previous Keep the replaced version for a rollback.
 	 * @return true|\WP_Error
 	 */
-	private function write_atomic( $dest, $contents ) {
+	private function write_atomic( $dest, $contents, $keep_previous = true ) {
 		$dir = dirname( $dest );
 
 		if ( ! is_dir( $dir ) && ! wp_mkdir_p( $dir ) ) {
@@ -965,9 +1066,13 @@ class MU_Plugins {
 			return new \WP_Error( 'plugin_hub_mu_verify', __( 'The written MU plugin file did not match the download and was rolled back.', 'plugin-hub' ) );
 		}
 
-		// The replacement is verified, so the backup is no longer needed.
+		// The replacement is verified: keep the old version for a rollback, or drop it.
 		if ( $exists ) {
-			wp_delete_file( $backup );
+			if ( $keep_previous ) {
+				$this->store_previous( $backup, $dest );
+			} else {
+				wp_delete_file( $backup );
+			}
 		}
 
 		if ( function_exists( 'opcache_invalidate' ) ) {
@@ -1168,6 +1273,66 @@ class MU_Plugins {
 	}
 
 	/**
+	 * Restore the version that was replaced by the last update.
+	 *
+	 * Auto-update is switched off for the file so the cron does not undo the
+	 * rollback.
+	 *
+	 * @param string $file Catalog basename.
+	 * @return string|\WP_Error Restored version.
+	 */
+	public function rollback( $file ) {
+		if ( ! $this->file_mods_allowed() ) {
+			return new \WP_Error( 'plugin_hub_mu_mods', __( 'File modifications are disabled on this site.', 'plugin-hub' ) );
+		}
+
+		return $this->with_lock(
+			function () use ( $file ) {
+				$catalog = $this->get_catalog();
+				if ( ! self::is_valid_file_name( $file ) || ! isset( $catalog[ $file ] ) ) {
+					return new \WP_Error( 'plugin_hub_mu_unknown', __( 'The requested MU plugin is not in the trusted catalog.', 'plugin-hub' ) );
+				}
+
+				// Other MU plugins may already rely on newer helper functions.
+				if ( self::HELPERS_FILE === $file ) {
+					return new \WP_Error( 'plugin_hub_mu_helpers_rollback', __( 'The shared helpers file cannot be rolled back because other MU plugins may depend on it.', 'plugin-hub' ) );
+				}
+
+				$local = $this->scan_local( $catalog );
+				if ( ! isset( $local[ $file ] ) ) {
+					return new \WP_Error( 'plugin_hub_mu_missing', __( 'This MU plugin is not installed.', 'plugin-hub' ) );
+				}
+
+				$backup = $this->get_backup_path( $file );
+				if ( ! is_file( $backup ) ) {
+					return new \WP_Error( 'plugin_hub_mu_nobackup', __( 'There is no previous version to restore.', 'plugin-hub' ) );
+				}
+
+				$code = $this->read_backup( $backup );
+				if ( false === $code || '' !== self::check_source( $code ) ) {
+					return new \WP_Error( 'plugin_hub_mu_invalid', __( 'The stored previous version is not a valid MU plugin.', 'plugin-hub' ) );
+				}
+
+				$written = $this->write_atomic( $local[ $file ]['path'], $code, false );
+				if ( is_wp_error( $written ) ) {
+					return $written;
+				}
+
+				wp_delete_file( $backup );
+
+				$list = get_option( self::AUTOUPDATE_OPTION, array() );
+				$list = is_array( $list ) ? $list : array();
+				update_option( self::AUTOUPDATE_OPTION, array_values( array_diff( $list, array( $file ) ) ), false );
+
+				$version = self::get_header_field( $code, 'Version' );
+				$this->api->log_activity( 'mu_rollback', $file, $version );
+
+				return $version;
+			}
+		);
+	}
+
+	/**
 	 * Update every installed MU plugin that has a newer version.
 	 *
 	 * @param string $log_action Activity log action.
@@ -1221,12 +1386,13 @@ class MU_Plugins {
 	/**
 	 * Cron entry point: update opted-in MU plugins and report the rest.
 	 *
-	 * @return array Array with 'updated' and 'available' notification lines.
+	 * @return array Array with 'updated', 'available' and 'failed' notification lines.
 	 */
 	public function run_auto_updates() {
 		$summary = array(
 			'updated'   => array(),
 			'available' => array(),
+			'failed'    => array(),
 		);
 
 		$catalog = $this->refresh_catalog();
@@ -1248,6 +1414,7 @@ class MU_Plugins {
 					continue;
 				}
 				$this->api->log( 'Automatic MU update failed for ' . $row['file'] . ': ' . $version->get_error_message() );
+				$summary['failed'][] = 'MU: ' . $row['file'] . ' (' . $version->get_error_message() . ')';
 			}
 
 			$summary['available'][] = 'MU: ' . $row['file'] . ' (v' . $row['local_version'] . ' → v' . $row['remote_version'] . ')';
@@ -1287,6 +1454,11 @@ class MU_Plugins {
 
 		if ( ! current_user_can( $capability ) ) {
 			wp_send_json_error( esc_html__( 'You do not have permission to manage MU plugins.', 'plugin-hub' ) );
+		}
+
+		// The MU directory is shared by the whole network.
+		if ( $writes && is_multisite() && ! is_super_admin() ) {
+			wp_send_json_error( esc_html__( 'Only network administrators can change MU plugins on a multisite network.', 'plugin-hub' ) );
 		}
 
 		if ( $writes && ! $this->file_mods_allowed() ) {
@@ -1337,6 +1509,22 @@ class MU_Plugins {
 
 		/* translators: 1: file name, 2: version number. */
 		wp_send_json_success( sprintf( esc_html__( '%1$s updated to version %2$s.', 'plugin-hub' ), $file, $version ) );
+	}
+
+	/**
+	 * AJAX: restore the previous version of one MU plugin.
+	 */
+	public function ajax_rollback() {
+		$this->guard( 'update_plugins' );
+		$file    = $this->requested_file();
+		$version = $this->rollback( $file );
+
+		if ( is_wp_error( $version ) ) {
+			wp_send_json_error( $version->get_error_message() );
+		}
+
+		/* translators: 1: file name, 2: version number. */
+		wp_send_json_success( sprintf( esc_html__( '%1$s restored to version %2$s. Automatic updates were switched off for it.', 'plugin-hub' ), $file, $version ) );
 	}
 
 	/**

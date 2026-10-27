@@ -16,6 +16,9 @@ namespace {
 	if ( ! defined( 'MINUTE_IN_SECONDS' ) ) {
 		define( 'MINUTE_IN_SECONDS', 60 );
 	}
+	if ( ! defined( 'HOUR_IN_SECONDS' ) ) {
+		define( 'HOUR_IN_SECONDS', 3600 );
+	}
 	if ( ! defined( 'DAY_IN_SECONDS' ) ) {
 		define( 'DAY_IN_SECONDS', 86400 );
 	}
@@ -46,6 +49,21 @@ namespace {
 
 	if ( ! class_exists( 'WP_Error' ) ) {
 		class WP_Error {
+			private $code;
+			private $message;
+
+			public function __construct( $code = '', $message = '' ) {
+				$this->code    = $code;
+				$this->message = $message;
+			}
+
+			public function get_error_code() {
+				return $this->code;
+			}
+
+			public function get_error_message() {
+				return $this->message;
+			}
 		}
 	}
 }

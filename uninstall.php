@@ -61,3 +61,17 @@ $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordP
 		$wpdb->esc_like( '_transient_timeout_plugin_hub_release_' ) . '%'
 	)
 );
+
+/**
+ * Remove stored previous versions of MU plugins (our own folder in uploads).
+ */
+$plugin_hub_uploads = wp_upload_dir( null, false );
+if ( is_array( $plugin_hub_uploads ) && ! empty( $plugin_hub_uploads['basedir'] ) ) {
+	$plugin_hub_backups = $plugin_hub_uploads['basedir'] . '/plugin-hub-mu-backups';
+	if ( is_dir( $plugin_hub_backups ) ) {
+		foreach ( (array) glob( $plugin_hub_backups . '/{*.prev.php,index.php,.htaccess}', GLOB_BRACE ) as $plugin_hub_item ) {
+			wp_delete_file( $plugin_hub_item );
+		}
+		rmdir( $plugin_hub_backups ); // phpcs:ignore WordPress.WP.AlternativeFunctions.rmdir_rmdir -- Remove our own backup folder.
+	}
+}
