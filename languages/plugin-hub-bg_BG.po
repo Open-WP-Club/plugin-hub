@@ -5,7 +5,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Plugin Hub 1.6.0\n"
+"Project-Id-Version: Plugin Hub 1.6.1\n"
 "Report-Msgid-Bugs-To: https://github.com/Open-WP-Club/plugin-hub/issues\n"
 "POT-Creation-Date: 2026-08-29 16:16+0300\n"
 "PO-Revision-Date: 2026-08-29 09:00+0300\n"
@@ -949,3 +949,18 @@ msgstr "Резултати от търсенето за „%s“"
 
 msgid "Their support helps keep our plugins free and maintained."
 msgstr "Тяхната подкрепа помага плъгините ни да остават безплатни и поддържани."
+
+msgid "Filter by category"
+msgstr "Филтриране по категория"
+
+msgid "All categories"
+msgstr "Всички категории"
+
+msgid "Search MU plugins"
+msgstr "Търсене на MU плъгини"
+
+msgid "Search MU plugins…"
+msgstr "Търсене на MU плъгини…"
+
+msgid "No MU plugins match your filters."
+msgstr "Няма MU плъгини, отговарящи на филтрите."

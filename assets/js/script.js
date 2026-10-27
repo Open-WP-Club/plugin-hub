@@ -360,6 +360,27 @@ jQuery( document ).ready( function( $ ) {
 	// MU plugins
 	// =========================================================================
 
+	// Filter the available MU plugins by category and search text.
+	function filterMuPlugins() {
+		var category = $( '#plugin-hub-mu-category' ).val() || '';
+		var term = ( $( '#plugin-hub-mu-search' ).val() || '' ).toLowerCase().trim();
+		var visible = 0;
+
+		$( '.plugin-hub-mu-available .plugin-hub-mu-row' ).each( function() {
+			var $row = $( this );
+			var match = ( '' === category || $row.data( 'category' ) === category ) &&
+				( '' === term || $row.text().toLowerCase().indexOf( term ) !== -1 );
+			$row.prop( 'hidden', ! match );
+			if ( match ) {
+				visible++;
+			}
+		} );
+
+		$( '.plugin-hub-mu-no-results' ).prop( 'hidden', visible > 0 || 0 === $( '.plugin-hub-mu-row' ).length );
+	}
+	$( '#plugin-hub-mu-category' ).on( 'change', filterMuPlugins );
+	$( '#plugin-hub-mu-search' ).on( 'input', filterMuPlugins );
+
 	$( '.mu-install-now' ).on( 'click', function() {
 		var button = $( this );
 		if ( isActionBusy( button ) || ! window.confirm( i18n.mu_install_confirm ) ) {

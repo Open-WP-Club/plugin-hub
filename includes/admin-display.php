@@ -174,7 +174,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 					</div>
 					<p class="description"><?php esc_html_e( 'Installed flat into the MU directory. Shared helpers (000-helpers.php) are installed automatically when a plugin needs them.', 'plugin-hub' ); ?></p>
 
-					<table class="wp-list-table widefat fixed striped plugin-hub-mu-table">
+					<?php $mu_categories = array_values( array_unique( array_filter( array_column( $mu_data['available'], 'category' ) ) ) ); ?>
+					<?php sort( $mu_categories ); ?>
+					<div class="plugin-hub-mu-filters">
+						<label class="screen-reader-text" for="plugin-hub-mu-category"><?php esc_html_e( 'Filter by category', 'plugin-hub' ); ?></label>
+						<select id="plugin-hub-mu-category">
+							<option value=""><?php esc_html_e( 'All categories', 'plugin-hub' ); ?></option>
+							<?php foreach ( $mu_categories as $mu_category ) : ?>
+								<option value="<?php echo esc_attr( $mu_category ); ?>"><?php echo esc_html( $mu_category ); ?></option>
+							<?php endforeach; ?>
+						</select>
+						<label class="screen-reader-text" for="plugin-hub-mu-search"><?php esc_html_e( 'Search MU plugins', 'plugin-hub' ); ?></label>
+						<input type="search" id="plugin-hub-mu-search" placeholder="<?php esc_attr_e( 'Search MU plugins…', 'plugin-hub' ); ?>">
+					</div>
+
+					<table class="wp-list-table widefat fixed striped plugin-hub-mu-table plugin-hub-mu-available">
 						<thead>
 							<tr>
 								<th><?php esc_html_e( 'MU plugin', 'plugin-hub' ); ?></th>
@@ -186,9 +200,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<?php if ( empty( $mu_data['available'] ) ) : ?>
 								<tr><td colspan="3"><?php esc_html_e( 'Every catalog MU plugin is already installed.', 'plugin-hub' ); ?></td></tr>
 							<?php endif; ?>
+							<tr class="plugin-hub-mu-no-results" hidden><td colspan="3"><?php esc_html_e( 'No MU plugins match your filters.', 'plugin-hub' ); ?></td></tr>
 							<?php foreach ( $mu_data['available'] as $mu_row ) : ?>
-								<tr>
-									<td><strong><?php echo esc_html( $mu_row['name'] ); ?></strong><?php if ( $mu_row['name'] !== $mu_row['file'] ) : ?><br><code><?php echo esc_html( $mu_row['file'] ); ?></code><?php endif; ?></td>
+								<tr class="plugin-hub-mu-row" data-category="<?php echo esc_attr( $mu_row['category'] ); ?>">
+									<td><strong><?php echo esc_html( $mu_row['name'] ); ?></strong><?php if ( $mu_row['name'] !== $mu_row['file'] ) : ?><br><code><?php echo esc_html( $mu_row['file'] ); ?></code><?php endif; ?><?php if ( '' !== $mu_row['description'] ) : ?><p class="description plugin-hub-mu-description"><?php echo esc_html( $mu_row['description'] ); ?></p><?php endif; ?></td>
 									<td><?php echo esc_html( $mu_row['category'] ); ?></td>
 									<td>
 										<?php if ( $mu_data['file_mods'] ) : ?>

@@ -488,6 +488,10 @@
 .plugin-hub-mu .notice.inline { margin: 12px 0; }
 .plugin-hub-mu-table code { font-size: 12px; word-break: break-all; }
 .plugin-hub-mu-table td { vertical-align: middle; }
+.plugin-hub-mu-description { margin: 4px 0 0; max-width: 70ch; }
+.plugin-hub-mu-filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+.plugin-hub-mu-filters select, .plugin-hub-mu-filters input[type="search"] { min-width: 180px; max-width: 100%; }
+.plugin-hub-mu-available [hidden] { display: none; }
 @media screen and (max-width: 782px) {
 	.plugin-hub-mu { overflow-x: auto; }
 	.plugin-hub-mu-table { min-width: 620px; }

@@ -81,6 +81,21 @@ class MU_Plugins {
 	const FETCH_RETRY_KEY = 'plugin_hub_mu_fetch_retry_v1';
 
 	/**
+	 * Descriptions transient (parsed from the repository README table).
+	 */
+	const DESCRIPTIONS_KEY = 'plugin_hub_mu_descriptions_v1';
+
+	/**
+	 * Option holding the last known descriptions, used during outages.
+	 */
+	const DESCRIPTIONS_OPTION = 'plugin_hub_mu_descriptions';
+
+	/**
+	 * Descriptions failure back-off transient.
+	 */
+	const DESCRIPTIONS_RETRY_KEY = 'plugin_hub_mu_descriptions_retry_v1';
+
+	/**
 	 * Operation lock transient.
 	 */
 	const LOCK_KEY = 'plugin_hub_mu_lock_v1';
@@ -487,6 +502,8 @@ class MU_Plugins {
 	 */
 	public function refresh_catalog() {
 		delete_transient( self::FETCH_RETRY_KEY );
+		delete_transient( self::DESCRIPTIONS_KEY );
+		delete_transient( self::DESCRIPTIONS_RETRY_KEY );
 		return $this->get_catalog( true );
 	}
 
@@ -581,6 +598,97 @@ class MU_Plugins {
 		}
 
 		return $body;
+	}
+
+	/**
+	 * Parse the generated plugin table of the repository README.
+	 *
+	 * The table sits between PLUGIN_LIST_START/END markers and has the columns
+	 * Plugin Name, Description, Version, WP, PHP. Only rows linking to a valid
+	 * catalog path are kept.
+	 *
+	 * @param string $markdown README contents.
+	 * @return array Map of file basename to array with 'name' and 'description'.
+	 */
+	public static function parse_readme_table( $markdown ) {
+		$markdown = (string) $markdown;
+		$start    = strpos( $markdown, '<!-- PLUGIN_LIST_START -->' );
+		$end      = strpos( $markdown, '<!-- PLUGIN_LIST_END -->' );
+		if ( false === $start || false === $end || $end <= $start ) {
+			return array();
+		}
+
+		$result = array();
+		foreach ( preg_split( '/\R/', substr( $markdown, $start, $end - $start ) ) as $line ) {
+			if ( ! preg_match( '/^\|\s*\[([^\]]+)\]\(([^)\s]+)\)\s*\|(.*)\|[^|]*\|[^|]*\|[^|]*\|\s*$/', $line, $match ) ) {
+				continue;
+			}
+
+			$parsed = self::parse_catalog_path( $match[2] );
+			if ( false === $parsed || '' === $parsed['category'] ) {
+				continue;
+			}
+
+			$description = trim( str_replace( '\\|', '|', $match[3] ) );
+			$description = trim( wp_strip_all_tags( $description ) );
+			if ( strlen( $description ) > 600 ) {
+				$description = rtrim( substr( $description, 0, 597 ) ) . '...';
+			}
+
+			$result[ $parsed['file'] ] = array(
+				'name'        => trim( $match[1] ),
+				'description' => $description,
+			);
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Descriptions for the catalog, from the README table (one request, cached).
+	 *
+	 * Failures never block the UI: the last known descriptions are used.
+	 *
+	 * @return array Map of file basename to array with 'name' and 'description'.
+	 */
+	public function get_descriptions() {
+		$cached = get_transient( self::DESCRIPTIONS_KEY );
+		if ( is_array( $cached ) ) {
+			return $cached;
+		}
+
+		$known = get_option( self::DESCRIPTIONS_OPTION, array() );
+		$known = is_array( $known ) ? $known : array();
+		if ( false !== get_transient( self::DESCRIPTIONS_RETRY_KEY ) ) {
+			return $known;
+		}
+
+		$response = wp_safe_remote_get(
+			'https://raw.githubusercontent.com/' . PLUGIN_HUB_ORGANIZATION . '/' . self::REPOSITORY . '/' . self::BRANCH . '/README.MD',
+			array(
+				'timeout'             => 15,
+				'redirection'         => 3,
+				'limit_response_size' => 1048576,
+				'headers'             => array( 'User-Agent' => 'Plugin-Hub/' . PLUGIN_HUB_VERSION . '; ' . home_url( '/' ) ),
+			)
+		);
+
+		$parsed = array();
+		if ( ! is_wp_error( $response ) && 200 === wp_remote_retrieve_response_code( $response ) ) {
+			$parsed = self::parse_readme_table( wp_remote_retrieve_body( $response ) );
+		}
+
+		if ( empty( $parsed ) ) {
+			$this->api->log( 'Could not load the MU plugin descriptions; using the last known ones.' );
+			set_transient( self::DESCRIPTIONS_RETRY_KEY, true, 5 * MINUTE_IN_SECONDS );
+			return $known;
+		}
+
+		delete_transient( self::DESCRIPTIONS_RETRY_KEY );
+		set_transient( self::DESCRIPTIONS_KEY, $parsed, DAY_IN_SECONDS );
+		update_option( self::DESCRIPTIONS_OPTION, $parsed, false );
+
+		return $parsed;
 	}
 
 	/**
@@ -753,15 +861,18 @@ class MU_Plugins {
 		$versions  = is_array( $versions ) ? $versions : array();
 		$available = array();
 
+		$descriptions = empty( $catalog ) ? array() : $this->get_descriptions();
+
 		foreach ( $catalog as $file => $entry ) {
 			if ( isset( $local[ $file ] ) || self::HELPERS_FILE === $file ) {
 				continue;
 			}
 			$available[] = array(
-				'file'     => $file,
-				'category' => $entry['category'],
-				'name'     => $versions[ $entry['sha'] ]['name'] ?? $file,
-				'version'  => $versions[ $entry['sha'] ]['version'] ?? '',
+				'file'        => $file,
+				'category'    => $entry['category'],
+				'name'        => $versions[ $entry['sha'] ]['name'] ?? ( $descriptions[ $file ]['name'] ?? $file ),
+				'version'     => $versions[ $entry['sha'] ]['version'] ?? '',
+				'description' => $descriptions[ $file ]['description'] ?? '',
 			);
 		}
 
@@ -1157,6 +1268,8 @@ class MU_Plugins {
 		delete_transient( self::RETRY_KEY );
 		delete_transient( self::FETCH_RETRY_KEY );
 		delete_transient( self::LOCK_KEY );
+		delete_transient( self::DESCRIPTIONS_KEY );
+		delete_transient( self::DESCRIPTIONS_RETRY_KEY );
 	}
 
 	// -------------------------------------------------------------------------

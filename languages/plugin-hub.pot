@@ -934,3 +934,18 @@ msgstr ""
 
 msgid "Their support helps keep our plugins free and maintained."
 msgstr ""
+
+msgid "Filter by category"
+msgstr ""
+
+msgid "All categories"
+msgstr ""
+
+msgid "Search MU plugins"
+msgstr ""
+
+msgid "Search MU plugins…"
+msgstr ""
+
+msgid "No MU plugins match your filters."
+msgstr ""

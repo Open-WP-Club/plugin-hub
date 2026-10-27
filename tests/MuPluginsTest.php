@@ -26,6 +26,9 @@ namespace PluginHub {
 		function wp_generate_password( $length = 12, $special = true ) {
 			return substr( md5( uniqid( '', true ) ), 0, $length );
 		}
+		function wp_strip_all_tags( $text ) {
+			return trim( strip_tags( $text ) );
+		}
 		function __( $text, $domain = 'default' ) {
 			return $text;
 		}
@@ -195,6 +198,81 @@ namespace PluginHub\Tests {
 
 			unlink( $dest );
 			rmdir( $dir );
+		}
+
+		private function readme( string $rows ): string {
+			return "# Title\n\n<!-- PLUGIN_LIST_START -->\n| Plugin Name | Description | Version | WP | PHP |\n|---|---|---:|---:|---:|\n" . $rows . "\n<!-- PLUGIN_LIST_END -->\n";
+		}
+
+		public function test_readme_table_extracts_name_and_description(): void {
+			$result = MU_Plugins::parse_readme_table(
+				$this->readme( "| [404 Logger](mu-plugins/security/404-logger.php) | Logs 404 errors. | 1.1.0 | 6.6+ | 7.4+ |\n| [Admin Bar Cleanup](mu-plugins/admin/admin-bar-cleanup.php) | Removes the logo. | 1.0.0 | 6.6+ | 7.4+ |" )
+			);
+
+			$this->assertSame(
+				array(
+					'404-logger.php'         => array(
+						'name'        => '404 Logger',
+						'description' => 'Logs 404 errors.',
+					),
+					'admin-bar-cleanup.php' => array(
+						'name'        => 'Admin Bar Cleanup',
+						'description' => 'Removes the logo.',
+					),
+				),
+				$result
+			);
+		}
+
+		public function test_readme_table_handles_escaped_pipes_and_markup(): void {
+			$result = MU_Plugins::parse_readme_table(
+				$this->readme( '| [Pipes](mu-plugins/admin/pipes.php) | Uses a \| b and <script>alert(1)</script>text. | 1.0.0 | 6.6+ | 7.4+ |' )
+			);
+
+			$this->assertSame( 'Uses a | b and alert(1)text.', $result['pipes.php']['description'] );
+		}
+
+		public function test_readme_table_truncates_long_descriptions(): void {
+			$result = MU_Plugins::parse_readme_table(
+				$this->readme( '| [Long](mu-plugins/admin/long.php) | ' . str_repeat( 'word ', 200 ) . '| 1.0.0 | 6.6+ | 7.4+ |' )
+			);
+
+			$this->assertLessThanOrEqual( 600, strlen( $result['long.php']['description'] ) );
+			$this->assertStringEndsWith( '...', $result['long.php']['description'] );
+		}
+
+		public function test_readme_table_skips_unsafe_and_non_catalog_rows(): void {
+			$result = MU_Plugins::parse_readme_table(
+				$this->readme(
+					implode(
+						"\n",
+						array(
+							'| [Traversal](mu-plugins/../evil.php) | Bad. | 1.0.0 | 6.6+ | 7.4+ |',
+							'| [Nested](mu-plugins/a/b/deep.php) | Bad. | 1.0.0 | 6.6+ | 7.4+ |',
+							'| [Helpers](mu-plugins/000-helpers.php) | Shared. | 1.0.0 | 6.6+ | 7.4+ |',
+							'| [Other](scripts/tool.php) | Bad. | 1.0.0 | 6.6+ | 7.4+ |',
+							'| not a plugin row | at all |',
+							'| [Good](mu-plugins/admin/good.php) | Fine. | 1.0.0 | 6.6+ | 7.4+ |',
+						)
+					)
+				)
+			);
+
+			$this->assertSame( array( 'good.php' ), array_keys( $result ) );
+		}
+
+		public function test_readme_table_requires_markers_in_order(): void {
+			$row = '| [Good](mu-plugins/admin/good.php) | Fine. | 1.0.0 | 6.6+ | 7.4+ |';
+
+			$this->assertSame( array(), MU_Plugins::parse_readme_table( $row ) );
+			$this->assertSame( array(), MU_Plugins::parse_readme_table( "<!-- PLUGIN_LIST_END -->\n{$row}\n<!-- PLUGIN_LIST_START -->" ) );
+			$this->assertSame( array(), MU_Plugins::parse_readme_table( '' ) );
+		}
+
+		public function test_readme_table_ignores_rows_outside_markers(): void {
+			$markdown = "| [Outside](mu-plugins/admin/outside.php) | No. | 1.0.0 | 6.6+ | 7.4+ |\n" . $this->readme( '| [Inside](mu-plugins/admin/inside.php) | Yes. | 1.0.0 | 6.6+ | 7.4+ |' );
+
+			$this->assertSame( array( 'inside.php' ), array_keys( MU_Plugins::parse_readme_table( $markdown ) ) );
 		}
 	}
 }

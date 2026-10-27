@@ -4,7 +4,7 @@ Tags: plugins, github, installer, plugin-manager, open-wp-club
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.6.0
+Stable tag: 1.6.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -76,6 +76,12 @@ Beta plugins are those with version numbers less than 1.0.0. You can toggle thei
 3. Settings panel with beta plugin toggle
 
 == Changelog ==
+
+= 1.6.1 =
+* Show a description for every MU plugin in the available list.
+* Filter available MU plugins by category and search text.
+* Remove the .bak backup after a verified MU plugin update.
+* Add more tests.
 
 = 1.6.0 =
 * Add an MU plugins tab to install and update Open WP Club must-use plugins from the mu-plugin repository.

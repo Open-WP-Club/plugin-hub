@@ -6,7 +6,7 @@ Plugin Hub is a WordPress plugin that manages and installs plugins directly from
 
 ## Current Version
 
-- **Version**: 1.6.0
+- **Version**: 1.6.1
 - **WordPress Compatibility**: 6.0 - 7.1
 - **PHP Requirement**: 8.0+
 - **License**: GPL-2.0+
