@@ -162,6 +162,17 @@ async function mount( main, options = {} ) {
 		}
 	}
 
+	/** Wait (real time, bounded) until at least n requests were made, e.g. after an async FileReader. */
+	h.waitForRequests = async ( n ) => {
+		const deadline = Date.now() + 5000;
+		while ( h.ajax.length < n ) {
+			if ( Date.now() > deadline ) {
+				throw new Error( `Expected ${ n } requests, saw ${ h.ajax.length }` );
+			}
+			await new Promise( ( resolve ) => setTimeout( resolve, 2 ) );
+		}
+	};
+
 	h.actions = () => h.ajax.map( ( opts ) => ( 'string' === typeof opts.data ? new URLSearchParams( opts.data ).get( 'action' ) : opts.data.action ) );
 	/** Dispatch a submit event on a form as if `submitterSelector` was pressed; returns whether the script took over. */
 	h.submit = ( formSelector, submitterSelector ) => {

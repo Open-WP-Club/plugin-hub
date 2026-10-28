@@ -204,8 +204,6 @@ function choose( h, contents ) {
 	Object.defineProperty( h.$( '#plugin-hub-import-file' )[ 0 ], 'files', { value: [ file ], configurable: true } );
 }
 
-const settle = () => new Promise( ( resolve ) => setTimeout( resolve, 30 ) );
-
 test( 'importing without a file asks for one', async () => {
 	const h = await mount( IMPORT );
 	h.click( '#plugin-hub-import' );
@@ -217,7 +215,7 @@ test( 'the chosen file is sent as text', async () => {
 	const h = await mount( IMPORT );
 	choose( h, '{"format":"plugin-hub-config"}' );
 	h.click( '#plugin-hub-import' );
-	await settle();
+	await h.waitForRequests( 1 );
 
 	assert.deepEqual( h.ajax[ 0 ].data, { action: 'import_hub_config', nonce: 'nonce-1', config: '{"format":"plugin-hub-config"}' } );
 	h.ok( 0, { message: 'Configuration imported.', missing: [], mu_missing: [] } );
@@ -229,12 +227,12 @@ test( 'import errors are shown', async () => {
 	const h = await mount( IMPORT );
 	choose( h, 'junk' );
 	h.click( '#plugin-hub-import' );
-	await settle();
+	await h.waitForRequests( 1 );
 	h.fail( 0, 'This is not a Plugin Hub configuration file.' );
 	assert.equal( h.text( '#plugin-hub-import-result' ), '✗ This is not a Plugin Hub configuration file.' );
 
 	h.click( '#plugin-hub-import' );
-	await settle();
+	await h.waitForRequests( 2 );
 	h.error( 1 );
 	assert.equal( h.text( '#plugin-hub-import-result' ), '✗ An error occurred. Please try again.' );
 } );
@@ -243,7 +241,7 @@ test( 'missing plugins can be installed from the import result, one after anothe
 	const h = await mount( `<div class="tablenav"><button class="button">Apply</button></div>${ IMPORT }` );
 	choose( h, '{}' );
 	h.click( '#plugin-hub-import' );
-	await settle();
+	await h.waitForRequests( 1 );
 	h.ok( 0, {
 		message: 'Configuration imported.',
 		missing: [ { repo: 'gamma', version: '3.0.0', active: true }, { repo: 'delta', version: '1.0.0', active: false } ],
