@@ -497,3 +497,115 @@
 	.plugin-hub-mu-table { min-width: 620px; }
 }
 /* <<< Plugin Hub MU plugins (end) */
+
+/* 1.8: WP_List_Table based screens. */
+.plugin-hub-tabs.nav-tab-wrapper {
+  float: none;
+  margin: 8px 0 14px;
+}
+
+.plugin-hub-main form .search-box {
+  margin-bottom: 8px;
+}
+
+.plugin-hub-main .subsubsub {
+  float: none;
+  margin: 8px 0;
+}
+
+.plugin-hub-wrap .wp-list-table.plugin-hub-table .column-cb {
+  width: 2.2em;
+}
+
+.plugin-hub-wrap .wp-list-table .column-status,
+.plugin-hub-wrap .wp-list-table .column-autoupdate,
+.plugin-hub-wrap .wp-list-table .column-category,
+.plugin-hub-wrap .wp-list-table .column-new_version,
+.plugin-hub-wrap .wp-list-table .column-size {
+  width: 110px;
+}
+
+.plugin-hub-wrap .wp-list-table .column-version,
+.plugin-hub-wrap .wp-list-table .column-created,
+.plugin-hub-wrap .wp-list-table .column-time {
+  width: 170px;
+}
+
+.plugin-hub-wrap .wp-list-table .update-message.notice {
+  margin: 6px 0 0;
+  padding: 2px 8px;
+}
+
+.plugin-hub-wrap .wp-list-table .update-message.notice p {
+  margin: 0;
+  padding: 2px 0;
+  font-size: 12px;
+}
+
+.plugin-hub-wrap .wp-list-table code {
+  font-size: 12px;
+  word-break: break-all;
+}
+
+.plugin-hub-badge {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 10px;
+  background: #f0f0f1;
+  color: #50575e;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.plugin-hub-badge.is-beta { background: #fcf0d6; color: #7a5400; }
+.plugin-hub-badge.is-pin { background: #e5f0fa; color: #135e96; }
+
+.plugin-hub-warning {
+  margin: 4px 0 0;
+  color: #b32d2e;
+}
+
+.plugin-hub-pin-panel {
+  margin-top: 8px;
+  padding: 8px;
+  border: 1px solid #dcdcde;
+  background: #f6f7f7;
+}
+
+.plugin-hub-log-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.plugin-hub-settings h2,
+.plugin-hub-main > h2 {
+  margin-top: 24px;
+}
+
+.plugin-hub-inline-check {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.plugin-hub-mu-update-all {
+  clear: both;
+  margin: 0 0 8px;
+}
+
+#plugin-hub-modal-footer {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid #dcdcde;
+}
+
+#plugin-hub-modal-footer[hidden] {
+  display: none;
+}
+
+#plugin-hub-import-result .notice {
+  margin: 8px 0;
+}

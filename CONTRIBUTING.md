@@ -76,6 +76,17 @@ Feature requests are welcome! Include:
    - Verify AJAX functionality
    - Test security (nonces, capabilities, escaping)
 
+   Automated tests run without WordPress and must pass before you open a pull request:
+
+   ```bash
+   composer install && composer test   # PHPUnit: logic, AJAX handlers, list tables, admin page render
+   npm install && npm test             # JavaScript: assets/js/script.js in jsdom
+   composer phpstan                    # static analysis
+   ```
+
+   WordPress is replaced by small stubs in `tests/`. Add a stub next to the existing ones
+   (`wp-api-stubs.php`, `wp-ajax-stubs.php`, `wp-fakes.php`) rather than loading WordPress.
+
 5. **Commit your changes**
    ```bash
    # Use conventional commits format

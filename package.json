@@ -1,13 +1,15 @@
 {
   "name": "plugin-hub",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "description": "WordPress plugin for managing GitHub-hosted plugins",
   "main": "assets/js/script.js",
   "scripts": {
     "lint:js": "echo 'JavaScript linting not configured yet'",
     "lint:css": "echo 'CSS linting not configured yet'",
     "build": "echo 'Build process not configured yet'",
-    "watch": "echo 'Watch process not configured yet'"
+    "watch": "echo 'Watch process not configured yet'",
+    "test": "node --test tests/js/",
+    "test:js": "node --test tests/js/"
   },
   "repository": {
     "type": "git",
@@ -25,5 +27,8 @@
     "url": "https://github.com/Open-WP-Club/plugin-hub/issues"
   },
   "homepage": "https://github.com/Open-WP-Club/plugin-hub#readme",
-  "devDependencies": {}
+  "devDependencies": {
+    "jquery": "^3.7.1",
+    "jsdom": "^26.1.0"
+  }
 }

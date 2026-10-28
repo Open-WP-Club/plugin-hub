@@ -95,11 +95,21 @@ class Main {
 		require_once plugin_dir_path( __DIR__ ) . 'includes/admin.php';
 		require_once plugin_dir_path( __DIR__ ) . 'includes/api.php';
 		require_once plugin_dir_path( __DIR__ ) . 'includes/class-mu-plugins.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-policy.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-settings.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-notifier.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-backups.php';
+		require_once plugin_dir_path( __DIR__ ) . 'includes/class-config.php';
 
 		$this->api        = new API();
 		$this->mu_plugins = new MU_Plugins( $this->api );
 		$this->api->set_mu_plugins( $this->mu_plugins );
 		$this->admin = new Admin( $this->api, $this->mu_plugins );
+
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			require_once plugin_dir_path( __DIR__ ) . 'includes/class-cli.php';
+			\WP_CLI::add_command( 'plugin-hub', new CLI( $this->api, $this->mu_plugins ) );
+		}
 	}
 
 	/**
@@ -109,10 +119,8 @@ class Main {
 	 * @access private
 	 */
 	private function define_admin_hooks() {
-		add_action( 'admin_menu', array( $this->admin, 'add_admin_menu' ) );
-		add_action( 'admin_enqueue_scripts', array( $this->admin, 'enqueue_styles' ) );
-		add_action( 'admin_enqueue_scripts', array( $this->admin, 'enqueue_scripts' ) );
-		add_action( 'admin_init', array( $this->admin, 'handle_refresh_cache' ) );
+		$this->admin->register_hooks();
+		add_action( 'init', __NAMESPACE__ . '\\maybe_upgrade' );
 	}
 
 	/**

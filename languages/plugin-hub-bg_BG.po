@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Plugin Hub 1.7.0\n"
+"Project-Id-Version: Plugin Hub 1.8.0\n"
 "Report-Msgid-Bugs-To: https://github.com/Open-WP-Club/plugin-hub/issues\n"
-"POT-Creation-Date: 2026-08-29 16:16+0300\n"
-"PO-Revision-Date: 2026-08-29 09:00+0300\n"
+"POT-Creation-Date: 2026-10-28 10:00+0200\n"
+"PO-Revision-Date: 2026-10-28 10:00+0200\n"
 "Last-Translator: Open WP Club\n"
 "Language-Team: Bulgarian\n"
 "Language: bg_BG\n"
@@ -17,676 +17,1634 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: includes/admin-display.php:19
-msgid "Refresh Open WP Club catalog"
-msgstr "Обновяване на каталога на Open WP Club"
+msgid "Plugins"
+msgstr "Добавки"
 
-#: includes/admin-display.php:21
-msgid "Install, update and manage plugins published by Open WP Club."
-msgstr "Инсталирайте, обновявайте и управлявайте плъгините, публикувани от Open WP Club."
+msgid "MU plugins"
+msgstr "MU добавки"
 
-#: includes/admin-display.php:24
-msgid "Open WP Club plugin views"
-msgstr "Изгледи на плъгините на Open WP Club"
+msgid "Backups"
+msgstr "Резервни копия"
 
-#: includes/admin-display.php:26
-msgid "All"
-msgstr "Всички"
-
-#: includes/admin-display.php:27
-msgid "Active"
-msgstr "Активни"
-
-#: includes/admin-display.php:28
-msgid "Inactive"
-msgstr "Неактивни"
-
-#: includes/admin-display.php:29
-msgid "Updates"
-msgstr "Обновявания"
-
-#: includes/admin-display.php:30
-msgid "Beta"
-msgstr "Бета"
-
-#: includes/admin-display.php:31
+#: includes/admin-display.php:23
 msgid "Activity"
 msgstr "Активност"
 
-#: includes/admin-display.php:44
+msgid "Settings"
+msgstr "Настройки"
+
+#: includes/admin-display.php:31
+msgid "Refresh Open WP Club catalog"
+msgstr "Обновяване на каталога на Open WP Club"
+
+#: includes/admin-display.php:33
+msgid "Install, update and manage plugins published by Open WP Club."
+msgstr ""
+"Инсталирайте, обновявайте и управлявайте плъгините, публикувани от Open WP "
+"Club."
+
+msgid "Plugin Hub sections"
+msgstr "Раздели на Plugin Hub"
+
+msgid "Notifications"
+msgstr "Известия"
+
+msgid "Email recipients"
+msgstr "Получатели на имейли"
+
+msgid "Comma-separated. Leave empty to use the site administrator email."
+msgstr ""
+"Разделени със запетая. Оставете празно, за да се ползва имейлът на "
+"администратора на сайта."
+
+msgid "Send reports"
+msgstr "Изпращане на отчети"
+
+msgid "For every change (updates, available updates, failures)"
+msgstr "При всяка промяна (ъпдейти, налични ъпдейти, грешки)"
+
+msgid "Only when something fails or is rolled back"
+msgstr "Само когато нещо се провали или бъде върнато назад"
+
+msgid "Webhook URL"
+msgstr "Webhook URL"
+
+msgid "Send test notification"
+msgstr "Изпращане на тестово известие"
+
+msgid ""
+"Slack, Discord or any HTTPS endpoint that accepts JSON. Save the settings "
+"before sending a test."
+msgstr ""
+"Slack, Discord или всеки HTTPS адрес, който приема JSON. Запазете "
+"настройките преди да изпратите тест."
+
+msgid "Update schedule"
+msgstr "График на ъпдейтите"
+
+msgid "Maintenance window"
+msgstr "Прозорец за поддръжка"
+
+msgid "Only run automatic updates inside this window"
+msgstr "Автоматичните ъпдейти да се изпълняват само в този прозорец"
+
+msgid "From"
+msgstr "От"
+
+msgid "until"
+msgstr "до"
+
+msgid "Site time."
+msgstr "Часът на сайта."
+
+msgid "Release delay"
+msgstr "Забавяне на версиите"
+
+msgid "days"
+msgstr "дни"
+
+msgid ""
+"Automatic updates wait until a release is this old, so a faulty release can "
+"be caught first. 0 disables the delay."
+msgstr ""
+"Автоматичните ъпдейти изчакват версията да е толкова стара, за да може "
+"дефектна версия да бъде забелязана първо. 0 изключва забавянето."
+
+msgid "Safety"
+msgstr "Безопасност"
+
+msgid "Automatic rollback"
+msgstr "Автоматично връщане назад"
+
+msgid ""
+"Check the site after an update and restore the previous version if it fails"
+msgstr ""
+"Проверка на сайта след ъпдейт и възстановяване на предишната версия при "
+"неуспех"
+
+msgid "Package integrity"
+msgstr "Цялост на пакетите"
+
+msgid "Refuse installs and updates whose catalog entry has no SHA-256 checksum"
+msgstr ""
+"Отказване на инсталации и ъпдейти, чийто запис в каталога няма SHA-256 "
+"контролна сума"
+
+msgid "When the catalog publishes a checksum, packages are always verified."
+msgstr ""
+"Когато каталогът публикува контролна сума, пакетите винаги се проверяват."
+
+msgid "Before updates"
+msgstr "Преди ъпдейти"
+
+msgid "Back up the plugin folder before every update"
+msgstr "Резервно копие на папката на добавката преди всеки ъпдейт"
+
+msgid "Keep"
+msgstr "Пази"
+
+msgid "backups per plugin, for at most"
+msgstr "резервни копия на добавка, най-много"
+
+msgid "Days to keep backups"
+msgstr "Дни за съхранение на резервните копия"
+
+msgid "days (0 = no age limit)"
+msgstr "дни (0 = без ограничение по възраст)"
+
+#, php-format
+msgid "Currently %1$s backup(s) using %2$s."
+msgstr "В момента: %1$s резервни копия, заемащи %2$s."
+
+#: includes/admin-display.php:175
 msgid "Activity log"
 msgstr "Дневник на активността"
 
-#: includes/admin-display.php:45
+msgid "Retention"
+msgstr "Съхранение"
+
+msgid "Keep the last"
+msgstr "Пази последните"
+
+msgid "entries, for at most"
+msgstr "записа, най-много"
+
+msgid "Days to keep log entries"
+msgstr "Дни за съхранение на записите в журнала"
+
+msgid "Save settings"
+msgstr "Запазване на настройките"
+
+msgid "Export and import"
+msgstr "Експорт и импорт"
+
+msgid ""
+"Move your Plugin Hub setup to another site: installed plugins, auto-update "
+"choices, version pins, MU plugins and settings. The GitHub token is never "
+"exported."
+msgstr ""
+"Пренесете настройката на Plugin Hub към друг сайт: инсталирани добавки, "
+"избори за автоматични ъпдейти, фиксирани версии, MU добавки и настройки. "
+"GitHub токенът никога не се експортира."
+
+msgid "Export configuration"
+msgstr "Експорт на конфигурацията"
+
+msgid "Configuration file"
+msgstr "Конфигурационен файл"
+
+msgid "Import configuration"
+msgstr "Импорт на конфигурацията"
+
+#: includes/admin-display.php:212
 msgid "A history of plugin changes made from Plugin Hub."
 msgstr "История на промените по плъгините, направени чрез Plugin Hub."
 
-#: includes/admin-display.php:51
-msgid "Date / Time"
-msgstr "Дата / Час"
+msgid "Export as CSV"
+msgstr "Експорт като CSV"
 
-#: includes/admin-display.php:52
-msgid "Action"
-msgstr "Действие"
+msgid "Search activity"
+msgstr "Търсене в активността"
 
-#: includes/admin-display.php:53 includes/admin-display.php:130
-#: includes/admin-display.php:262
-msgid "Plugin"
-msgstr "Плъгин"
+#, php-format
+msgid ""
+"%1$s backup(s) use %4$s in total (plugins: %2$s, MU plugins: %3$s). "
+"Retention is configured in Settings."
+msgstr ""
+"%1$s резервни копия заемат общо %4$s (добавки: %2$s, MU добавки: %3$s). "
+"Съхранението се настройва в Настройки."
 
-#: includes/admin-display.php:54
-msgid "Version"
-msgstr "Версия"
+msgid "Search backups"
+msgstr "Търсене в резервните копия"
 
-#: includes/admin-display.php:55
-msgid "User"
-msgstr "Потребител"
+#. translators: %s: MU plugin directory path.
+#: includes/admin-display.php:269
+#, php-format
+msgid ""
+"Must-use plugins from the Open WP Club mu-plugin repository, managed in %s. "
+"Only files whose name matches a catalog file are updated."
+msgstr ""
+"Задължителни плъгини (MU) от хранилището mu-plugin на Open WP Club, "
+"управлявани в %s. Обновяват се само файлове, чието име съвпада с файл от "
+"каталога."
 
-#: includes/admin-display.php:61
-msgid "No activity recorded yet."
-msgstr "Все още няма записана активност."
+#: includes/admin-display.php:276
+msgid ""
+"File modifications are disabled on this site, so MU plugins cannot be "
+"installed or updated here."
+msgstr ""
+"Промените по файловете са забранени на този сайт, затова MU плъгините не "
+"могат да се инсталират или обновяват оттук."
 
-#: includes/admin-display.php:66
-msgid "Install"
-msgstr "Инсталиране"
+#: includes/admin-display.php:278
+msgid ""
+"The MU plugin directory does not exist yet. It will be created on the first "
+"install if the parent directory is writable."
+msgstr ""
+"Директорията за MU плъгини още не съществува. Тя ще бъде създадена при "
+"първото инсталиране, ако родителската директория е записваема."
 
-#: includes/admin-display.php:67 includes/admin-display.php:113
-msgid "Update"
-msgstr "Обновяване"
+#: includes/admin-display.php:280
+msgid ""
+"The MU plugin directory is not writable. Fix its permissions to install or "
+"update MU plugins."
+msgstr ""
+"Директорията за MU плъгини не е записваема. Коригирайте правата ѝ, за да "
+"инсталирате или обновявате MU плъгини."
 
-#: includes/admin-display.php:68
-msgid "Rollback"
-msgstr "Връщане на версия"
+#: includes/admin-display.php:284
+msgid ""
+"The MU plugin catalog could not be loaded from GitHub. Try again in a few "
+"minutes."
+msgstr ""
+"Каталогът с MU плъгини не можа да бъде зареден от GitHub. Опитайте отново "
+"след няколко минути."
 
-#: includes/admin-display.php:69 includes/admin-display.php:111
-#: includes/admin-display.php:177
-msgid "Activate"
-msgstr "Активиране"
+msgid ""
+"This is a multisite network: MU plugins are shared by every site, and only "
+"network administrators can change them."
+msgstr ""
+"Това е мрежа от сайтове (multisite): MU добавките са общи за всички сайтове "
+"и само мрежовите администратори могат да ги променят."
 
-#: includes/admin-display.php:70 includes/admin-display.php:112
-#: includes/admin-display.php:173
-msgid "Deactivate"
-msgstr "Деактивиране"
+#: includes/admin-display.php:290
+msgid ""
+"MU plugins load automatically on every request and cannot be deactivated "
+"from the admin. Some change core behaviour, for example blocking plugin "
+"installs, comments, search or email. Read the description before installing "
+"and test on a staging site first."
+msgstr ""
+"MU плъгините се зареждат автоматично при всяка заявка и не могат да се "
+"деактивират от админа. Някои променят поведението на WordPress, например "
+"блокират инсталиране на плъгини, коментари, търсене или имейли. Прочетете "
+"описанието преди инсталиране и първо тествайте на staging сайт."
 
-#: includes/admin-display.php:71 includes/admin-display.php:114
-#: includes/admin-display.php:180
-msgid "Delete"
-msgstr "Изтриване"
+#: includes/admin-display.php:293 includes/admin.php:200
+#: includes/list-tables.php:402
+msgid "Installed"
+msgstr "Инсталиран"
 
-#: includes/admin-display.php:72
-msgid "Auto-Update"
-msgstr "Автоматично обновяване"
+#: includes/admin-display.php:305
+msgid "Available"
+msgstr "Наличен"
 
-#: includes/admin-display.php:108
-msgid "Select bulk action"
-msgstr "Избор на групово действие"
+#: includes/admin-display.php:318 includes/list-tables.php:404
+msgid "Updates"
+msgstr "Обновявания"
 
-#: includes/admin-display.php:110
-msgid "Bulk Actions"
-msgstr "Групови действия"
+#: includes/admin-display.php:322
+msgid "Update all"
+msgstr "Обнови всички"
 
-#: includes/admin-display.php:116
-msgid "Apply"
-msgstr "Прилагане"
+#: includes/admin-display.php:330
+msgid "Search MU plugins"
+msgstr "Търсене на MU плъгини"
 
-#: includes/admin-display.php:119
+#: includes/admin-display.php:344
 msgid "Search plugins"
 msgstr "Търсене на плъгини"
 
-#: includes/admin-display.php:120
-msgid "Search Open WP Club plugins…"
-msgstr "Търсене в плъгините на Open WP Club…"
-
-#: includes/admin-display.php:131 includes/admin-display.php:263
-msgid "Description"
-msgstr "Описание"
-
-#: includes/admin-display.php:167
-msgid "Install now"
-msgstr "Инсталиране сега"
-
-#: includes/admin-display.php:170
-msgid "No release available"
-msgstr "Няма налична версия"
-
-#: includes/admin-display.php:185
-msgid "Update now"
-msgstr "Обновяване сега"
-
-#: includes/admin-display.php:192 includes/admin.php:125
-msgid "What's new?"
-msgstr "Какво е новото?"
-
-#: includes/admin-display.php:196
-msgid "View on GitHub"
-msgstr "Преглед в GitHub"
-
-#: includes/admin-display.php:200 includes/admin.php:126
-msgid "Versions"
-msgstr "Версии"
-
-#: includes/admin-display.php:205
-msgid "Show more details"
-msgstr "Показване на повече подробности"
-
-#: includes/admin-display.php:214
-msgid "No published release"
-msgstr "Няма публикувана версия"
-
-#: includes/admin-display.php:216
-msgid "Beta version"
-msgstr "Бета версия"
-
-#: includes/admin-display.php:220
-#, php-format
-msgid "Latest version is %s"
-msgstr "Най-новата версия е %s"
-
-#: includes/admin-display.php:226
-#, php-format
-msgid "Version %s"
-msgstr "Версия %s"
-
-#: includes/admin-display.php:232
-#, php-format
-msgid "Update available (%s)"
-msgstr "Налично обновяване (%s)"
-
-#: includes/admin-display.php:243
-msgid "Auto-update"
-msgstr "Автоматично обновяване"
-
-#: includes/admin-display.php:252
-msgid "No plugins match the current view. Refresh the catalog or adjust the filter."
-msgstr "Няма плъгини, отговарящи на текущия изглед. Обновете каталога или променете филтъра."
-
-#: includes/admin-display.php:272
+#: includes/admin-display.php:352
 msgid "Plugin Hub settings"
 msgstr "Настройки на Plugin Hub"
 
-#: includes/admin-display.php:276
-msgid "Connection"
-msgstr "Връзка"
-
-#: includes/admin-display.php:277
+#: includes/admin-display.php:354
 msgid "GitHub access"
 msgstr "Достъп до GitHub"
 
-#: includes/admin-display.php:280
+#: includes/admin-display.php:357
 msgid "Connected"
 msgstr "Свързан"
 
-#: includes/admin-display.php:280
+#: includes/admin-display.php:357
 msgid "Public API"
 msgstr "Публичен API"
 
-#: includes/admin-display.php:284
+#: includes/admin-display.php:359
 msgid "Personal access token"
 msgstr "Персонален токен за достъп"
 
-#: includes/admin-display.php:286
+#: includes/admin-display.php:361
 msgid "Managed by PLUGIN_HUB_GITHUB_TOKEN in wp-config.php."
 msgstr "Управлява се чрез PLUGIN_HUB_GITHUB_TOKEN в wp-config.php."
 
-#: includes/admin-display.php:287
+#: includes/admin-display.php:362
 msgid "Configured in wp-config.php"
 msgstr "Настроен в wp-config.php"
 
-#: includes/admin-display.php:289
+#: includes/admin-display.php:364
 msgid "Optional. Add a token for a higher GitHub API rate limit."
 msgstr "По избор. Добавете токен за по-висок лимит на GitHub API заявките."
 
-#: includes/admin-display.php:290
+#: includes/admin-display.php:365
 msgid "Token configured — enter a replacement"
 msgstr "Токенът е настроен — въведете нов за замяна"
 
-#: includes/admin-display.php:290
+#: includes/admin-display.php:365
 msgid "github_pat_…"
 msgstr "github_pat_…"
 
-#: includes/admin-display.php:292 includes/admin.php:112
+#: includes/admin-display.php:367 includes/admin.php:215
 msgid "Save token"
 msgstr "Запазване на токена"
 
-#: includes/admin-display.php:294
+#: includes/admin-display.php:369
 msgid "Remove"
 msgstr "Премахване"
 
-#: includes/admin-display.php:304
+#. translators: %1$d: remaining requests, %2$d: total limit.
+#: includes/admin-display.php:379
 #, php-format
 msgid "%1$d of %2$d API requests remaining"
 msgstr "Остават %1$d от %2$d API заявки"
 
-#: includes/admin-display.php:315
+#. translators: %s: GitHub API rate-limit reset time.
+#: includes/admin-display.php:390
 #, php-format
 msgid "Resets at %s."
 msgstr "Нулира се в %s."
 
-#: includes/admin-display.php:328
-msgid "Preferences"
-msgstr "Предпочитания"
-
-#: includes/admin-display.php:329
+#: includes/admin-display.php:401
 msgid "Catalog settings"
 msgstr "Настройки на каталога"
 
-#: includes/admin-display.php:335
+#: includes/admin-display.php:405
 msgid "Show beta plugins"
 msgstr "Показване на бета плъгини"
 
-#: includes/admin-display.php:336
+#: includes/admin-display.php:406
 msgid "Include releases below version 1.0.0."
 msgstr "Включване на версии под 1.0.0."
 
-#: includes/admin-display.php:341
+#: includes/admin-display.php:411
 msgid "Open GitHub organization"
 msgstr "Отваряне на GitHub организацията"
 
-#: includes/admin-display.php:342
+#: includes/admin-display.php:412
 msgid "Documentation"
 msgstr "Документация"
 
-#: includes/admin-display.php:343
+#: includes/admin-display.php:413
 msgid "Support"
 msgstr "Поддръжка"
 
-#: includes/admin-display.php:350
+#: includes/admin-display.php:422
 msgid "Activity history"
 msgstr "История на активността"
 
-#: includes/admin-display.php:351
+#: includes/admin-display.php:423
 msgid "Permanently remove all recorded plugin actions."
 msgstr "Безвъзвратно премахване на всички записани действия с плъгини."
 
-#: includes/admin-display.php:352
+#: includes/admin-display.php:424
 msgid "Clear activity log"
 msgstr "Изчистване на дневника"
 
-#: includes/admin-display.php:364
+#: includes/admin-display.php:436
 msgid "Close"
 msgstr "Затваряне"
 
-#: includes/admin.php:53 includes/admin.php:54
+#: includes/admin.php:120 includes/admin.php:127 includes/admin.php:143
+#: includes/admin.php:144 includes/admin.php:758
 msgid "Plugin Hub"
 msgstr "Plugin Hub"
 
-#: includes/admin.php:96
+#: includes/admin.php:199 includes/admin.php:239
 msgid "Installing..."
 msgstr "Инсталиране..."
 
-#: includes/admin.php:97
-msgid "Installed"
-msgstr "Инсталиран"
-
-#: includes/admin.php:98
+#: includes/admin.php:201
 msgid "Install Failed"
 msgstr "Неуспешно инсталиране"
 
-#: includes/admin.php:99
+#: includes/admin.php:202
 msgid "Updating..."
 msgstr "Обновяване..."
 
-#: includes/admin.php:100
+#: includes/admin.php:203
 msgid "Updated"
 msgstr "Обновен"
 
-#: includes/admin.php:101
+#: includes/admin.php:204
 msgid "Update Failed"
 msgstr "Неуспешно обновяване"
 
-#: includes/admin.php:102
+#: includes/admin.php:205
 msgid "Activating..."
 msgstr "Активиране..."
 
-#: includes/admin.php:103
+#: includes/admin.php:206
 msgid "Activated"
 msgstr "Активиран"
 
-#: includes/admin.php:104
+#: includes/admin.php:207
 msgid "Activation Failed"
 msgstr "Неуспешно активиране"
 
-#: includes/admin.php:105
+#: includes/admin.php:208
 msgid "Deactivating..."
 msgstr "Деактивиране..."
 
-#: includes/admin.php:106
+#: includes/admin.php:209
 msgid "Deactivated"
 msgstr "Деактивиран"
 
-#: includes/admin.php:107
+#: includes/admin.php:210
 msgid "Deactivation Failed"
 msgstr "Неуспешно деактивиране"
 
-#: includes/admin.php:108
+#: includes/admin.php:211
 msgid "Deleting..."
 msgstr "Изтриване..."
 
-#: includes/admin.php:109
+#: includes/admin.php:212
 msgid "Deleted"
 msgstr "Изтрит"
 
-#: includes/admin.php:110
+#: includes/admin.php:213
 msgid "Delete Failed"
 msgstr "Неуспешно изтриване"
 
-#: includes/admin.php:111
+#: includes/admin.php:214
 msgid "Saving..."
 msgstr "Запазване..."
 
-#: includes/admin.php:113
+#: includes/admin.php:216
 msgid "Processing..."
 msgstr "Обработване..."
 
-#: includes/admin.php:114
+#: includes/admin.php:217
 msgid "Done"
 msgstr "Готово"
 
-#: includes/admin.php:115
+#: includes/admin.php:218
 msgid "Failed"
 msgstr "Неуспешно"
 
-#: includes/admin.php:116
+#: includes/admin.php:219
 msgid "An error occurred. Please try again."
 msgstr "Възникна грешка. Моля, опитайте отново."
 
-#: includes/admin.php:117
+#: includes/admin.php:220
 msgid "Are you sure you want to delete this plugin?"
 msgstr "Сигурни ли сте, че искате да изтриете този плъгин?"
 
-#: includes/admin.php:118
+#: includes/admin.php:221
 msgid "Are you sure you want to delete the selected plugins?"
 msgstr "Сигурни ли сте, че искате да изтриете избраните плъгини?"
 
-#: includes/admin.php:119
-msgid "Please select an action and at least one plugin."
-msgstr "Изберете действие и поне един плъгин."
+msgid "Please select an action and at least one item."
+msgstr "Моля, изберете действие и поне един елемент."
 
-#: includes/admin.php:120
-msgid "No inactive plugins selected for deletion. Active plugins cannot be deleted."
-msgstr "Не са избрани неактивни плъгини за изтриване. Активните плъгини не могат да бъдат изтрити."
+#: includes/admin.php:223
+msgid ""
+"Failed to verify update. Please refresh the page and check the plugin "
+"version."
+msgstr ""
+"Обновяването не можа да бъде потвърдено. Обновете страницата и проверете "
+"версията на плъгина."
 
-#: includes/admin.php:121
-msgid "Failed to verify update. Please refresh the page and check the plugin version."
-msgstr "Обновяването не можа да бъде потвърдено. Обновете страницата и проверете версията на плъгина."
-
-#: includes/admin.php:122
+#: includes/admin.php:224
 msgid "Loading changelog…"
 msgstr "Зареждане на списъка с промени…"
 
-#: includes/admin.php:123
+#: includes/admin.php:225
 msgid "Changelog"
 msgstr "Списък с промени"
 
-#: includes/admin.php:124
+#: includes/admin.php:226
 msgid "No changelog available for this version."
 msgstr "За тази версия няма списък с промени."
 
-#: includes/admin.php:127
+#: includes/admin.php:227 includes/list-tables.php:540
+msgid "What's new?"
+msgstr "Какво е новото?"
+
+#: includes/admin.php:228 includes/list-tables.php:549
+msgid "Versions"
+msgstr "Версии"
+
+#: includes/admin.php:229
 msgid "Loading…"
 msgstr "Зареждане…"
 
-#: includes/admin.php:129
+#. translators: %s: Version number.
+#: includes/admin.php:231
 #, php-format
 msgid "Roll back to version %s?"
 msgstr "Връщане към версия %s?"
 
-#: includes/admin.php:130
+#: includes/admin.php:232
 msgid "current"
 msgstr "текуща"
 
-#: includes/admin.php:131
+#: includes/admin.php:233
 msgid "Rolling back…"
 msgstr "Връщане на версия…"
 
-#: includes/admin.php:132
+#: includes/admin.php:234
 msgid "Rolled back"
 msgstr "Версията е върната"
 
-#: includes/admin.php:133
+#: includes/admin.php:235
 msgid "Rollback Failed"
 msgstr "Неуспешно връщане на версия"
 
-#: includes/admin.php:134
+#: includes/admin.php:236
 msgid "Clear the entire activity log?"
 msgstr "Да се изчисти ли целият дневник на активността?"
 
-#: includes/admin.php:135
+#: includes/admin.php:237
 msgid "Clearing…"
 msgstr "Изчистване…"
 
-#: includes/admin.php:136
+#: includes/admin.php:238
 msgid "Clear Log"
 msgstr "Изчистване на дневника"
 
-#: includes/admin.php:137
-msgid "No plugins match your search."
-msgstr "Няма плъгини, отговарящи на търсенето."
+#: includes/admin.php:240
+msgid "Restoring..."
+msgstr "Възстановяване..."
 
-#: includes/admin.php:155
+#: includes/admin.php:241
+msgid ""
+"Restore the previous version of this MU plugin? Automatic updates will be "
+"switched off for it."
+msgstr ""
+"Да се възстанови ли предишната версия на този MU плъгин? Автоматичните "
+"обновявания за него ще бъдат изключени."
+
+#: includes/admin.php:242
+msgid "Restored"
+msgstr "Възстановено"
+
+#: includes/admin.php:243
+msgid ""
+"Update all MU plugins that have a newer version? The previous version of "
+"each replaced file is kept so you can roll it back."
+msgstr ""
+"Да се обновят ли всички MU плъгини с по-нова версия? Предишната версия на "
+"всеки заменен файл се пази, за да можете да я върнете."
+
+#: includes/admin.php:244
+msgid "Install this MU plugin? MU plugins load automatically on every request."
+msgstr ""
+"Да се инсталира ли този MU плъгин? MU плъгините се зареждат автоматично при "
+"всяка заявка."
+
+msgid "Update to"
+msgstr "Ъпдейт до"
+
+#: includes/admin.php:246 includes/list-tables.php:537
+msgid "Update now"
+msgstr "Обновяване сега"
+
+msgid "Cancel"
+msgstr "Отказ"
+
+#, php-format
+msgid "Update %s"
+msgstr "Ъпдейт на %s"
+
+#, php-format
+msgid "These active plugins depend on it: %s. Continue anyway?"
+msgstr "Тези активни добавки зависят от нея: %s. Да продължа ли въпреки това?"
+
+msgid "Pin"
+msgstr "Фиксиране"
+
+msgid "No pin (follow every update)"
+msgstr "Без фиксиране (следва всеки ъпдейт)"
+
+#, php-format
+msgid "Hold at %s (never update)"
+msgstr "Задържане на %s (без ъпдейт)"
+
+#, php-format
+msgid "Stay on %s"
+msgstr "Оставане на %s"
+
+msgid "Save"
+msgstr "Запазване"
+
+msgid "Pin saved."
+msgstr "Фиксирането е запазено."
+
+msgid "Settings saved."
+msgstr "Настройките са запазени."
+
+msgid "Restore this backup? The current plugin files will be replaced."
+msgstr ""
+"Да се възстанови ли това резервно копие? Текущите файлове на добавката ще "
+"бъдат заменени."
+
+msgid "Delete the selected backups?"
+msgstr "Да се изтрият ли избраните резервни копия?"
+
+msgid "Delete the selected activity entries?"
+msgstr "Да се изтрият ли избраните записи за активност?"
+
+msgid "Restoring…"
+msgstr "Възстановяване…"
+
+msgid "Sending…"
+msgstr "Изпращане…"
+
+msgid "Test sent."
+msgstr "Тестът е изпратен."
+
+msgid "Choose a configuration file first."
+msgstr "Първо изберете конфигурационен файл."
+
+msgid "Some plugins from this file are not installed yet."
+msgstr "Някои добавки от този файл още не са инсталирани."
+
+msgid "Install missing"
+msgstr "Инсталиране на липсващите"
+
+#, php-format
+msgid "Processing %1$s of %2$s"
+msgstr "Обработка на %1$s от %2$s"
+
+#, php-format
+msgid "%1$s of %2$s completed"
+msgstr "%1$s от %2$s завършени"
+
+msgid "skipped"
+msgstr "пропуснати"
+
+#: includes/admin.php:290
 msgid "You do not have permission to refresh the cache."
 msgstr "Нямате права да обновявате кеша."
 
-#: includes/admin.php:179
+#: includes/admin.php:315
 msgid "Plugin list refreshed successfully."
 msgstr "Списъкът с плъгини е обновен успешно."
 
-#: includes/admin.php:260 includes/admin.php:297 includes/admin.php:315
+#: includes/admin.php:394 includes/admin.php:431 includes/admin.php:449
 msgid "You do not have permission to change this setting."
 msgstr "Нямате права да променяте тази настройка."
 
-#: includes/admin.php:264
-msgid "The GitHub token is managed in wp-config.php and cannot be changed here."
-msgstr "GitHub токенът се управлява в wp-config.php и не може да бъде променен оттук."
+#: includes/admin.php:398
+msgid ""
+"The GitHub token is managed in wp-config.php and cannot be changed here."
+msgstr ""
+"GitHub токенът се управлява в wp-config.php и не може да бъде променен оттук."
 
-#: includes/admin.php:273
+#: includes/admin.php:407
 msgid "Enter a token or use Remove Token."
 msgstr "Въведете токен или използвайте „Премахване“."
 
-#: includes/admin.php:282
+#: includes/admin.php:416
 msgid "Token removed."
 msgstr "Токенът е премахнат."
 
-#: includes/admin.php:285
+#: includes/admin.php:419
 msgid "Token saved successfully."
 msgstr "Токенът е запазен успешно."
 
-#: includes/admin.php:303
+#: includes/admin.php:437
 msgid "Setting updated successfully."
 msgstr "Настройката е обновена успешно."
 
-#: includes/admin.php:322 includes/api.php:725 includes/api.php:836
-#: includes/api.php:872 includes/api.php:907 includes/api.php:1028
-#: includes/api.php:1077 includes/api.php:1173 includes/api.php:1249
+#: includes/admin.php:456 includes/admin.php:547 includes/api.php:1139
+#: includes/api.php:1300 includes/api.php:1371 includes/api.php:1439
+#: includes/api.php:1688 includes/api.php:1768 includes/api.php:1864
+#: includes/api.php:2026
 msgid "Invalid plugin information."
 msgstr "Невалидна информация за плъгина."
 
-#: includes/admin.php:335
+#: includes/admin.php:469 includes/class-mu-plugins.php:1584
 msgid "Setting updated."
 msgstr "Настройката е обновена."
 
-#: includes/admin.php:347 includes/api.php:1243
+#: includes/admin.php:481 includes/api.php:2020
 msgid "You do not have permission."
 msgstr "Нямате необходимите права."
 
-#: includes/admin.php:351
+#: includes/admin.php:485
 msgid "Activity log cleared."
 msgstr "Дневникът на активността е изчистен."
 
-#: includes/api.php:565
+msgid "You do not have permission to do this."
+msgstr "Нямате право да извършите това действие."
+
+#, php-format
+msgid "%d backup(s) deleted."
+msgstr "Изтрити резервни копия: %d."
+
+msgid "Invalid backup."
+msgstr "Невалидно резервно копие."
+
+msgid "The backup no longer exists."
+msgstr "Резервното копие вече не съществува."
+
+#, php-format
+msgid "%1$s restored to version %2$s."
+msgstr "%1$s е възстановена до версия %2$s."
+
+#, php-format
+msgid "%d entries deleted."
+msgstr "Изтрити записи: %d."
+
+msgid "Configuration imported."
+msgstr "Конфигурацията е импортирана."
+
+msgid "Email sent."
+msgstr "Имейлът е изпратен."
+
+msgid "Email failed."
+msgstr "Имейлът не бе изпратен."
+
+msgid "Webhook delivered."
+msgstr "Webhook е доставен."
+
+msgid "Webhook failed."
+msgstr "Webhook неуспешен."
+
+msgid "You do not have permission to export the configuration."
+msgstr "Нямате право да експортирате конфигурацията."
+
+msgid "You do not have permission to export the activity log."
+msgstr "Нямате право да експортирате журнала с активност."
+
+#, php-format
+msgid "%d Open WP Club plugin installed."
+msgid_plural "%d Open WP Club plugins installed."
+msgstr[0] "Инсталирана е %d добавка на Open WP Club."
+msgstr[1] "Инсталирани са %d добавки на Open WP Club."
+
+msgid "Everything is up to date."
+msgstr "Всичко е актуално."
+
+#: includes/admin.php:803
+msgid "Updates available"
+msgstr "Налични обновявания"
+
+#, php-format
+msgid "%d MU plugin update"
+msgid_plural "%d MU plugin updates"
+msgstr[0] "%d ъпдейт на MU добавка"
+msgstr[1] "%d ъпдейта на MU добавки"
+
+msgid "Recent activity"
+msgstr "Скорошна активност"
+
+msgid "Open Plugin Hub"
+msgstr "Отваряне на Plugin Hub"
+
+#: includes/api.php:627
 msgid "No changelog is available."
 msgstr "Няма наличен списък с промени."
 
-#: includes/api.php:718
-msgid "You do not have permission to install plugins."
-msgstr "Нямате права да инсталирате плъгини."
+msgid "Invalid version pin."
+msgstr "Невалидно фиксиране на версия."
 
-#: includes/api.php:730
+msgid ""
+"This release has no published SHA-256 checksum, and checksum verification is "
+"required in the Plugin Hub settings."
+msgstr ""
+"Тази версия няма публикувана SHA-256 контролна сума, а настройките на Plugin "
+"Hub изискват проверка на контролна сума."
+
+msgid ""
+"The downloaded package does not match the SHA-256 checksum published in the "
+"catalog. The installation was cancelled."
+msgstr ""
+"Изтегленият пакет не съвпада със SHA-256 контролната сума от каталога. "
+"Инсталацията беше отменена."
+
+#: includes/api.php:1144
 msgid "The requested plugin version is not in the trusted catalog."
 msgstr "Заявената версия на плъгина не е в доверения каталог."
 
-#: includes/api.php:734
+#: includes/api.php:1148
 msgid "The plugin is already installed."
 msgstr "Плъгинът вече е инсталиран."
 
-#: includes/api.php:741
+#. translators: %1$s: Repository name, %2$s: Version number
+#: includes/api.php:1155
 #, php-format
-msgid "Unable to fetch download URL for %1$s v%2$s. Please check the error log for more details."
-msgstr "Адресът за изтегляне на %1$s v%2$s не може да бъде получен. Проверете дневника за грешки за повече подробности."
+msgid ""
+"Unable to fetch download URL for %1$s v%2$s. Please check the error log for "
+"more details."
+msgstr ""
+"Адресът за изтегляне на %1$s v%2$s не може да бъде получен. Проверете "
+"дневника за грешки за повече подробности."
 
-#: includes/api.php:746
+#: includes/api.php:1159
 msgid "Invalid download URL."
 msgstr "Невалиден адрес за изтегляне."
 
-#: includes/api.php:763
+#: includes/api.php:1181
 msgid "Installation failed. Please check the error log for more details."
-msgstr "Инсталирането е неуспешно. Проверете дневника за грешки за повече подробности."
+msgstr ""
+"Инсталирането е неуспешно. Проверете дневника за грешки за повече "
+"подробности."
 
-#: includes/api.php:768
+#: includes/api.php:1186
 msgid "Plugin installed but file path could not be determined."
 msgstr "Плъгинът е инсталиран, но пътят до файла не можа да бъде определен."
 
-#: includes/api.php:775
-msgid "Plugin installation completed but the installed version could not be verified."
-msgstr "Инсталирането приключи, но инсталираната версия не можа да бъде потвърдена."
+#: includes/api.php:1193
+msgid ""
+"Plugin installation completed but the installed version could not be "
+"verified."
+msgstr ""
+"Инсталирането приключи, но инсталираната версия не можа да бъде потвърдена."
 
-#: includes/api.php:785
+#: includes/api.php:1215
+msgid "You do not have permission to install plugins."
+msgstr "Нямате права да инсталирате плъгини."
+
+#: includes/api.php:1226
 msgid "Plugin installed successfully."
 msgstr "Плъгинът е инсталиран успешно."
 
-#: includes/api.php:815
+#: includes/api.php:1256
 msgid "The downloaded plugin package could not be prepared."
 msgstr "Изтегленият пакет на плъгина не можа да бъде подготвен."
 
-#: includes/api.php:830
-msgid "You do not have permission to activate plugins."
-msgstr "Нямате права да активирате плъгини."
+msgid "You do not have permission to manage network plugins."
+msgstr "Нямате право да управлявате мрежовите добавки."
 
-#: includes/api.php:842 includes/api.php:878 includes/api.php:923
-#: includes/api.php:969 includes/api.php:1034
+#: includes/api.php:1305 includes/api.php:1376 includes/api.php:1453
+#: includes/api.php:1629 includes/api.php:1693
 msgid "Plugin not found."
 msgstr "Плъгинът не е намерен."
 
-#: includes/api.php:854
+#: includes/api.php:1329
+msgid "You do not have permission to activate plugins."
+msgstr "Нямате права да активирате плъгини."
+
+#: includes/api.php:1339
 msgid "Plugin activated successfully."
 msgstr "Плъгинът е активиран успешно."
 
-#: includes/api.php:866
+#: includes/api.php:1382
+msgid "Network-active plugins must be managed from Network Admin."
+msgstr ""
+"Активните за мрежата плъгини трябва да се управляват от администрацията на "
+"мрежата."
+
+#, php-format
+msgid "These active plugins require this plugin: %s"
+msgstr "Тези активни добавки изискват тази добавка: %s"
+
+#: includes/api.php:1409
 msgid "You do not have permission to deactivate plugins."
 msgstr "Нямате права да деактивирате плъгини."
 
-#: includes/api.php:883
-msgid "Network-active plugins must be managed from Network Admin."
-msgstr "Активните за мрежата плъгини трябва да се управляват от администрацията на мрежата."
-
-#: includes/api.php:888
+#: includes/api.php:1419
 msgid "Plugin deactivated successfully."
 msgstr "Плъгинът е деактивиран успешно."
 
-#: includes/api.php:900
-msgid "You do not have permission to update plugins."
-msgstr "Нямате права да обновявате плъгини."
-
-#: includes/api.php:914
+#: includes/api.php:1444
 msgid "The requested plugin is not in the trusted catalog."
 msgstr "Заявеният плъгин не е в доверения каталог."
 
-#: includes/api.php:918
-msgid "The requested update is no longer current. Refresh the plugin list and try again."
-msgstr "Заявеното обновяване вече не е актуално. Обновете списъка с плъгини и опитайте отново."
+#: includes/api.php:1448
+msgid ""
+"The requested update is no longer current. Refresh the plugin list and try "
+"again."
+msgstr ""
+"Заявеното обновяване вече не е актуално. Обновете списъка с плъгини и "
+"опитайте отново."
 
-#: includes/api.php:926
+#: includes/api.php:1456
 msgid "The installed plugin is already at this version or newer."
 msgstr "Инсталираният плъгин вече е с тази или по-нова версия."
 
-#: includes/api.php:929
+#: includes/api.php:1459
 msgid "The selected version is already installed."
 msgstr "Избраната версия вече е инсталирана."
 
-#: includes/api.php:939
-msgid "Update failed. Please check the error log for more details."
-msgstr "Обновяването е неуспешно. Проверете дневника за грешки за повече подробности."
+#: includes/api.php:1462
+msgid "Rollback only supports installing an older version. Use Update instead."
+msgstr ""
+"Връщането поддържа само инсталиране на по-стара версия. Използвайте "
+"Обновяване."
 
-#: includes/api.php:947
+#, php-format
+msgid "This plugin is pinned to %s. Remove the pin to update."
+msgstr ""
+"Тази добавка е фиксирана на %s. Премахнете фиксирането, за да я обновите."
+
+#: includes/api.php:1489
+msgid "Update failed. Please check the error log for more details."
+msgstr ""
+"Обновяването е неуспешно. Проверете дневника за грешки за повече подробности."
+
+#: includes/api.php:1495
+msgid ""
+"Update reported success but version mismatch. Please check the error log for "
+"more details."
+msgstr ""
+"Обновяването е отчетено като успешно, но версията не съвпада. Проверете "
+"дневника за грешки за повече подробности."
+
+#, php-format
+msgid ""
+"The site failed its health check after updating %1$s to %2$s, so version "
+"%3$s was restored automatically."
+msgstr ""
+"Сайтът не премина проверката за състояние след ъпдейта на %1$s до %2$s, "
+"затова версия %3$s беше възстановена автоматично."
+
+msgid "the previous version (restore failed, check the site)"
+msgstr "предишната версия (възстановяването не успя, проверете сайта)"
+
+#: includes/api.php:1598
+msgid "You do not have permission to update plugins."
+msgstr "Нямате права да обновявате плъгини."
+
+#. translators: %s: Version number
+#: includes/api.php:1611
 #, php-format
 msgid "Plugin updated successfully to version %s"
 msgstr "Плъгинът е обновен успешно до версия %s"
 
-#: includes/api.php:950
-msgid "Update reported success but version mismatch. Please check the error log for more details."
-msgstr "Обновяването е отчетено като успешно, но версията не съвпада. Проверете дневника за грешки за повече подробности."
-
-#: includes/api.php:974
+#: includes/api.php:1634
 msgid "Unable to fetch a trusted download URL for this release."
 msgstr "Не може да бъде получен доверен адрес за изтегляне на тази версия."
 
-#: includes/api.php:1022
-msgid "You do not have permission to delete plugins."
-msgstr "Нямате права да изтривате плъгини."
-
-#: includes/api.php:1038
+#: includes/api.php:1697
 msgid "Please deactivate the plugin before deleting."
 msgstr "Деактивирайте плъгина, преди да го изтриете."
 
-#: includes/api.php:1055
-msgid "Plugin deleted successfully."
-msgstr "Плъгинът е изтрит успешно."
-
-#: includes/api.php:1058
+#: includes/api.php:1727
 msgid "Failed to delete the plugin."
 msgstr "Плъгинът не можа да бъде изтрит."
 
-#: includes/api.php:1070
+#: includes/api.php:1739
+msgid "You do not have permission to delete plugins."
+msgstr "Нямате права да изтривате плъгини."
+
+#: includes/api.php:1749
+msgid "Plugin deleted successfully."
+msgstr "Плъгинът е изтрит успешно."
+
+#: includes/api.php:1761
 msgid "You do not have permission to verify plugin updates."
 msgstr "Нямате права да потвърждавате обновявания на плъгини."
 
-#: includes/api.php:1084
+#. translators: %s: Plugin version
+#: includes/api.php:1775
 #, php-format
 msgid "Plugin version verified: %s"
 msgstr "Версията на плъгина е потвърдена: %s"
 
-#: includes/api.php:1088
+#. translators: %1$s: Expected version, %2$s: Found version
+#: includes/api.php:1779
 #, php-format
 msgid "Plugin version mismatch. Expected: %1$s, Found: %2$s"
 msgstr "Версията на плъгина не съвпада. Очаквана: %1$s, намерена: %2$s"
 
-#: includes/api.php:1165
+#: includes/api.php:1856
 msgid "You do not have permission to view changelogs."
 msgstr "Нямате права да преглеждате списъци с промени."
 
-#: includes/api.php:1182
+#: includes/api.php:1873
 msgid "Unable to fetch changelog."
 msgstr "Списъкът с промени не може да бъде зареден."
 
-#: includes/api.php:1206
+#: includes/api.php:1896
 msgid "WordPress Cron"
 msgstr "WordPress Cron"
 
-#: includes/api.php:1253
+#: includes/api.php:2030
 msgid "The requested plugin is not available for rollback."
 msgstr "Заявената версия на плъгина не е налична за възстановяване."
 
-#: includes/api.php:1266 includes/api.php:1271
+#: includes/api.php:2043 includes/api.php:2048
 msgid "Unable to fetch releases."
 msgstr "Версиите не могат да бъдат заредени."
 
-#: includes/api.php:1376
+#, php-format
+msgid "waiting %d day after release"
+msgid_plural "waiting %d days after release"
+msgstr[0] "изчакване %d ден след излизането"
+msgstr[1] "изчакване %d дни след излизането"
+
+msgid "rolled back after a failed health check"
+msgstr "върната назад след неуспешна проверка за състояние"
+
+#. translators: %s: site name
+#: includes/api.php:2204
 #, php-format
 msgid "[%s] Plugin Hub Update Report"
 msgstr "[%s] Отчет за обновяванията от Plugin Hub"
 
-#: includes/api.php:1381
+#: includes/api.php:2209
 msgid "The following plugins were automatically updated:"
 msgstr "Следните плъгини бяха обновени автоматично:"
 
-#: includes/api.php:1389
+msgid ""
+"The automatic update of the following plugins failed. Update them manually "
+"from Plugin Hub:"
+msgstr ""
+"Автоматичният ъпдейт на следните добавки се провали. Обновете ги ръчно от "
+"Plugin Hub:"
+
+#: includes/api.php:2225
 msgid "The following plugins have updates available:"
 msgstr "За следните плъгини има налични обновявания:"
 
-#: includes/api.php:1397
+#. translators: %s: Plugin Hub admin URL
+#: includes/api.php:2233
 #, php-format
 msgid "Manage your plugins: %s"
 msgstr "Управление на плъгините: %s"
+
+msgid "Invalid plugin for backup."
+msgstr "Невалидна добавка за резервно копие."
+
+msgid "The plugin directory does not exist."
+msgstr "Папката на добавката не съществува."
+
+msgid "The backup directory could not be created."
+msgstr "Папката за резервни копия не можа да бъде създадена."
+
+msgid "The backup archive could not be created."
+msgstr "Архивът с резервното копие не можа да бъде създаден."
+
+msgid "The backup archive could not be written."
+msgstr "Архивът с резервното копие не можа да бъде записан."
+
+msgid "The backup was not found."
+msgstr "Резервното копие не е намерено."
+
+msgid "The PHP zip extension is required to restore backups."
+msgstr "За възстановяване на резервни копия е нужно PHP разширението zip."
+
+msgid "The backup archive is damaged."
+msgstr "Архивът с резервното копие е повреден."
+
+msgid "The backup archive contains unexpected paths."
+msgstr "Архивът с резервното копие съдържа неочаквани пътища."
+
+msgid "The filesystem could not be initialised."
+msgstr "Файловата система не можа да бъде инициализирана."
+
+msgid "The current plugin directory could not be moved aside."
+msgstr "Текущата папка на добавката не можа да бъде преместена настрана."
+
+msgid "The backup did not contain the plugin directory."
+msgstr "Резервното копие не съдържа папката на добавката."
+
+msgid "The configuration file is empty or too large."
+msgstr "Конфигурационният файл е празен или твърде голям."
+
+msgid "This is not a Plugin Hub configuration file."
+msgstr "Това не е конфигурационен файл на Plugin Hub."
+
+#: includes/class-mu-plugins.php:573
+msgid "Invalid MU plugin path."
+msgstr "Невалиден път на MU плъгин."
+
+#: includes/class-mu-plugins.php:588
+msgid "Could not download the MU plugin from GitHub."
+msgstr "MU плъгинът не можа да бъде изтеглен от GitHub."
+
+#: includes/class-mu-plugins.php:593
+msgid "GitHub did not return the MU plugin file."
+msgstr "GitHub не върна файла на MU плъгина."
+
+#: includes/class-mu-plugins.php:598
+msgid ""
+"The MU plugin changed on GitHub while downloading. Refresh the catalog and "
+"try again."
+msgstr ""
+"MU плъгинът е променен в GitHub по време на изтеглянето. Обновете каталога и "
+"опитайте отново."
+
+#: includes/class-mu-plugins.php:1027
+msgid "The MU plugin directory does not exist and could not be created."
+msgstr "Директорията за MU плъгини не съществува и не можа да бъде създадена."
+
+#. translators: %s: directory path.
+#: includes/class-mu-plugins.php:1031
+#, php-format
+msgid "The directory %s is not writable."
+msgstr "Директорията %s не е записваема."
+
+#. translators: %s: file path.
+#: includes/class-mu-plugins.php:1035
+#, php-format
+msgid "The file %s is not writable."
+msgstr "Файлът %s не е записваем."
+
+#: includes/class-mu-plugins.php:1045
+msgid "Could not write the MU plugin file."
+msgstr "Файлът на MU плъгина не можа да бъде записан."
+
+#: includes/class-mu-plugins.php:1051
+msgid "Could not back up the existing MU plugin file."
+msgstr ""
+"Не можа да се направи резервно копие на съществуващия файл на MU плъгина."
+
+#: includes/class-mu-plugins.php:1056
+msgid "Could not replace the MU plugin file."
+msgstr "Файлът на MU плъгина не можа да бъде заменен."
+
+#: includes/class-mu-plugins.php:1066
+msgid ""
+"The written MU plugin file did not match the download and was rolled back."
+msgstr ""
+"Записаният файл на MU плъгина не съвпада с изтегления и промяната беше "
+"върната."
+
+#: includes/class-mu-plugins.php:1103
+msgid "The downloaded file is not a PHP file."
+msgstr "Изтегленият файл не е PHP файл."
+
+#: includes/class-mu-plugins.php:1104
+msgid "The downloaded file has no Plugin Name header."
+msgstr "Изтегленият файл няма заглавие Plugin Name."
+
+#: includes/class-mu-plugins.php:1105
+msgid "The downloaded file has no valid Version header."
+msgstr "Изтегленият файл няма валидно заглавие Version."
+
+#: includes/class-mu-plugins.php:1106
+msgid "The downloaded file has a PHP syntax error and was not installed."
+msgstr "Изтегленият файл съдържа PHP синтактична грешка и не беше инсталиран."
+
+#: includes/class-mu-plugins.php:1113
+msgid "The installed MU plugin is already at this version or newer."
+msgstr "Инсталираният MU плъгин вече е в тази версия или по-нова."
+
+#: includes/class-mu-plugins.php:1143
+msgid "This MU plugin needs 000-helpers.php, which is not in the catalog."
+msgstr "Този MU плъгин се нуждае от 000-helpers.php, който не е в каталога."
+
+#. translators: %s: error message.
+#: includes/class-mu-plugins.php:1164
+#, php-format
+msgid "Could not install the shared helpers: %s"
+msgstr "Споделените помощни функции не можаха да бъдат инсталирани: %s"
+
+#: includes/class-mu-plugins.php:1181
+msgid "Another MU plugin operation is in progress. Try again in a moment."
+msgstr ""
+"В момента тече друга операция с MU плъгини. Опитайте отново след малко."
+
+#: includes/class-mu-plugins.php:1200 includes/class-mu-plugins.php:1234
+#: includes/class-mu-plugins.php:1286 includes/class-mu-plugins.php:1343
+#: includes/class-mu-plugins.php:1465
+msgid "File modifications are disabled on this site."
+msgstr "Промените по файловете са забранени на този сайт."
+
+#: includes/class-mu-plugins.php:1207 includes/class-mu-plugins.php:1254
+#: includes/class-mu-plugins.php:1293 includes/class-mu-plugins.php:1570
+msgid "The requested MU plugin is not in the trusted catalog."
+msgstr "Заявеният MU плъгин не е в доверения каталог."
+
+#: includes/class-mu-plugins.php:1210
+msgid "This MU plugin is already installed."
+msgstr "Този MU плъгин вече е инсталиран."
+
+#: includes/class-mu-plugins.php:1259 includes/class-mu-plugins.php:1303
+msgid "This MU plugin is not installed."
+msgstr "Този MU плъгин не е инсталиран."
+
+#: includes/class-mu-plugins.php:1262
+msgid "The installed MU plugin is already up to date."
+msgstr "Инсталираният MU плъгин вече е актуален."
+
+msgid ""
+"The shared helpers file cannot be rolled back because other MU plugins may "
+"depend on it."
+msgstr ""
+"Споделеният файл с помощни функции не може да бъде върнат назад, защото "
+"други MU добавки може да зависят от него."
+
+#: includes/class-mu-plugins.php:1308
+msgid "There is no previous version to restore."
+msgstr "Няма предишна версия за възстановяване."
+
+#: includes/class-mu-plugins.php:1313
+msgid "The stored previous version is not a valid MU plugin."
+msgstr "Запазената предишна версия не е валиден MU плъгин."
+
+#: includes/class-mu-plugins.php:1456
+msgid "You do not have permission to manage MU plugins."
+msgstr "Нямате право да управлявате MU плъгини."
+
+msgid ""
+"Only network administrators can change MU plugins on a multisite network."
+msgstr ""
+"Само мрежовите администратори могат да променят MU добавки в мрежа от "
+"сайтове."
+
+#: includes/class-mu-plugins.php:1477
+msgid "Invalid MU plugin information."
+msgstr "Невалидна информация за MU плъгин."
+
+#. translators: 1: file name, 2: version number.
+#: includes/class-mu-plugins.php:1495
+#, php-format
+msgid "%1$s installed (version %2$s)."
+msgstr "%1$s е инсталиран (версия %2$s)."
+
+#. translators: 1: file name, 2: version number.
+#: includes/class-mu-plugins.php:1511
+#, php-format
+msgid "%1$s updated to version %2$s."
+msgstr "%1$s е обновен до версия %2$s."
+
+#. translators: 1: file name, 2: version number.
+#: includes/class-mu-plugins.php:1527
+#, php-format
+msgid ""
+"%1$s restored to version %2$s. Automatic updates were switched off for it."
+msgstr ""
+"%1$s е върнат до версия %2$s. Автоматичните обновявания за него са изключени."
+
+#: includes/class-mu-plugins.php:1545
+msgid "All MU plugins are up to date."
+msgstr "Всички MU плъгини са актуални."
+
+#. translators: %d: number of MU plugins.
+#: includes/class-mu-plugins.php:1549
+#, php-format
+msgid "%d MU plugin(s) updated."
+msgstr "Обновени MU плъгини: %d."
+
+#, php-format
+msgid "[%s] Plugin Hub test notification"
+msgstr "[%s] Тестово известие от Plugin Hub"
+
+msgid ""
+"This is a test message from Plugin Hub. Your notification settings work."
+msgstr ""
+"Това е тестово съобщение от Plugin Hub. Настройките за известия работят."
+
+#: includes/list-tables.php:371 includes/list-tables.php:1285
+#: includes/list-tables.php:1486
+msgid "Plugin"
+msgstr "Плъгин"
+
+msgid "Status"
+msgstr "Статус"
+
+#: includes/list-tables.php:373 includes/list-tables.php:748
+#: includes/list-tables.php:988 includes/list-tables.php:1286
+#: includes/list-tables.php:1487
+msgid "Version"
+msgstr "Версия"
+
+#: includes/list-tables.php:374 includes/list-tables.php:621
+#: includes/list-tables.php:750 includes/list-tables.php:894
+msgid "Auto-update"
+msgstr "Автоматично обновяване"
+
+#: includes/list-tables.php:375 includes/list-tables.php:989
+msgid "Description"
+msgstr "Описание"
+
+#: includes/list-tables.php:399
+msgid "All"
+msgstr "Всички"
+
+#: includes/list-tables.php:400 includes/list-tables.php:567
+msgid "Active"
+msgstr "Активни"
+
+#: includes/list-tables.php:401 includes/list-tables.php:569
+msgid "Inactive"
+msgstr "Неактивни"
+
+msgid "Not installed"
+msgstr "Не е инсталирана"
+
+#: includes/list-tables.php:405 includes/list-tables.php:572
+msgid "Beta"
+msgstr "Бета"
+
+msgid "Pinned"
+msgstr "Фиксирана"
+
+#: includes/list-tables.php:437 includes/list-tables.php:1012
+#: includes/list-tables.php:1083 includes/list-tables.php:1165
+msgid "Install"
+msgstr "Инсталиране"
+
+#: includes/list-tables.php:438 includes/list-tables.php:529
+#: includes/list-tables.php:1169
+msgid "Activate"
+msgstr "Активиране"
+
+#: includes/list-tables.php:439 includes/list-tables.php:527
+#: includes/list-tables.php:1170
+msgid "Deactivate"
+msgstr "Деактивиране"
+
+#: includes/list-tables.php:440 includes/list-tables.php:774
+#: includes/list-tables.php:846 includes/list-tables.php:1166
+msgid "Update"
+msgstr "Обновяване"
+
+#: includes/list-tables.php:441 includes/list-tables.php:533
+#: includes/list-tables.php:1171 includes/list-tables.php:1393
+#: includes/list-tables.php:1558
+msgid "Delete"
+msgstr "Изтриване"
+
+msgid "Enable auto-updates"
+msgstr "Включване на автоматичните ъпдейти"
+
+msgid "Disable auto-updates"
+msgstr "Изключване на автоматичните ъпдейти"
+
+msgid "Network activate"
+msgstr "Мрежова активация"
+
+msgid "Network deactivate"
+msgstr "Мрежова деактивация"
+
+#: includes/list-tables.php:458
+msgid ""
+"No plugins match the current view. Refresh the catalog or adjust the filter."
+msgstr ""
+"Няма плъгини, отговарящи на текущия изглед. Обновете каталога или променете "
+"филтъра."
+
+#, php-format
+msgid "Select %s"
+msgstr "Избор на %s"
+
+#: includes/list-tables.php:517
+msgid "Install now"
+msgstr "Инсталиране сега"
+
+#: includes/list-tables.php:519
+msgid "No release available"
+msgstr "Няма налична версия"
+
+msgid "Change pin"
+msgstr "Промяна на фиксирането"
+
+msgid "Pin version"
+msgstr "Фиксиране на версия"
+
+#: includes/list-tables.php:546
+msgid "View on GitHub"
+msgstr "Преглед в GitHub"
+
+msgid "Network active"
+msgstr "Активна в мрежата"
+
+#: includes/list-tables.php:586
+msgid "No published release"
+msgstr "Няма публикувана версия"
+
+#. translators: %s: Plugin version number
+#: includes/list-tables.php:589
+#, php-format
+msgid "Latest version is %s"
+msgstr "Най-новата версия е %s"
+
+#. translators: %s: Plugin version number
+#: includes/list-tables.php:593
+#, php-format
+msgid "Version %s"
+msgstr "Версия %s"
+
+#. translators: %s: New version number
+#: includes/list-tables.php:597
+#, php-format
+msgid "Update available (%s)"
+msgstr "Налично обновяване (%s)"
+
+#, php-format
+msgid "Update to %s is blocked by the pin or a failed earlier attempt."
+msgstr "Ъпдейтът до %s е блокиран от фиксиране или от неуспешен предишен опит."
+
+#, php-format
+msgid "Pinned: %s"
+msgstr "Фиксирана: %s"
+
+#, php-format
+msgid "Requires plugins that are not installed: %s"
+msgstr "Изисква добавки, които не са инсталирани: %s"
+
+#, php-format
+msgid "Required by active plugins: %s"
+msgstr "Изисква се от активни добавки: %s"
+
+#: includes/list-tables.php:746 includes/list-tables.php:986
+msgid "MU plugin"
+msgstr "MU плъгин"
+
+#: includes/list-tables.php:747 includes/list-tables.php:987
+msgid "Category"
+msgstr "Категория"
+
+#: includes/list-tables.php:749
+msgid "New version"
+msgstr "Нова версия"
+
+msgid "Roll back"
+msgstr "Връщане назад"
+
+#: includes/list-tables.php:793 includes/list-tables.php:1027
+msgid "Filter by category"
+msgstr "Филтриране по категория"
+
+#: includes/list-tables.php:794 includes/list-tables.php:1028
+msgid "All categories"
+msgstr "Всички категории"
+
+msgid "Filter"
+msgstr "Филтриране"
+
+#: includes/list-tables.php:807
+msgid "No catalog MU plugins are installed."
+msgstr "Няма инсталирани MU плъгини от каталога."
+
+#: includes/list-tables.php:849 includes/list-tables.php:1167
+msgid "Rollback"
+msgstr "Връщане на версия"
+
+#: includes/list-tables.php:852
+msgid "Up to date"
+msgstr "Актуален"
+
+#: includes/list-tables.php:864
+msgid "shared"
+msgstr "споделени"
+
+msgid ""
+"No MU plugins match your filters, or every catalog MU plugin is already "
+"installed."
+msgstr ""
+"Няма MU добавки, отговарящи на филтрите, или всички MU добавки от каталога "
+"вече са инсталирани."
+
+#. translators: %s: WordPress version.
+#: includes/list-tables.php:1110
+#, php-format
+msgid "WP %s"
+msgstr "WP %s"
+
+#. translators: %s: PHP version.
+#: includes/list-tables.php:1114
+#, php-format
+msgid "PHP %s"
+msgstr "PHP %s"
+
+msgid "Auto-Rollback"
+msgstr "Автоматично връщане"
+
+#: includes/list-tables.php:1172
+msgid "Auto-Update"
+msgstr "Автоматично обновяване"
+
+msgid "Backup restore"
+msgstr "Възстановяване от копие"
+
+msgid "Import"
+msgstr "Импорт"
+
+#: includes/list-tables.php:1176
+msgid "MU Install"
+msgstr "MU инсталиране"
+
+#: includes/list-tables.php:1177
+msgid "MU Update"
+msgstr "MU обновяване"
+
+#: includes/list-tables.php:1178
+msgid "MU Rollback"
+msgstr "MU връщане на версия"
+
+#: includes/list-tables.php:1179
+msgid "MU Auto-Update"
+msgstr "MU автоматично обновяване"
+
+#: includes/list-tables.php:1283
+msgid "Date / Time"
+msgstr "Дата / Час"
+
+#: includes/list-tables.php:1284
+msgid "Action"
+msgstr "Действие"
+
+#: includes/list-tables.php:1287
+msgid "User"
+msgstr "Потребител"
+
+msgid "Delete entries"
+msgstr "Изтриване на записи"
+
+msgid "Filter by action"
+msgstr "Филтър по действие"
+
+msgid "All actions"
+msgstr "Всички действия"
+
+msgid "Filter by user"
+msgstr "Филтър по потребител"
+
+msgid "All users"
+msgstr "Всички потребители"
+
+msgid "From date"
+msgstr "От дата"
+
+msgid "To date"
+msgstr "До дата"
+
+#: includes/list-tables.php:1356
+msgid "No activity recorded yet."
+msgstr "Все още няма записана активност."
+
+msgid "Select entry"
+msgstr "Избор на запис"
+
+msgid "Created"
+msgstr "Създадено"
+
+msgid "Size"
+msgstr "Размер"
+
+msgid "Delete backups"
+msgstr "Изтриване на копия"
+
+msgid ""
+"No backups yet. A backup is created before each plugin update when backups "
+"are enabled in Settings."
+msgstr ""
+"Още няма резервни копия. Копие се създава преди всеки ъпдейт на добавка, "
+"когато резервните копия са включени в Настройки."
+
+msgid "Select backup"
+msgstr "Избор на копие"
+
+msgid "Restore"
+msgstr "Възстановяване"
+
+#: includes/sponsorship-display.php:21
+msgid "Open-source supporters"
+msgstr "Поддръжници на отворения код"
+
+#: includes/sponsorship-display.php:22
+msgid "Their support helps keep our plugins free and maintained."
+msgstr ""
+"Тяхната подкрепа помага плъгините ни да остават безплатни и поддържани."
+
+#: includes/sponsorship-display.php:29
+msgid "All supporters and sponsorship options"
+msgstr "Всички поддръжници и възможности за спонсорство"
+
+#: includes/sponsorship-display.php:34
+msgid "Show supporter thanks"
+msgstr "Показване на благодарностите към поддръжниците"
+
+#: includes/sponsorship-display.php:34
+msgid "Hide supporter thanks"
+msgstr "Скриване на благодарностите към поддръжниците"
+
+#~ msgid "Open WP Club plugin views"
+#~ msgstr "Изгледи на плъгините на Open WP Club"
+
+#~ msgid "Select bulk action"
+#~ msgstr "Избор на групово действие"
+
+#~ msgid "Bulk Actions"
+#~ msgstr "Групови действия"
+
+#~ msgid "Apply"
+#~ msgstr "Прилагане"
+
+#~ msgid "Search Open WP Club plugins…"
+#~ msgstr "Търсене в плъгините на Open WP Club…"
+
+#~ msgid "Show more details"
+#~ msgstr "Показване на повече подробности"
+
+#~ msgid "Beta version"
+#~ msgstr "Бета версия"
+
+#~ msgid "Connection"
+#~ msgstr "Връзка"
+
+#~ msgid "Preferences"
+#~ msgstr "Предпочитания"
+
+#~ msgid "Please select an action and at least one plugin."
+#~ msgstr "Изберете действие и поне един плъгин."
+
+#~ msgid ""
+#~ "No inactive plugins selected for deletion. Active plugins cannot be "
+#~ "deleted."
+#~ msgstr ""
+#~ "Не са избрани неактивни плъгини за изтриване. Активните плъгини не могат "
+#~ "да бъдат изтрити."
+
+#~ msgid "No plugins match your search."
+#~ msgstr "Няма плъгини, отговарящи на търсенето."
 
 #~ msgid "Plugin overview"
 #~ msgstr "Обобщение на плъгините"
@@ -694,302 +1652,52 @@ msgstr "Управление на плъгините: %s"
 #~ msgid "Plugins in catalog"
 #~ msgstr "Плъгини в каталога"
 
-#~ msgid "Updates available"
-#~ msgstr "Налични обновявания"
-
 #~ msgid "Plugin views"
 #~ msgstr "Изгледи на плъгините"
 
 #~ msgid "Search plugins by name or description…"
 #~ msgstr "Търсене по име или описание…"
 
-#~ msgid "Available"
-#~ msgstr "Наличен"
-
 #~ msgid "Unavailable"
 #~ msgstr "Недостъпен"
 
-#: includes/admin-display.php:32
-msgid "MU"
-msgstr "MU"
+#~ msgid "MU"
+#~ msgstr "MU"
 
-#: includes/admin-display.php:70
-msgid "MU Install"
-msgstr "MU инсталиране"
+#~ msgid "Installed MU plugins"
+#~ msgstr "Инсталирани MU плъгини"
 
-#: includes/admin-display.php:71
-msgid "MU Update"
-msgstr "MU обновяване"
+#~ msgid "Available MU plugins"
+#~ msgstr "Налични MU плъгини"
 
-#: includes/admin-display.php:72
-msgid "MU Auto-Update"
-msgstr "MU автоматично обновяване"
+#~ msgid ""
+#~ "Installed flat into the MU directory. Shared helpers (000-helpers.php) "
+#~ "are installed automatically when a plugin needs them."
+#~ msgstr ""
+#~ "Инсталират се директно в MU директорията. Споделените помощни функции "
+#~ "(000-helpers.php) се инсталират автоматично, когато плъгин се нуждае от "
+#~ "тях."
 
-#: includes/admin-display.php:111
-msgid "Must-use plugins from the Open WP Club mu-plugin repository, managed in %s. Only files whose name matches a catalog file are updated."
-msgstr "Задължителни плъгини (MU) от хранилището mu-plugin на Open WP Club, управлявани в %s. Обновяват се само файлове, чието име съвпада с файл от каталога."
+#~ msgid "Every catalog MU plugin is already installed."
+#~ msgstr "Всички MU плъгини от каталога вече са инсталирани."
 
-#: includes/admin-display.php:118
-msgid "File modifications are disabled on this site, so MU plugins cannot be installed or updated here."
-msgstr "Промените по файловете са забранени на този сайт, затова MU плъгините не могат да се инсталират или обновяват оттук."
+#~ msgid "%1$s of %2$s"
+#~ msgstr "%1$s от %2$s"
 
-#: includes/admin-display.php:120
-msgid "The MU plugin directory does not exist yet. It will be created on the first install if the parent directory is writable."
-msgstr "Директорията за MU плъгини още не съществува. Тя ще бъде създадена при първото инсталиране, ако родителската директория е записваема."
+#~ msgid "Next page"
+#~ msgstr "Следваща страница"
 
-#: includes/admin-display.php:122
-msgid "The MU plugin directory is not writable. Fix its permissions to install or update MU plugins."
-msgstr "Директорията за MU плъгини не е записваема. Коригирайте правата ѝ, за да инсталирате или обновявате MU плъгини."
+#~ msgid "Previous page"
+#~ msgstr "Предишна страница"
 
-#: includes/admin-display.php:126
-msgid "The MU plugin catalog could not be loaded from GitHub. Try again in a few minutes."
-msgstr "Каталогът с MU плъгини не можа да бъде зареден от GitHub. Опитайте отново след няколко минути."
+#~ msgid "Search Plugins"
+#~ msgstr "Търсене на плъгини"
 
-#: includes/admin-display.php:130
-msgid "Installed MU plugins"
-msgstr "Инсталирани MU плъгини"
+#~ msgid "Search results for \"%s\""
+#~ msgstr "Резултати от търсенето за „%s“"
 
-#: includes/admin-display.php:132
-msgid "Update all"
-msgstr "Обнови всички"
+#~ msgid "Search MU plugins…"
+#~ msgstr "Търсене на MU плъгини…"
 
-#: includes/admin-display.php:139
-msgid "MU plugin"
-msgstr "MU плъгин"
-
-#: includes/admin-display.php:140
-msgid "Category"
-msgstr "Категория"
-
-#: includes/admin-display.php:142
-msgid "New version"
-msgstr "Нова версия"
-
-#: includes/admin-display.php:149
-msgid "No catalog MU plugins are installed."
-msgstr "Няма инсталирани MU плъгини от каталога."
-
-#: includes/admin-display.php:154
-msgid "shared"
-msgstr "споделени"
-
-#: includes/admin-display.php:164
-msgid "Up to date"
-msgstr "Актуален"
-
-#: includes/admin-display.php:173
-msgid "Available MU plugins"
-msgstr "Налични MU плъгини"
-
-#: includes/admin-display.php:175
-msgid "Installed flat into the MU directory. Shared helpers (000-helpers.php) are installed automatically when a plugin needs them."
-msgstr "Инсталират се директно в MU директорията. Споделените помощни функции (000-helpers.php) се инсталират автоматично, когато плъгин се нуждае от тях."
-
-#: includes/admin-display.php:187
-msgid "Every catalog MU plugin is already installed."
-msgstr "Всички MU плъгини от каталога вече са инсталирани."
-
-#: includes/admin.php:153
-msgid "Install this MU plugin? MU plugins load automatically on every request."
-msgstr "Да се инсталира ли този MU плъгин? MU плъгините се зареждат автоматично при всяка заявка."
-
-#: includes/class-mu-plugins.php:555
-msgid "Invalid MU plugin path."
-msgstr "Невалиден път на MU плъгин."
-
-#: includes/class-mu-plugins.php:570
-msgid "Could not download the MU plugin from GitHub."
-msgstr "MU плъгинът не можа да бъде изтеглен от GitHub."
-
-#: includes/class-mu-plugins.php:575
-msgid "GitHub did not return the MU plugin file."
-msgstr "GitHub не върна файла на MU плъгина."
-
-#: includes/class-mu-plugins.php:580
-msgid "The MU plugin changed on GitHub while downloading. Refresh the catalog and try again."
-msgstr "MU плъгинът е променен в GitHub по време на изтеглянето. Обновете каталога и опитайте отново."
-
-#: includes/class-mu-plugins.php:814
-msgid "The MU plugin directory does not exist and could not be created."
-msgstr "Директорията за MU плъгини не съществува и не можа да бъде създадена."
-
-#: includes/class-mu-plugins.php:818
-msgid "The directory %s is not writable."
-msgstr "Директорията %s не е записваема."
-
-#: includes/class-mu-plugins.php:822
-msgid "The file %s is not writable."
-msgstr "Файлът %s не е записваем."
-
-#: includes/class-mu-plugins.php:832
-msgid "Could not write the MU plugin file."
-msgstr "Файлът на MU плъгина не можа да бъде записан."
-
-#: includes/class-mu-plugins.php:838
-msgid "Could not back up the existing MU plugin file."
-msgstr "Не можа да се направи резервно копие на съществуващия файл на MU плъгина."
-
-#: includes/class-mu-plugins.php:843
-msgid "Could not replace the MU plugin file."
-msgstr "Файлът на MU плъгина не можа да бъде заменен."
-
-#: includes/class-mu-plugins.php:853
-msgid "The written MU plugin file did not match the download and was rolled back."
-msgstr "Записаният файл на MU плъгина не съвпада с изтегления и промяната беше върната."
-
-#: includes/class-mu-plugins.php:881
-msgid "The downloaded file is not a PHP file."
-msgstr "Изтегленият файл не е PHP файл."
-
-#: includes/class-mu-plugins.php:882
-msgid "The downloaded file has no Plugin Name header."
-msgstr "Изтегленият файл няма заглавие Plugin Name."
-
-#: includes/class-mu-plugins.php:883
-msgid "The downloaded file has no valid Version header."
-msgstr "Изтегленият файл няма валидно заглавие Version."
-
-#: includes/class-mu-plugins.php:884
-msgid "The downloaded file has a PHP syntax error and was not installed."
-msgstr "Изтегленият файл съдържа PHP синтактична грешка и не беше инсталиран."
-
-#: includes/class-mu-plugins.php:891
-msgid "The installed MU plugin is already at this version or newer."
-msgstr "Инсталираният MU плъгин вече е в тази версия или по-нова."
-
-#: includes/class-mu-plugins.php:921
-msgid "This MU plugin needs 000-helpers.php, which is not in the catalog."
-msgstr "Този MU плъгин се нуждае от 000-helpers.php, който не е в каталога."
-
-#: includes/class-mu-plugins.php:942
-msgid "Could not install the shared helpers: %s"
-msgstr "Споделените помощни функции не можаха да бъдат инсталирани: %s"
-
-#: includes/class-mu-plugins.php:959
-msgid "Another MU plugin operation is in progress. Try again in a moment."
-msgstr "В момента тече друга операция с MU плъгини. Опитайте отново след малко."
-
-#: includes/class-mu-plugins.php:978
-msgid "File modifications are disabled on this site."
-msgstr "Промените по файловете са забранени на този сайт."
-
-#: includes/class-mu-plugins.php:985
-msgid "The requested MU plugin is not in the trusted catalog."
-msgstr "Заявеният MU плъгин не е в доверения каталог."
-
-#: includes/class-mu-plugins.php:988
-msgid "This MU plugin is already installed."
-msgstr "Този MU плъгин вече е инсталиран."
-
-#: includes/class-mu-plugins.php:1037
-msgid "This MU plugin is not installed."
-msgstr "Този MU плъгин не е инсталиран."
-
-#: includes/class-mu-plugins.php:1040
-msgid "The installed MU plugin is already up to date."
-msgstr "Инсталираният MU плъгин вече е актуален."
-
-#: includes/class-mu-plugins.php:1170
-msgid "You do not have permission to manage MU plugins."
-msgstr "Нямате право да управлявате MU плъгини."
-
-#: includes/class-mu-plugins.php:1186
-msgid "Invalid MU plugin information."
-msgstr "Невалидна информация за MU плъгин."
-
-#: includes/class-mu-plugins.php:1204
-msgid "%1$s installed (version %2$s)."
-msgstr "%1$s е инсталиран (версия %2$s)."
-
-#: includes/class-mu-plugins.php:1220
-msgid "%1$s updated to version %2$s."
-msgstr "%1$s е обновен до версия %2$s."
-
-#: includes/class-mu-plugins.php:1238
-msgid "All MU plugins are up to date."
-msgstr "Всички MU плъгини са актуални."
-
-#: includes/class-mu-plugins.php:1242
-msgid "%d MU plugin(s) updated."
-msgstr "Обновени MU плъгини: %d."
-
-msgid "%1$s of %2$s"
-msgstr "%1$s от %2$s"
-
-msgid "All supporters and sponsorship options"
-msgstr "Всички поддръжници и възможности за спонсорство"
-
-msgid "Hide supporter thanks"
-msgstr "Скриване на благодарностите към поддръжниците"
-
-msgid "Show supporter thanks"
-msgstr "Показване на благодарностите към поддръжниците"
-
-msgid "Next page"
-msgstr "Следваща страница"
-
-msgid "Previous page"
-msgstr "Предишна страница"
-
-msgid "Open-source supporters"
-msgstr "Поддръжници на отворения код"
-
-msgid "Rollback only supports installing an older version. Use Update instead."
-msgstr "Връщането поддържа само инсталиране на по-стара версия. Използвайте Обновяване."
-
-msgid "Search Plugins"
-msgstr "Търсене на плъгини"
-
-msgid "Search results for \"%s\""
-msgstr "Резултати от търсенето за „%s“"
-
-msgid "Their support helps keep our plugins free and maintained."
-msgstr "Тяхната подкрепа помага плъгините ни да остават безплатни и поддържани."
-
-msgid "Filter by category"
-msgstr "Филтриране по категория"
-
-msgid "All categories"
-msgstr "Всички категории"
-
-msgid "Search MU plugins"
-msgstr "Търсене на MU плъгини"
-
-msgid "Search MU plugins…"
-msgstr "Търсене на MU плъгини…"
-
-msgid "No MU plugins match your filters."
-msgstr "Няма MU плъгини, отговарящи на филтрите."
-
-msgid "MU plugins load automatically on every request and cannot be deactivated from the admin. Some change core behaviour, for example blocking plugin installs, comments, search or email. Read the description before installing and test on a staging site first."
-msgstr "MU плъгините се зареждат автоматично при всяка заявка и не могат да се деактивират от админа. Някои променят поведението на WordPress, например блокират инсталиране на плъгини, коментари, търсене или имейли. Прочетете описанието преди инсталиране и първо тествайте на staging сайт."
-
-msgid "WP %s"
-msgstr "WP %s"
-
-msgid "PHP %s"
-msgstr "PHP %s"
-
-msgid "MU Rollback"
-msgstr "MU връщане на версия"
-
-msgid "Restoring..."
-msgstr "Възстановяване..."
-
-msgid "Restored"
-msgstr "Възстановено"
-
-msgid "Restore the previous version of this MU plugin? Automatic updates will be switched off for it."
-msgstr "Да се възстанови ли предишната версия на този MU плъгин? Автоматичните обновявания за него ще бъдат изключени."
-
-msgid "%1$s restored to version %2$s. Automatic updates were switched off for it."
-msgstr "%1$s е върнат до версия %2$s. Автоматичните обновявания за него са изключени."
-
-msgid "There is no previous version to restore."
-msgstr "Няма предишна версия за възстановяване."
-
-msgid "The stored previous version is not a valid MU plugin."
-msgstr "Запазената предишна версия не е валиден MU плъгин."
-
-msgid "Update all MU plugins that have a newer version? The previous version of each replaced file is kept so you can roll it back."
-msgstr "Да се обновят ли всички MU плъгини с по-нова версия? Предишната версия на всеки заменен файл се пази, за да можете да я върнете."
+#~ msgid "No MU plugins match your filters."
+#~ msgstr "Няма MU плъгини, отговарящи на филтрите."

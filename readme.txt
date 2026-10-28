@@ -4,7 +4,7 @@ Tags: plugins, github, installer, plugin-manager, open-wp-club
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.7.0
+Stable tag: 1.8.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,6 +30,11 @@ Plugin Hub provides a WordPress admin interface for browsing, installing, updati
 * **Activity Log**: Review manual and automatic plugin-management actions
 * **GitHub Authentication**: Optionally use a token for higher API limits
 * **Quiet Notifications**: Daily update reports are sent only when their contents change
+
+* **List Tables**: Native WordPress tables with bulk actions, sorting, search and pagination
+* **Safety Net**: Backups before updates, automatic rollback after a failed health check, version pinning and optional checksum verification
+* **Scheduling and Notifications**: Maintenance windows, release-age delay, e-mail and webhook reports
+* **WP-CLI**: Manage everything with `wp plugin-hub`
 
 = Requirements =
 
@@ -76,6 +81,19 @@ Beta plugins are those with version numbers less than 1.0.0. You can toggle thei
 3. Settings panel with beta plugin toggle
 
 == Changelog ==
+
+= 1.8.0 =
+* Plugin lists are now real WordPress list tables: select-all checkboxes, bulk actions, sortable columns, views, search and pagination for plugins, MU plugins, backups and the activity log.
+* Update notices: the Plugin Hub menu shows a badge with the number of pending updates and a dashboard widget summarises updates and recent activity.
+* Automatic rollback: after an update the site is checked and the previous version is restored if it fails.
+* Backups of a plugin are stored before each update, with retention by count and age and a disk-usage summary; restore from the Backups tab.
+* Changelog preview before updating, version pinning (hold, N.x, N.M.x), dependency warnings and optional SHA-256 package verification.
+* Maintenance window and release-age delay for automatic updates.
+* Notifications by e-mail recipients and Slack, Discord or generic webhooks, optionally only on failures.
+* Export and import the configuration (plugins, auto-update, pins, settings).
+* Activity log filters, CSV export, selective delete and retention settings.
+* Multisite: manage Plugin Hub in Network Admin with network activation.
+* WP-CLI: `wp plugin-hub` commands for list, install, update, rollback, backups, pins, MU plugins, export/import and settings.
 
 = 1.7.0 =
 * Add a Rollback button for MU plugins. The previous version of an updated file is kept in the uploads folder instead of next to the plugin.
@@ -150,6 +168,9 @@ Beta plugins are those with version numbers less than 1.0.0. You can toggle thei
 * Initial release
 
 == Upgrade Notice ==
+
+= 1.8.0 =
+Adds backups, automatic rollback, pinning, scheduling, notifications, WP-CLI and native list tables. The update check now runs hourly inside your maintenance window.
 
 = 1.4.0 =
 Recommended compatibility and reliability update for WordPress 7.1.

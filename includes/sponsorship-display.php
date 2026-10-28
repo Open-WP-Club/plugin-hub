@@ -29,7 +29,7 @@ $hide_supporters = $hide_supporters ?? true;
 			<p><a href="https://openwpclub.com/sponsors/" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'All supporters and sponsorship options', 'plugin-hub' ); ?></a></p>
 		<?php endif; ?>
 		<?php if ( ! defined( 'PLUGIN_HUB_HIDE_SUPPORTERS' ) || ! PLUGIN_HUB_HIDE_SUPPORTERS ) : ?>
-			<form method="post" action="<?php echo esc_url( admin_url( 'plugins.php?page=plugin-hub' ) ); ?>">
+			<form method="post" action="<?php echo esc_url( \PluginHub\page_url() ); ?>">
 				<?php wp_nonce_field( 'plugin_hub_supporters_visibility' ); ?>
 				<button type="submit" class="button button-link" name="plugin_hub_supporters_visibility" value="<?php echo $hide_supporters ? 'show' : 'hide'; ?>"><?php echo $hide_supporters ? esc_html__( 'Show supporter thanks', 'plugin-hub' ) : esc_html__( 'Hide supporter thanks', 'plugin-hub' ); ?></button>
 			</form>

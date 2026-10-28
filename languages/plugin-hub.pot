@@ -5,9 +5,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Plugin Hub 1.4.0\n"
+"Project-Id-Version: Plugin Hub 1.8.0\n"
 "Report-Msgid-Bugs-To: https://github.com/Open-WP-Club/plugin-hub/issues\n"
-"POT-Creation-Date: 2026-08-29 16:16+0300\n"
+"POT-Creation-Date: 2026-10-28 10:00+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,965 +16,1686 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: includes/admin-display.php:19
-msgid "Refresh Open WP Club catalog"
+#: includes/admin-display.php:20
+msgid "Plugins"
 msgstr ""
 
 #: includes/admin-display.php:21
-msgid "Install, update and manage plugins published by Open WP Club."
+msgid "MU plugins"
 msgstr ""
 
-#: includes/admin-display.php:24
-msgid "Open WP Club plugin views"
+#: includes/admin-display.php:22 includes/admin-display.php:145
+msgid "Backups"
 msgstr ""
 
-#: includes/admin-display.php:26
-msgid "All"
-msgstr ""
-
-#: includes/admin-display.php:27
-msgid "Active"
-msgstr ""
-
-#: includes/admin-display.php:28
-msgid "Inactive"
-msgstr ""
-
-#: includes/admin-display.php:29
-msgid "Updates"
-msgstr ""
-
-#: includes/admin-display.php:30
-msgid "Beta"
-msgstr ""
-
-#: includes/admin-display.php:31
+#: includes/admin-display.php:23
 msgid "Activity"
 msgstr ""
 
-#: includes/admin-display.php:44
-msgid "Activity log"
+#: includes/admin-display.php:24
+msgid "Settings"
 msgstr ""
 
-#: includes/admin-display.php:45
-msgid "A history of plugin changes made from Plugin Hub."
+#: includes/admin-display.php:31
+msgid "Refresh Open WP Club catalog"
 msgstr ""
 
-#: includes/admin-display.php:51
-msgid "Date / Time"
+#: includes/admin-display.php:33
+msgid "Install, update and manage plugins published by Open WP Club."
 msgstr ""
 
-#: includes/admin-display.php:52
-msgid "Action"
+#: includes/admin-display.php:38
+msgid "Plugin Hub sections"
 msgstr ""
 
-#: includes/admin-display.php:53 includes/admin-display.php:130
-#: includes/admin-display.php:262
-msgid "Plugin"
-msgstr ""
-
-#: includes/admin-display.php:54
-msgid "Version"
-msgstr ""
-
-#: includes/admin-display.php:55
-msgid "User"
+#: includes/admin-display.php:58
+msgid "Notifications"
 msgstr ""
 
 #: includes/admin-display.php:61
-msgid "No activity recorded yet."
+msgid "Email recipients"
 msgstr ""
 
-#: includes/admin-display.php:66
-msgid "Install"
-msgstr ""
-
-#: includes/admin-display.php:67 includes/admin-display.php:113
-msgid "Update"
+#: includes/admin-display.php:64
+msgid "Comma-separated. Leave empty to use the site administrator email."
 msgstr ""
 
 #: includes/admin-display.php:68
-msgid "Rollback"
+msgid "Send reports"
 msgstr ""
 
-#: includes/admin-display.php:69 includes/admin-display.php:111
-#: includes/admin-display.php:177
-msgid "Activate"
-msgstr ""
-
-#: includes/admin-display.php:70 includes/admin-display.php:112
-#: includes/admin-display.php:173
-msgid "Deactivate"
-msgstr ""
-
-#: includes/admin-display.php:71 includes/admin-display.php:114
-#: includes/admin-display.php:180
-msgid "Delete"
+#: includes/admin-display.php:71
+msgid "For every change (updates, available updates, failures)"
 msgstr ""
 
 #: includes/admin-display.php:72
-msgid "Auto-Update"
+msgid "Only when something fails or is rolled back"
 msgstr ""
 
-#: includes/admin-display.php:108
-msgid "Select bulk action"
+#: includes/admin-display.php:77
+msgid "Webhook URL"
 msgstr ""
 
-#: includes/admin-display.php:110
-msgid "Bulk Actions"
+#: includes/admin-display.php:80
+msgid "Send test notification"
 msgstr ""
 
-#: includes/admin-display.php:116
-msgid "Apply"
+#: includes/admin-display.php:81
+msgid ""
+"Slack, Discord or any HTTPS endpoint that accepts JSON. Save the settings "
+"before sending a test."
 msgstr ""
 
-#: includes/admin-display.php:119
-msgid "Search plugins"
+#: includes/admin-display.php:87
+msgid "Update schedule"
+msgstr ""
+
+#: includes/admin-display.php:90
+msgid "Maintenance window"
+msgstr ""
+
+#: includes/admin-display.php:93
+msgid "Only run automatic updates inside this window"
+msgstr ""
+
+#: includes/admin-display.php:100
+msgid "From"
+msgstr ""
+
+#: includes/admin-display.php:106
+msgid "until"
+msgstr ""
+
+#: includes/admin-display.php:112
+msgid "Site time."
+msgstr ""
+
+#: includes/admin-display.php:117
+msgid "Release delay"
 msgstr ""
 
 #: includes/admin-display.php:120
-msgid "Search Open WP Club plugins…"
+msgid "days"
 msgstr ""
 
-#: includes/admin-display.php:131 includes/admin-display.php:263
-msgid "Description"
+#: includes/admin-display.php:121
+msgid ""
+"Automatic updates wait until a release is this old, so a faulty release can "
+"be caught first. 0 disables the delay."
 msgstr ""
 
-#: includes/admin-display.php:167
-msgid "Install now"
+#: includes/admin-display.php:126
+msgid "Safety"
 msgstr ""
 
-#: includes/admin-display.php:170
-msgid "No release available"
+#: includes/admin-display.php:129
+msgid "Automatic rollback"
 msgstr ""
 
-#: includes/admin-display.php:185
-msgid "Update now"
+#: includes/admin-display.php:132
+msgid ""
+"Check the site after an update and restore the previous version if it fails"
 msgstr ""
 
-#: includes/admin-display.php:192 includes/admin.php:125
-msgid "What's new?"
+#: includes/admin-display.php:136
+msgid "Package integrity"
+msgstr ""
+
+#: includes/admin-display.php:139
+msgid "Refuse installs and updates whose catalog entry has no SHA-256 checksum"
+msgstr ""
+
+#: includes/admin-display.php:140
+msgid "When the catalog publishes a checksum, packages are always verified."
+msgstr ""
+
+#: includes/admin-display.php:148
+msgid "Before updates"
+msgstr ""
+
+#: includes/admin-display.php:151
+msgid "Back up the plugin folder before every update"
+msgstr ""
+
+#: includes/admin-display.php:155
+msgid "Keep"
+msgstr ""
+
+#: includes/admin-display.php:158
+msgid "backups per plugin, for at most"
+msgstr ""
+
+#: includes/admin-display.php:159
+msgid "Days to keep backups"
+msgstr ""
+
+#: includes/admin-display.php:160 includes/admin-display.php:184
+msgid "days (0 = no age limit)"
+msgstr ""
+
+#. translators: 1: Number of backups, 2: Disk space used.
+#: includes/admin-display.php:165
+#, php-format
+msgid "Currently %1$s backup(s) using %2$s."
+msgstr ""
+
+#: includes/admin-display.php:175
+msgid "Activity log"
+msgstr ""
+
+#: includes/admin-display.php:178
+msgid "Retention"
+msgstr ""
+
+#: includes/admin-display.php:180
+msgid "Keep the last"
+msgstr ""
+
+#: includes/admin-display.php:182
+msgid "entries, for at most"
+msgstr ""
+
+#: includes/admin-display.php:183
+msgid "Days to keep log entries"
+msgstr ""
+
+#: includes/admin-display.php:190
+msgid "Save settings"
+msgstr ""
+
+#: includes/admin-display.php:195
+msgid "Export and import"
 msgstr ""
 
 #: includes/admin-display.php:196
-msgid "View on GitHub"
+msgid ""
+"Move your Plugin Hub setup to another site: installed plugins, auto-update "
+"choices, version pins, MU plugins and settings. The GitHub token is never "
+"exported."
 msgstr ""
 
-#: includes/admin-display.php:200 includes/admin.php:126
-msgid "Versions"
+#: includes/admin-display.php:198
+msgid "Export configuration"
 msgstr ""
 
-#: includes/admin-display.php:205
-msgid "Show more details"
+#: includes/admin-display.php:201
+msgid "Configuration file"
 msgstr ""
 
-#: includes/admin-display.php:214
-msgid "No published release"
+#: includes/admin-display.php:203
+msgid "Import configuration"
 msgstr ""
 
-#: includes/admin-display.php:216
-msgid "Beta version"
+#: includes/admin-display.php:212
+msgid "A history of plugin changes made from Plugin Hub."
 msgstr ""
 
-#: includes/admin-display.php:220
-#, php-format
-msgid "Latest version is %s"
+#: includes/admin-display.php:223
+msgid "Export as CSV"
 msgstr ""
 
-#: includes/admin-display.php:226
-#, php-format
-msgid "Version %s"
+#: includes/admin-display.php:229
+msgid "Search activity"
 msgstr ""
 
-#: includes/admin-display.php:232
-#, php-format
-msgid "Update available (%s)"
-msgstr ""
-
+#. translators: 1: Number of backups, 2: Plugin backups size, 3: MU backups size, 4: Total size.
 #: includes/admin-display.php:243
-msgid "Auto-update"
+#, php-format
+msgid ""
+"%1$s backup(s) use %4$s in total (plugins: %2$s, MU plugins: %3$s). "
+"Retention is configured in Settings."
 msgstr ""
 
-#: includes/admin-display.php:252
-msgid "No plugins match the current view. Refresh the catalog or adjust the filter."
+#: includes/admin-display.php:255
+msgid "Search backups"
 msgstr ""
 
-#: includes/admin-display.php:272
-msgid "Plugin Hub settings"
+#. translators: %s: MU plugin directory path.
+#: includes/admin-display.php:269
+#, php-format
+msgid ""
+"Must-use plugins from the Open WP Club mu-plugin repository, managed in %s. "
+"Only files whose name matches a catalog file are updated."
 msgstr ""
 
 #: includes/admin-display.php:276
-msgid "Connection"
+msgid ""
+"File modifications are disabled on this site, so MU plugins cannot be "
+"installed or updated here."
 msgstr ""
 
-#: includes/admin-display.php:277
-msgid "GitHub access"
+#: includes/admin-display.php:278
+msgid ""
+"The MU plugin directory does not exist yet. It will be created on the first "
+"install if the parent directory is writable."
 msgstr ""
 
 #: includes/admin-display.php:280
-msgid "Connected"
-msgstr ""
-
-#: includes/admin-display.php:280
-msgid "Public API"
+msgid ""
+"The MU plugin directory is not writable. Fix its permissions to install or "
+"update MU plugins."
 msgstr ""
 
 #: includes/admin-display.php:284
+msgid ""
+"The MU plugin catalog could not be loaded from GitHub. Try again in a few "
+"minutes."
+msgstr ""
+
+#: includes/admin-display.php:288
+msgid ""
+"This is a multisite network: MU plugins are shared by every site, and only "
+"network administrators can change them."
+msgstr ""
+
+#: includes/admin-display.php:290
+msgid ""
+"MU plugins load automatically on every request and cannot be deactivated "
+"from the admin. Some change core behaviour, for example blocking plugin "
+"installs, comments, search or email. Read the description before installing "
+"and test on a staging site first."
+msgstr ""
+
+#: includes/admin-display.php:293 includes/admin.php:200
+#: includes/list-tables.php:402
+msgid "Installed"
+msgstr ""
+
+#: includes/admin-display.php:305
+msgid "Available"
+msgstr ""
+
+#: includes/admin-display.php:318 includes/list-tables.php:404
+msgid "Updates"
+msgstr ""
+
+#: includes/admin-display.php:322
+msgid "Update all"
+msgstr ""
+
+#: includes/admin-display.php:330
+msgid "Search MU plugins"
+msgstr ""
+
+#: includes/admin-display.php:344
+msgid "Search plugins"
+msgstr ""
+
+#: includes/admin-display.php:352
+msgid "Plugin Hub settings"
+msgstr ""
+
+#: includes/admin-display.php:354
+msgid "GitHub access"
+msgstr ""
+
+#: includes/admin-display.php:357
+msgid "Connected"
+msgstr ""
+
+#: includes/admin-display.php:357
+msgid "Public API"
+msgstr ""
+
+#: includes/admin-display.php:359
 msgid "Personal access token"
 msgstr ""
 
-#: includes/admin-display.php:286
+#: includes/admin-display.php:361
 msgid "Managed by PLUGIN_HUB_GITHUB_TOKEN in wp-config.php."
 msgstr ""
 
-#: includes/admin-display.php:287
+#: includes/admin-display.php:362
 msgid "Configured in wp-config.php"
 msgstr ""
 
-#: includes/admin-display.php:289
+#: includes/admin-display.php:364
 msgid "Optional. Add a token for a higher GitHub API rate limit."
 msgstr ""
 
-#: includes/admin-display.php:290
+#: includes/admin-display.php:365
 msgid "Token configured — enter a replacement"
 msgstr ""
 
-#: includes/admin-display.php:290
+#: includes/admin-display.php:365
 msgid "github_pat_…"
 msgstr ""
 
-#: includes/admin-display.php:292 includes/admin.php:112
+#: includes/admin-display.php:367 includes/admin.php:215
 msgid "Save token"
 msgstr ""
 
-#: includes/admin-display.php:294
+#: includes/admin-display.php:369
 msgid "Remove"
 msgstr ""
 
-#: includes/admin-display.php:304
+#. translators: %1$d: remaining requests, %2$d: total limit.
+#: includes/admin-display.php:379
 #, php-format
 msgid "%1$d of %2$d API requests remaining"
 msgstr ""
 
-#: includes/admin-display.php:315
+#. translators: %s: GitHub API rate-limit reset time.
+#: includes/admin-display.php:390
 #, php-format
 msgid "Resets at %s."
 msgstr ""
 
-#: includes/admin-display.php:328
-msgid "Preferences"
-msgstr ""
-
-#: includes/admin-display.php:329
+#: includes/admin-display.php:401
 msgid "Catalog settings"
 msgstr ""
 
-#: includes/admin-display.php:335
+#: includes/admin-display.php:405
 msgid "Show beta plugins"
 msgstr ""
 
-#: includes/admin-display.php:336
+#: includes/admin-display.php:406
 msgid "Include releases below version 1.0.0."
 msgstr ""
 
-#: includes/admin-display.php:341
+#: includes/admin-display.php:411
 msgid "Open GitHub organization"
 msgstr ""
 
-#: includes/admin-display.php:342
+#: includes/admin-display.php:412
 msgid "Documentation"
 msgstr ""
 
-#: includes/admin-display.php:343
+#: includes/admin-display.php:413
 msgid "Support"
 msgstr ""
 
-#: includes/admin-display.php:350
+#: includes/admin-display.php:422
 msgid "Activity history"
 msgstr ""
 
-#: includes/admin-display.php:351
+#: includes/admin-display.php:423
 msgid "Permanently remove all recorded plugin actions."
 msgstr ""
 
-#: includes/admin-display.php:352
+#: includes/admin-display.php:424
 msgid "Clear activity log"
 msgstr ""
 
-#: includes/admin-display.php:364
+#: includes/admin-display.php:436
 msgid "Close"
 msgstr ""
 
-#: includes/admin.php:53 includes/admin.php:54
+#: includes/admin.php:120 includes/admin.php:127 includes/admin.php:143
+#: includes/admin.php:144 includes/admin.php:758
 msgid "Plugin Hub"
 msgstr ""
 
-#: includes/admin.php:96
+#: includes/admin.php:199 includes/admin.php:239
 msgid "Installing..."
 msgstr ""
 
-#: includes/admin.php:97
-msgid "Installed"
-msgstr ""
-
-#: includes/admin.php:98
+#: includes/admin.php:201
 msgid "Install Failed"
 msgstr ""
 
-#: includes/admin.php:99
+#: includes/admin.php:202
 msgid "Updating..."
 msgstr ""
 
-#: includes/admin.php:100
+#: includes/admin.php:203
 msgid "Updated"
 msgstr ""
 
-#: includes/admin.php:101
+#: includes/admin.php:204
 msgid "Update Failed"
 msgstr ""
 
-#: includes/admin.php:102
+#: includes/admin.php:205
 msgid "Activating..."
 msgstr ""
 
-#: includes/admin.php:103
+#: includes/admin.php:206
 msgid "Activated"
 msgstr ""
 
-#: includes/admin.php:104
+#: includes/admin.php:207
 msgid "Activation Failed"
 msgstr ""
 
-#: includes/admin.php:105
+#: includes/admin.php:208
 msgid "Deactivating..."
 msgstr ""
 
-#: includes/admin.php:106
+#: includes/admin.php:209
 msgid "Deactivated"
 msgstr ""
 
-#: includes/admin.php:107
+#: includes/admin.php:210
 msgid "Deactivation Failed"
 msgstr ""
 
-#: includes/admin.php:108
+#: includes/admin.php:211
 msgid "Deleting..."
 msgstr ""
 
-#: includes/admin.php:109
+#: includes/admin.php:212
 msgid "Deleted"
 msgstr ""
 
-#: includes/admin.php:110
+#: includes/admin.php:213
 msgid "Delete Failed"
 msgstr ""
 
-#: includes/admin.php:111
+#: includes/admin.php:214
 msgid "Saving..."
 msgstr ""
 
-#: includes/admin.php:113
+#: includes/admin.php:216
 msgid "Processing..."
 msgstr ""
 
-#: includes/admin.php:114
+#: includes/admin.php:217
 msgid "Done"
 msgstr ""
 
-#: includes/admin.php:115
+#: includes/admin.php:218
 msgid "Failed"
 msgstr ""
 
-#: includes/admin.php:116
+#: includes/admin.php:219
 msgid "An error occurred. Please try again."
 msgstr ""
 
-#: includes/admin.php:117
+#: includes/admin.php:220
 msgid "Are you sure you want to delete this plugin?"
 msgstr ""
 
-#: includes/admin.php:118
+#: includes/admin.php:221
 msgid "Are you sure you want to delete the selected plugins?"
 msgstr ""
 
-#: includes/admin.php:119
-msgid "Please select an action and at least one plugin."
+#: includes/admin.php:222
+msgid "Please select an action and at least one item."
 msgstr ""
 
-#: includes/admin.php:120
-msgid "No inactive plugins selected for deletion. Active plugins cannot be deleted."
+#: includes/admin.php:223
+msgid ""
+"Failed to verify update. Please refresh the page and check the plugin "
+"version."
 msgstr ""
 
-#: includes/admin.php:121
-msgid "Failed to verify update. Please refresh the page and check the plugin version."
-msgstr ""
-
-#: includes/admin.php:122
+#: includes/admin.php:224
 msgid "Loading changelog…"
 msgstr ""
 
-#: includes/admin.php:123
+#: includes/admin.php:225
 msgid "Changelog"
 msgstr ""
 
-#: includes/admin.php:124
+#: includes/admin.php:226
 msgid "No changelog available for this version."
 msgstr ""
 
-#: includes/admin.php:127
+#: includes/admin.php:227 includes/list-tables.php:540
+msgid "What's new?"
+msgstr ""
+
+#: includes/admin.php:228 includes/list-tables.php:549
+msgid "Versions"
+msgstr ""
+
+#: includes/admin.php:229
 msgid "Loading…"
 msgstr ""
 
-#: includes/admin.php:129
+#. translators: %s: Version number.
+#: includes/admin.php:231
 #, php-format
 msgid "Roll back to version %s?"
 msgstr ""
 
-#: includes/admin.php:130
+#: includes/admin.php:232
 msgid "current"
 msgstr ""
 
-#: includes/admin.php:131
+#: includes/admin.php:233
 msgid "Rolling back…"
 msgstr ""
 
-#: includes/admin.php:132
+#: includes/admin.php:234
 msgid "Rolled back"
 msgstr ""
 
-#: includes/admin.php:133
+#: includes/admin.php:235
 msgid "Rollback Failed"
 msgstr ""
 
-#: includes/admin.php:134
+#: includes/admin.php:236
 msgid "Clear the entire activity log?"
 msgstr ""
 
-#: includes/admin.php:135
+#: includes/admin.php:237
 msgid "Clearing…"
 msgstr ""
 
-#: includes/admin.php:136
+#: includes/admin.php:238
 msgid "Clear Log"
 msgstr ""
 
-#: includes/admin.php:137
-msgid "No plugins match your search."
+#: includes/admin.php:240
+msgid "Restoring..."
 msgstr ""
 
-#: includes/admin.php:155
-msgid "You do not have permission to refresh the cache."
+#: includes/admin.php:241
+msgid ""
+"Restore the previous version of this MU plugin? Automatic updates will be "
+"switched off for it."
 msgstr ""
 
-#: includes/admin.php:179
-msgid "Plugin list refreshed successfully."
+#: includes/admin.php:242
+msgid "Restored"
 msgstr ""
 
-#: includes/admin.php:260 includes/admin.php:297 includes/admin.php:315
-msgid "You do not have permission to change this setting."
+#: includes/admin.php:243
+msgid ""
+"Update all MU plugins that have a newer version? The previous version of "
+"each replaced file is kept so you can roll it back."
+msgstr ""
+
+#: includes/admin.php:244
+msgid "Install this MU plugin? MU plugins load automatically on every request."
+msgstr ""
+
+#: includes/admin.php:245
+msgid "Update to"
+msgstr ""
+
+#: includes/admin.php:246 includes/list-tables.php:537
+msgid "Update now"
+msgstr ""
+
+#: includes/admin.php:247
+msgid "Cancel"
+msgstr ""
+
+#. translators: %s: Plugin name.
+#: includes/admin.php:249
+#, php-format
+msgid "Update %s"
+msgstr ""
+
+#. translators: %s: Comma-separated plugin names.
+#: includes/admin.php:251
+#, php-format
+msgid "These active plugins depend on it: %s. Continue anyway?"
+msgstr ""
+
+#: includes/admin.php:252 includes/list-tables.php:1173
+msgid "Pin"
+msgstr ""
+
+#: includes/admin.php:253
+msgid "No pin (follow every update)"
+msgstr ""
+
+#. translators: %s: Version number.
+#: includes/admin.php:255
+#, php-format
+msgid "Hold at %s (never update)"
+msgstr ""
+
+#. translators: %s: Version constraint such as 1.x.
+#: includes/admin.php:257
+#, php-format
+msgid "Stay on %s"
+msgstr ""
+
+#: includes/admin.php:258
+msgid "Save"
+msgstr ""
+
+#: includes/admin.php:259 includes/admin.php:555
+msgid "Pin saved."
+msgstr ""
+
+#: includes/admin.php:260 includes/admin.php:532
+msgid "Settings saved."
+msgstr ""
+
+#: includes/admin.php:261
+msgid "Restore this backup? The current plugin files will be replaced."
+msgstr ""
+
+#: includes/admin.php:262
+msgid "Delete the selected backups?"
+msgstr ""
+
+#: includes/admin.php:263
+msgid "Delete the selected activity entries?"
 msgstr ""
 
 #: includes/admin.php:264
-msgid "The GitHub token is managed in wp-config.php and cannot be changed here."
+msgid "Restoring…"
 msgstr ""
 
+#: includes/admin.php:265
+msgid "Sending…"
+msgstr ""
+
+#: includes/admin.php:266
+msgid "Test sent."
+msgstr ""
+
+#: includes/admin.php:267
+msgid "Choose a configuration file first."
+msgstr ""
+
+#: includes/admin.php:268
+msgid "Some plugins from this file are not installed yet."
+msgstr ""
+
+#: includes/admin.php:269
+msgid "Install missing"
+msgstr ""
+
+#. translators: 1: Processed items, 2: Total items.
+#: includes/admin.php:271
+#, php-format
+msgid "Processing %1$s of %2$s"
+msgstr ""
+
+#. translators: 1: Completed items, 2: Total items.
 #: includes/admin.php:273
+#, php-format
+msgid "%1$s of %2$s completed"
+msgstr ""
+
+#: includes/admin.php:274
+msgid "skipped"
+msgstr ""
+
+#: includes/admin.php:290
+msgid "You do not have permission to refresh the cache."
+msgstr ""
+
+#: includes/admin.php:315
+msgid "Plugin list refreshed successfully."
+msgstr ""
+
+#: includes/admin.php:394 includes/admin.php:431 includes/admin.php:449
+msgid "You do not have permission to change this setting."
+msgstr ""
+
+#: includes/admin.php:398
+msgid ""
+"The GitHub token is managed in wp-config.php and cannot be changed here."
+msgstr ""
+
+#: includes/admin.php:407
 msgid "Enter a token or use Remove Token."
 msgstr ""
 
-#: includes/admin.php:282
+#: includes/admin.php:416
 msgid "Token removed."
 msgstr ""
 
-#: includes/admin.php:285
+#: includes/admin.php:419
 msgid "Token saved successfully."
 msgstr ""
 
-#: includes/admin.php:303
+#: includes/admin.php:437
 msgid "Setting updated successfully."
 msgstr ""
 
-#: includes/admin.php:322 includes/api.php:725 includes/api.php:836
-#: includes/api.php:872 includes/api.php:907 includes/api.php:1028
-#: includes/api.php:1077 includes/api.php:1173 includes/api.php:1249
+#: includes/admin.php:456 includes/admin.php:547 includes/api.php:1139
+#: includes/api.php:1300 includes/api.php:1371 includes/api.php:1439
+#: includes/api.php:1688 includes/api.php:1768 includes/api.php:1864
+#: includes/api.php:2026
 msgid "Invalid plugin information."
 msgstr ""
 
-#: includes/admin.php:335
+#: includes/admin.php:469 includes/class-mu-plugins.php:1584
 msgid "Setting updated."
 msgstr ""
 
-#: includes/admin.php:347 includes/api.php:1243
+#: includes/admin.php:481 includes/api.php:2020
 msgid "You do not have permission."
 msgstr ""
 
-#: includes/admin.php:351
+#: includes/admin.php:485
 msgid "Activity log cleared."
 msgstr ""
 
-#: includes/api.php:565
+#: includes/admin.php:498
+msgid "You do not have permission to do this."
+msgstr ""
+
+#. translators: %d: Number of backups.
+#: includes/admin.php:568
+#, php-format
+msgid "%d backup(s) deleted."
+msgstr ""
+
+#: includes/admin.php:581
+msgid "Invalid backup."
+msgstr ""
+
+#: includes/admin.php:592
+msgid "The backup no longer exists."
+msgstr ""
+
+#. translators: 1: Plugin name, 2: Version number.
+#: includes/admin.php:602
+#, php-format
+msgid "%1$s restored to version %2$s."
+msgstr ""
+
+#. translators: %d: Number of log entries.
+#: includes/admin.php:615
+#, php-format
+msgid "%d entries deleted."
+msgstr ""
+
+#: includes/admin.php:641
+msgid "Configuration imported."
+msgstr ""
+
+#: includes/admin.php:660
+msgid "Email sent."
+msgstr ""
+
+#: includes/admin.php:660
+msgid "Email failed."
+msgstr ""
+
+#: includes/admin.php:665
+msgid "Webhook delivered."
+msgstr ""
+
+#: includes/admin.php:665
+msgid "Webhook failed."
+msgstr ""
+
+#: includes/admin.php:686
+msgid "You do not have permission to export the configuration."
+msgstr ""
+
+#: includes/admin.php:707
+msgid "You do not have permission to export the activity log."
+msgstr ""
+
+#. translators: %d: Number of installed plugins.
+#: includes/admin.php:794
+#, php-format
+msgid "%d Open WP Club plugin installed."
+msgid_plural "%d Open WP Club plugins installed."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/admin.php:801
+msgid "Everything is up to date."
+msgstr ""
+
+#: includes/admin.php:803
+msgid "Updates available"
+msgstr ""
+
+#. translators: %d: Number of MU plugin updates.
+#: includes/admin.php:809
+#, php-format
+msgid "%d MU plugin update"
+msgid_plural "%d MU plugin updates"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/admin.php:816
+msgid "Recent activity"
+msgstr ""
+
+#: includes/admin.php:824
+msgid "Open Plugin Hub"
+msgstr ""
+
+#: includes/api.php:627
 msgid "No changelog is available."
 msgstr ""
 
-#: includes/api.php:718
-msgid "You do not have permission to install plugins."
+#: includes/api.php:835
+msgid "Invalid version pin."
 msgstr ""
 
-#: includes/api.php:730
+#: includes/api.php:1058
+msgid ""
+"This release has no published SHA-256 checksum, and checksum verification is "
+"required in the Plugin Hub settings."
+msgstr ""
+
+#: includes/api.php:1104
+msgid ""
+"The downloaded package does not match the SHA-256 checksum published in the "
+"catalog. The installation was cancelled."
+msgstr ""
+
+#: includes/api.php:1144
 msgid "The requested plugin version is not in the trusted catalog."
 msgstr ""
 
-#: includes/api.php:734
+#: includes/api.php:1148
 msgid "The plugin is already installed."
 msgstr ""
 
-#: includes/api.php:741
+#. translators: %1$s: Repository name, %2$s: Version number
+#: includes/api.php:1155
 #, php-format
-msgid "Unable to fetch download URL for %1$s v%2$s. Please check the error log for more details."
+msgid ""
+"Unable to fetch download URL for %1$s v%2$s. Please check the error log for "
+"more details."
 msgstr ""
 
-#: includes/api.php:746
+#: includes/api.php:1159
 msgid "Invalid download URL."
 msgstr ""
 
-#: includes/api.php:763
+#: includes/api.php:1181
 msgid "Installation failed. Please check the error log for more details."
 msgstr ""
 
-#: includes/api.php:768
+#: includes/api.php:1186
 msgid "Plugin installed but file path could not be determined."
 msgstr ""
 
-#: includes/api.php:775
-msgid "Plugin installation completed but the installed version could not be verified."
+#: includes/api.php:1193
+msgid ""
+"Plugin installation completed but the installed version could not be "
+"verified."
 msgstr ""
 
-#: includes/api.php:785
+#: includes/api.php:1215
+msgid "You do not have permission to install plugins."
+msgstr ""
+
+#: includes/api.php:1226
 msgid "Plugin installed successfully."
 msgstr ""
 
-#: includes/api.php:815
+#: includes/api.php:1256
 msgid "The downloaded plugin package could not be prepared."
 msgstr ""
 
-#: includes/api.php:830
-msgid "You do not have permission to activate plugins."
+#: includes/api.php:1273
+msgid "You do not have permission to manage network plugins."
 msgstr ""
 
-#: includes/api.php:842 includes/api.php:878 includes/api.php:923
-#: includes/api.php:969 includes/api.php:1034
+#: includes/api.php:1305 includes/api.php:1376 includes/api.php:1453
+#: includes/api.php:1629 includes/api.php:1693
 msgid "Plugin not found."
 msgstr ""
 
-#: includes/api.php:854
+#: includes/api.php:1329
+msgid "You do not have permission to activate plugins."
+msgstr ""
+
+#: includes/api.php:1339
 msgid "Plugin activated successfully."
 msgstr ""
 
-#: includes/api.php:866
-msgid "You do not have permission to deactivate plugins."
-msgstr ""
-
-#: includes/api.php:883
+#: includes/api.php:1382
 msgid "Network-active plugins must be managed from Network Admin."
 msgstr ""
 
-#: includes/api.php:888
+#. translators: %s: Comma-separated plugin names.
+#: includes/api.php:1389 includes/api.php:1704
+#, php-format
+msgid "These active plugins require this plugin: %s"
+msgstr ""
+
+#: includes/api.php:1409
+msgid "You do not have permission to deactivate plugins."
+msgstr ""
+
+#: includes/api.php:1419
 msgid "Plugin deactivated successfully."
 msgstr ""
 
-#: includes/api.php:900
-msgid "You do not have permission to update plugins."
-msgstr ""
-
-#: includes/api.php:914
+#: includes/api.php:1444
 msgid "The requested plugin is not in the trusted catalog."
 msgstr ""
 
-#: includes/api.php:918
-msgid "The requested update is no longer current. Refresh the plugin list and try again."
+#: includes/api.php:1448
+msgid ""
+"The requested update is no longer current. Refresh the plugin list and try "
+"again."
 msgstr ""
 
-#: includes/api.php:926
+#: includes/api.php:1456
 msgid "The installed plugin is already at this version or newer."
 msgstr ""
 
-#: includes/api.php:929
+#: includes/api.php:1459
 msgid "The selected version is already installed."
 msgstr ""
 
-#: includes/api.php:939
+#: includes/api.php:1462
+msgid "Rollback only supports installing an older version. Use Update instead."
+msgstr ""
+
+#. translators: %s: Version pin.
+#: includes/api.php:1467
+#, php-format
+msgid "This plugin is pinned to %s. Remove the pin to update."
+msgstr ""
+
+#: includes/api.php:1489
 msgid "Update failed. Please check the error log for more details."
 msgstr ""
 
-#: includes/api.php:947
+#: includes/api.php:1495
+msgid ""
+"Update reported success but version mismatch. Please check the error log for "
+"more details."
+msgstr ""
+
+#. translators: 1: Plugin name, 2: Failed version, 3: Restored version.
+#: includes/api.php:1507
+#, php-format
+msgid ""
+"The site failed its health check after updating %1$s to %2$s, so version "
+"%3$s was restored automatically."
+msgstr ""
+
+#: includes/api.php:1510
+msgid "the previous version (restore failed, check the site)"
+msgstr ""
+
+#: includes/api.php:1598
+msgid "You do not have permission to update plugins."
+msgstr ""
+
+#. translators: %s: Version number
+#: includes/api.php:1611
 #, php-format
 msgid "Plugin updated successfully to version %s"
 msgstr ""
 
-#: includes/api.php:950
-msgid "Update reported success but version mismatch. Please check the error log for more details."
-msgstr ""
-
-#: includes/api.php:974
+#: includes/api.php:1634
 msgid "Unable to fetch a trusted download URL for this release."
 msgstr ""
 
-#: includes/api.php:1022
-msgid "You do not have permission to delete plugins."
-msgstr ""
-
-#: includes/api.php:1038
+#: includes/api.php:1697
 msgid "Please deactivate the plugin before deleting."
 msgstr ""
 
-#: includes/api.php:1055
-msgid "Plugin deleted successfully."
-msgstr ""
-
-#: includes/api.php:1058
+#: includes/api.php:1727
 msgid "Failed to delete the plugin."
 msgstr ""
 
-#: includes/api.php:1070
+#: includes/api.php:1739
+msgid "You do not have permission to delete plugins."
+msgstr ""
+
+#: includes/api.php:1749
+msgid "Plugin deleted successfully."
+msgstr ""
+
+#: includes/api.php:1761
 msgid "You do not have permission to verify plugin updates."
 msgstr ""
 
-#: includes/api.php:1084
+#. translators: %s: Plugin version
+#: includes/api.php:1775
 #, php-format
 msgid "Plugin version verified: %s"
 msgstr ""
 
-#: includes/api.php:1088
+#. translators: %1$s: Expected version, %2$s: Found version
+#: includes/api.php:1779
 #, php-format
 msgid "Plugin version mismatch. Expected: %1$s, Found: %2$s"
 msgstr ""
 
-#: includes/api.php:1165
+#: includes/api.php:1856
 msgid "You do not have permission to view changelogs."
 msgstr ""
 
-#: includes/api.php:1182
+#: includes/api.php:1873
 msgid "Unable to fetch changelog."
 msgstr ""
 
-#: includes/api.php:1206
+#: includes/api.php:1896
 msgid "WordPress Cron"
 msgstr ""
 
-#: includes/api.php:1253
+#: includes/api.php:2030
 msgid "The requested plugin is not available for rollback."
 msgstr ""
 
-#: includes/api.php:1266 includes/api.php:1271
+#: includes/api.php:2043 includes/api.php:2048
 msgid "Unable to fetch releases."
 msgstr ""
 
-#: includes/api.php:1376
+#. translators: %d: Number of days.
+#: includes/api.php:2135
+#, php-format
+msgid "waiting %d day after release"
+msgid_plural "waiting %d days after release"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/api.php:2145
+msgid "rolled back after a failed health check"
+msgstr ""
+
+#. translators: %s: site name
+#: includes/api.php:2204
 #, php-format
 msgid "[%s] Plugin Hub Update Report"
 msgstr ""
 
-#: includes/api.php:1381
+#: includes/api.php:2209
 msgid "The following plugins were automatically updated:"
 msgstr ""
 
-#: includes/api.php:1389
+#: includes/api.php:2217
+msgid ""
+"The automatic update of the following plugins failed. Update them manually "
+"from Plugin Hub:"
+msgstr ""
+
+#: includes/api.php:2225
 msgid "The following plugins have updates available:"
 msgstr ""
 
-#: includes/api.php:1397
+#. translators: %s: Plugin Hub admin URL
+#: includes/api.php:2233
 #, php-format
 msgid "Manage your plugins: %s"
 msgstr ""
 
-#: includes/admin-display.php:32
-msgid "MU"
+#: includes/class-backups.php:129
+msgid "Invalid plugin for backup."
 msgstr ""
 
-#: includes/admin-display.php:70
-msgid "MU Install"
+#: includes/class-backups.php:134
+msgid "The plugin directory does not exist."
 msgstr ""
 
-#: includes/admin-display.php:71
-msgid "MU Update"
+#: includes/class-backups.php:139
+msgid "The backup directory could not be created."
 msgstr ""
 
-#: includes/admin-display.php:72
-msgid "MU Auto-Update"
+#: includes/class-backups.php:152
+msgid "The backup archive could not be created."
 msgstr ""
 
-#. translators: placeholder(s) in the message
-#: includes/admin-display.php:111
-msgid "Must-use plugins from the Open WP Club mu-plugin repository, managed in %s. Only files whose name matches a catalog file are updated."
+#: includes/class-backups.php:174
+msgid "The backup archive could not be written."
 msgstr ""
 
-#: includes/admin-display.php:118
-msgid "File modifications are disabled on this site, so MU plugins cannot be installed or updated here."
+#: includes/class-backups.php:284
+msgid "The backup was not found."
 msgstr ""
 
-#: includes/admin-display.php:120
-msgid "The MU plugin directory does not exist yet. It will be created on the first install if the parent directory is writable."
+#: includes/class-backups.php:287
+msgid "The PHP zip extension is required to restore backups."
 msgstr ""
 
-#: includes/admin-display.php:122
-msgid "The MU plugin directory is not writable. Fix its permissions to install or update MU plugins."
+#: includes/class-backups.php:293
+msgid "The backup archive is damaged."
 msgstr ""
 
-#: includes/admin-display.php:126
-msgid "The MU plugin catalog could not be loaded from GitHub. Try again in a few minutes."
+#: includes/class-backups.php:299
+msgid "The backup archive contains unexpected paths."
 msgstr ""
 
-#: includes/admin-display.php:130
-msgid "Installed MU plugins"
+#: includes/class-backups.php:310
+msgid "The filesystem could not be initialised."
 msgstr ""
 
-#: includes/admin-display.php:132
-msgid "Update all"
+#: includes/class-backups.php:320
+msgid "The current plugin directory could not be moved aside."
 msgstr ""
 
-#: includes/admin-display.php:139
-msgid "MU plugin"
+#: includes/class-backups.php:327
+msgid "The backup did not contain the plugin directory."
 msgstr ""
 
-#: includes/admin-display.php:140
-msgid "Category"
+#: includes/class-config.php:111
+msgid "The configuration file is empty or too large."
 msgstr ""
 
-#: includes/admin-display.php:142
-msgid "New version"
+#: includes/class-config.php:116
+msgid "This is not a Plugin Hub configuration file."
 msgstr ""
 
-#: includes/admin-display.php:149
-msgid "No catalog MU plugins are installed."
-msgstr ""
-
-#: includes/admin-display.php:154
-msgid "shared"
-msgstr ""
-
-#: includes/admin-display.php:164
-msgid "Up to date"
-msgstr ""
-
-#: includes/admin-display.php:173
-msgid "Available MU plugins"
-msgstr ""
-
-#: includes/admin-display.php:175
-msgid "Installed flat into the MU directory. Shared helpers (000-helpers.php) are installed automatically when a plugin needs them."
-msgstr ""
-
-#: includes/admin-display.php:187
-msgid "Every catalog MU plugin is already installed."
-msgstr ""
-
-#: includes/admin.php:153
-msgid "Install this MU plugin? MU plugins load automatically on every request."
-msgstr ""
-
-#: includes/class-mu-plugins.php:555
+#: includes/class-mu-plugins.php:573
 msgid "Invalid MU plugin path."
 msgstr ""
 
-#: includes/class-mu-plugins.php:570
+#: includes/class-mu-plugins.php:588
 msgid "Could not download the MU plugin from GitHub."
 msgstr ""
 
-#: includes/class-mu-plugins.php:575
+#: includes/class-mu-plugins.php:593
 msgid "GitHub did not return the MU plugin file."
 msgstr ""
 
-#: includes/class-mu-plugins.php:580
-msgid "The MU plugin changed on GitHub while downloading. Refresh the catalog and try again."
+#: includes/class-mu-plugins.php:598
+msgid ""
+"The MU plugin changed on GitHub while downloading. Refresh the catalog and "
+"try again."
 msgstr ""
 
-#: includes/class-mu-plugins.php:814
+#: includes/class-mu-plugins.php:1027
 msgid "The MU plugin directory does not exist and could not be created."
 msgstr ""
 
-#. translators: placeholder(s) in the message
-#: includes/class-mu-plugins.php:818
+#. translators: %s: directory path.
+#: includes/class-mu-plugins.php:1031
+#, php-format
 msgid "The directory %s is not writable."
 msgstr ""
 
-#. translators: placeholder(s) in the message
-#: includes/class-mu-plugins.php:822
+#. translators: %s: file path.
+#: includes/class-mu-plugins.php:1035
+#, php-format
 msgid "The file %s is not writable."
 msgstr ""
 
-#: includes/class-mu-plugins.php:832
+#: includes/class-mu-plugins.php:1045
 msgid "Could not write the MU plugin file."
 msgstr ""
 
-#: includes/class-mu-plugins.php:838
+#: includes/class-mu-plugins.php:1051
 msgid "Could not back up the existing MU plugin file."
 msgstr ""
 
-#: includes/class-mu-plugins.php:843
+#: includes/class-mu-plugins.php:1056
 msgid "Could not replace the MU plugin file."
 msgstr ""
 
-#: includes/class-mu-plugins.php:853
-msgid "The written MU plugin file did not match the download and was rolled back."
+#: includes/class-mu-plugins.php:1066
+msgid ""
+"The written MU plugin file did not match the download and was rolled back."
 msgstr ""
 
-#: includes/class-mu-plugins.php:881
+#: includes/class-mu-plugins.php:1103
 msgid "The downloaded file is not a PHP file."
 msgstr ""
 
-#: includes/class-mu-plugins.php:882
+#: includes/class-mu-plugins.php:1104
 msgid "The downloaded file has no Plugin Name header."
 msgstr ""
 
-#: includes/class-mu-plugins.php:883
+#: includes/class-mu-plugins.php:1105
 msgid "The downloaded file has no valid Version header."
 msgstr ""
 
-#: includes/class-mu-plugins.php:884
+#: includes/class-mu-plugins.php:1106
 msgid "The downloaded file has a PHP syntax error and was not installed."
 msgstr ""
 
-#: includes/class-mu-plugins.php:891
+#: includes/class-mu-plugins.php:1113
 msgid "The installed MU plugin is already at this version or newer."
 msgstr ""
 
-#: includes/class-mu-plugins.php:921
+#: includes/class-mu-plugins.php:1143
 msgid "This MU plugin needs 000-helpers.php, which is not in the catalog."
 msgstr ""
 
-#. translators: placeholder(s) in the message
-#: includes/class-mu-plugins.php:942
+#. translators: %s: error message.
+#: includes/class-mu-plugins.php:1164
+#, php-format
 msgid "Could not install the shared helpers: %s"
 msgstr ""
 
-#: includes/class-mu-plugins.php:959
+#: includes/class-mu-plugins.php:1181
 msgid "Another MU plugin operation is in progress. Try again in a moment."
 msgstr ""
 
-#: includes/class-mu-plugins.php:978
+#: includes/class-mu-plugins.php:1200 includes/class-mu-plugins.php:1234
+#: includes/class-mu-plugins.php:1286 includes/class-mu-plugins.php:1343
+#: includes/class-mu-plugins.php:1465
 msgid "File modifications are disabled on this site."
 msgstr ""
 
-#: includes/class-mu-plugins.php:985
+#: includes/class-mu-plugins.php:1207 includes/class-mu-plugins.php:1254
+#: includes/class-mu-plugins.php:1293 includes/class-mu-plugins.php:1570
 msgid "The requested MU plugin is not in the trusted catalog."
 msgstr ""
 
-#: includes/class-mu-plugins.php:988
+#: includes/class-mu-plugins.php:1210
 msgid "This MU plugin is already installed."
 msgstr ""
 
-#: includes/class-mu-plugins.php:1037
+#: includes/class-mu-plugins.php:1259 includes/class-mu-plugins.php:1303
 msgid "This MU plugin is not installed."
 msgstr ""
 
-#: includes/class-mu-plugins.php:1040
+#: includes/class-mu-plugins.php:1262
 msgid "The installed MU plugin is already up to date."
 msgstr ""
 
-#: includes/class-mu-plugins.php:1170
-msgid "You do not have permission to manage MU plugins."
+#: includes/class-mu-plugins.php:1298
+msgid ""
+"The shared helpers file cannot be rolled back because other MU plugins may "
+"depend on it."
 msgstr ""
 
-#: includes/class-mu-plugins.php:1186
-msgid "Invalid MU plugin information."
-msgstr ""
-
-#. translators: placeholder(s) in the message
-#: includes/class-mu-plugins.php:1204
-msgid "%1$s installed (version %2$s)."
-msgstr ""
-
-#. translators: placeholder(s) in the message
-#: includes/class-mu-plugins.php:1220
-msgid "%1$s updated to version %2$s."
-msgstr ""
-
-#: includes/class-mu-plugins.php:1238
-msgid "All MU plugins are up to date."
-msgstr ""
-
-#. translators: placeholder(s) in the message
-#: includes/class-mu-plugins.php:1242
-msgid "%d MU plugin(s) updated."
-msgstr ""
-
-msgid "%1$s of %2$s"
-msgstr ""
-
-msgid "All supporters and sponsorship options"
-msgstr ""
-
-msgid "Hide supporter thanks"
-msgstr ""
-
-msgid "Show supporter thanks"
-msgstr ""
-
-msgid "Next page"
-msgstr ""
-
-msgid "Previous page"
-msgstr ""
-
-msgid "Open-source supporters"
-msgstr ""
-
-msgid "Rollback only supports installing an older version. Use Update instead."
-msgstr ""
-
-msgid "Search Plugins"
-msgstr ""
-
-msgid "Search results for \"%s\""
-msgstr ""
-
-msgid "Their support helps keep our plugins free and maintained."
-msgstr ""
-
-msgid "Filter by category"
-msgstr ""
-
-msgid "All categories"
-msgstr ""
-
-msgid "Search MU plugins"
-msgstr ""
-
-msgid "Search MU plugins…"
-msgstr ""
-
-msgid "No MU plugins match your filters."
-msgstr ""
-
-msgid "MU plugins load automatically on every request and cannot be deactivated from the admin. Some change core behaviour, for example blocking plugin installs, comments, search or email. Read the description before installing and test on a staging site first."
-msgstr ""
-
-msgid "WP %s"
-msgstr ""
-
-msgid "PHP %s"
-msgstr ""
-
-msgid "MU Rollback"
-msgstr ""
-
-msgid "Restoring..."
-msgstr ""
-
-msgid "Restored"
-msgstr ""
-
-msgid "Restore the previous version of this MU plugin? Automatic updates will be switched off for it."
-msgstr ""
-
-msgid "%1$s restored to version %2$s. Automatic updates were switched off for it."
-msgstr ""
-
+#: includes/class-mu-plugins.php:1308
 msgid "There is no previous version to restore."
 msgstr ""
 
+#: includes/class-mu-plugins.php:1313
 msgid "The stored previous version is not a valid MU plugin."
 msgstr ""
 
-msgid "Update all MU plugins that have a newer version? The previous version of each replaced file is kept so you can roll it back."
+#: includes/class-mu-plugins.php:1456
+msgid "You do not have permission to manage MU plugins."
+msgstr ""
+
+#: includes/class-mu-plugins.php:1461
+msgid ""
+"Only network administrators can change MU plugins on a multisite network."
+msgstr ""
+
+#: includes/class-mu-plugins.php:1477
+msgid "Invalid MU plugin information."
+msgstr ""
+
+#. translators: 1: file name, 2: version number.
+#: includes/class-mu-plugins.php:1495
+#, php-format
+msgid "%1$s installed (version %2$s)."
+msgstr ""
+
+#. translators: 1: file name, 2: version number.
+#: includes/class-mu-plugins.php:1511
+#, php-format
+msgid "%1$s updated to version %2$s."
+msgstr ""
+
+#. translators: 1: file name, 2: version number.
+#: includes/class-mu-plugins.php:1527
+#, php-format
+msgid ""
+"%1$s restored to version %2$s. Automatic updates were switched off for it."
+msgstr ""
+
+#: includes/class-mu-plugins.php:1545
+msgid "All MU plugins are up to date."
+msgstr ""
+
+#. translators: %d: number of MU plugins.
+#: includes/class-mu-plugins.php:1549
+#, php-format
+msgid "%d MU plugin(s) updated."
+msgstr ""
+
+#. translators: %s: site name.
+#: includes/class-notifier.php:184
+#, php-format
+msgid "[%s] Plugin Hub test notification"
+msgstr ""
+
+#: includes/class-notifier.php:185
+msgid ""
+"This is a test message from Plugin Hub. Your notification settings work."
+msgstr ""
+
+#: includes/list-tables.php:371 includes/list-tables.php:1285
+#: includes/list-tables.php:1486
+msgid "Plugin"
+msgstr ""
+
+#: includes/list-tables.php:372
+msgid "Status"
+msgstr ""
+
+#: includes/list-tables.php:373 includes/list-tables.php:748
+#: includes/list-tables.php:988 includes/list-tables.php:1286
+#: includes/list-tables.php:1487
+msgid "Version"
+msgstr ""
+
+#: includes/list-tables.php:374 includes/list-tables.php:621
+#: includes/list-tables.php:750 includes/list-tables.php:894
+msgid "Auto-update"
+msgstr ""
+
+#: includes/list-tables.php:375 includes/list-tables.php:989
+msgid "Description"
+msgstr ""
+
+#: includes/list-tables.php:399
+msgid "All"
+msgstr ""
+
+#: includes/list-tables.php:400 includes/list-tables.php:567
+msgid "Active"
+msgstr ""
+
+#: includes/list-tables.php:401 includes/list-tables.php:569
+msgid "Inactive"
+msgstr ""
+
+#: includes/list-tables.php:403 includes/list-tables.php:563
+msgid "Not installed"
+msgstr ""
+
+#: includes/list-tables.php:405 includes/list-tables.php:572
+msgid "Beta"
+msgstr ""
+
+#: includes/list-tables.php:406
+msgid "Pinned"
+msgstr ""
+
+#: includes/list-tables.php:437 includes/list-tables.php:1012
+#: includes/list-tables.php:1083 includes/list-tables.php:1165
+msgid "Install"
+msgstr ""
+
+#: includes/list-tables.php:438 includes/list-tables.php:529
+#: includes/list-tables.php:1169
+msgid "Activate"
+msgstr ""
+
+#: includes/list-tables.php:439 includes/list-tables.php:527
+#: includes/list-tables.php:1170
+msgid "Deactivate"
+msgstr ""
+
+#: includes/list-tables.php:440 includes/list-tables.php:774
+#: includes/list-tables.php:846 includes/list-tables.php:1166
+msgid "Update"
+msgstr ""
+
+#: includes/list-tables.php:441 includes/list-tables.php:533
+#: includes/list-tables.php:1171 includes/list-tables.php:1393
+#: includes/list-tables.php:1558
+msgid "Delete"
+msgstr ""
+
+#: includes/list-tables.php:442 includes/list-tables.php:776
+msgid "Enable auto-updates"
+msgstr ""
+
+#: includes/list-tables.php:443 includes/list-tables.php:777
+msgid "Disable auto-updates"
+msgstr ""
+
+#: includes/list-tables.php:447 includes/list-tables.php:531
+msgid "Network activate"
+msgstr ""
+
+#: includes/list-tables.php:448 includes/list-tables.php:524
+msgid "Network deactivate"
+msgstr ""
+
+#: includes/list-tables.php:458
+msgid ""
+"No plugins match the current view. Refresh the catalog or adjust the filter."
+msgstr ""
+
+#. translators: %s: Plugin name.
+#. translators: %s: MU plugin file.
+#: includes/list-tables.php:484 includes/list-tables.php:818
+#: includes/list-tables.php:1052
+#, php-format
+msgid "Select %s"
+msgstr ""
+
+#: includes/list-tables.php:517
+msgid "Install now"
+msgstr ""
+
+#: includes/list-tables.php:519
+msgid "No release available"
+msgstr ""
+
+#: includes/list-tables.php:543
+msgid "Change pin"
+msgstr ""
+
+#: includes/list-tables.php:543
+msgid "Pin version"
+msgstr ""
+
+#: includes/list-tables.php:546
+msgid "View on GitHub"
+msgstr ""
+
+#: includes/list-tables.php:565
+msgid "Network active"
+msgstr ""
+
+#: includes/list-tables.php:586
+msgid "No published release"
+msgstr ""
+
+#. translators: %s: Plugin version number
+#: includes/list-tables.php:589
+#, php-format
+msgid "Latest version is %s"
+msgstr ""
+
+#. translators: %s: Plugin version number
+#: includes/list-tables.php:593
+#, php-format
+msgid "Version %s"
+msgstr ""
+
+#. translators: %s: New version number
+#: includes/list-tables.php:597
+#, php-format
+msgid "Update available (%s)"
+msgstr ""
+
+#. translators: %s: New version number
+#: includes/list-tables.php:600
+#, php-format
+msgid "Update to %s is blocked by the pin or a failed earlier attempt."
+msgstr ""
+
+#. translators: %s: Pinned version or constraint.
+#: includes/list-tables.php:605
+#, php-format
+msgid "Pinned: %s"
+msgstr ""
+
+#. translators: %s: Comma-separated plugin slugs.
+#: includes/list-tables.php:635
+#, php-format
+msgid "Requires plugins that are not installed: %s"
+msgstr ""
+
+#. translators: %s: Comma-separated plugin names.
+#: includes/list-tables.php:639
+#, php-format
+msgid "Required by active plugins: %s"
+msgstr ""
+
+#: includes/list-tables.php:746 includes/list-tables.php:986
+msgid "MU plugin"
+msgstr ""
+
+#: includes/list-tables.php:747 includes/list-tables.php:987
+msgid "Category"
+msgstr ""
+
+#: includes/list-tables.php:749
+msgid "New version"
+msgstr ""
+
+#: includes/list-tables.php:775
+msgid "Roll back"
+msgstr ""
+
+#: includes/list-tables.php:793 includes/list-tables.php:1027
+msgid "Filter by category"
+msgstr ""
+
+#: includes/list-tables.php:794 includes/list-tables.php:1028
+msgid "All categories"
+msgstr ""
+
+#: includes/list-tables.php:799 includes/list-tables.php:1033
+#: includes/list-tables.php:1348
+msgid "Filter"
+msgstr ""
+
+#: includes/list-tables.php:807
+msgid "No catalog MU plugins are installed."
+msgstr ""
+
+#: includes/list-tables.php:849 includes/list-tables.php:1167
+msgid "Rollback"
+msgstr ""
+
+#: includes/list-tables.php:852
+msgid "Up to date"
+msgstr ""
+
+#: includes/list-tables.php:864
+msgid "shared"
+msgstr ""
+
+#: includes/list-tables.php:1041
+msgid ""
+"No MU plugins match your filters, or every catalog MU plugin is already "
+"installed."
+msgstr ""
+
+#. translators: %s: WordPress version.
+#: includes/list-tables.php:1110
+#, php-format
+msgid "WP %s"
+msgstr ""
+
+#. translators: %s: PHP version.
+#: includes/list-tables.php:1114
+#, php-format
+msgid "PHP %s"
+msgstr ""
+
+#: includes/list-tables.php:1168
+msgid "Auto-Rollback"
+msgstr ""
+
+#: includes/list-tables.php:1172
+msgid "Auto-Update"
+msgstr ""
+
+#: includes/list-tables.php:1174
+msgid "Backup restore"
+msgstr ""
+
+#: includes/list-tables.php:1175
+msgid "Import"
+msgstr ""
+
+#: includes/list-tables.php:1176
+msgid "MU Install"
+msgstr ""
+
+#: includes/list-tables.php:1177
+msgid "MU Update"
+msgstr ""
+
+#: includes/list-tables.php:1178
+msgid "MU Rollback"
+msgstr ""
+
+#: includes/list-tables.php:1179
+msgid "MU Auto-Update"
+msgstr ""
+
+#: includes/list-tables.php:1283
+msgid "Date / Time"
+msgstr ""
+
+#: includes/list-tables.php:1284
+msgid "Action"
+msgstr ""
+
+#: includes/list-tables.php:1287
+msgid "User"
+msgstr ""
+
+#: includes/list-tables.php:1311
+msgid "Delete entries"
+msgstr ""
+
+#: includes/list-tables.php:1332
+msgid "Filter by action"
+msgstr ""
+
+#: includes/list-tables.php:1333
+msgid "All actions"
+msgstr ""
+
+#: includes/list-tables.php:1338
+msgid "Filter by user"
+msgstr ""
+
+#: includes/list-tables.php:1339
+msgid "All users"
+msgstr ""
+
+#: includes/list-tables.php:1344
+msgid "From date"
+msgstr ""
+
+#: includes/list-tables.php:1346
+msgid "To date"
+msgstr ""
+
+#: includes/list-tables.php:1356
+msgid "No activity recorded yet."
+msgstr ""
+
+#: includes/list-tables.php:1366
+msgid "Select entry"
+msgstr ""
+
+#: includes/list-tables.php:1488
+msgid "Created"
+msgstr ""
+
+#: includes/list-tables.php:1489
+msgid "Size"
+msgstr ""
+
+#: includes/list-tables.php:1512
+msgid "Delete backups"
+msgstr ""
+
+#: includes/list-tables.php:1519
+msgid ""
+"No backups yet. A backup is created before each plugin update when backups "
+"are enabled in Settings."
+msgstr ""
+
+#: includes/list-tables.php:1529
+msgid "Select backup"
+msgstr ""
+
+#: includes/list-tables.php:1557
+msgid "Restore"
+msgstr ""
+
+#: includes/sponsorship-display.php:21
+msgid "Open-source supporters"
+msgstr ""
+
+#: includes/sponsorship-display.php:22
+msgid "Their support helps keep our plugins free and maintained."
+msgstr ""
+
+#: includes/sponsorship-display.php:29
+msgid "All supporters and sponsorship options"
+msgstr ""
+
+#: includes/sponsorship-display.php:34
+msgid "Show supporter thanks"
+msgstr ""
+
+#: includes/sponsorship-display.php:34
+msgid "Hide supporter thanks"
 msgstr ""

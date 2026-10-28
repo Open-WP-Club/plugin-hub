@@ -7,431 +7,346 @@
  * @since      1.0.0
  */
 
+namespace PluginHub;
+
 // Check if this file is being accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+
+global $wp_locale;
+
+$plugin_hub_tabs = array(
+	'plugins'  => array( __( 'Plugins', 'plugin-hub' ), 'all' ),
+	'mu'       => array( __( 'MU plugins', 'plugin-hub' ), 'mu' ),
+	'backups'  => array( __( 'Backups', 'plugin-hub' ), 'backups' ),
+	'activity' => array( __( 'Activity', 'plugin-hub' ), 'activity' ),
+	'settings' => array( __( 'Settings', 'plugin-hub' ), 'settings' ),
+);
 ?>
 
 <div class="wrap plugin-hub-wrap">
 	<header class="plugin-hub-header">
 		<h1 class="wp-heading-inline"><?php echo esc_html( get_admin_page_title() ); ?></h1>
-		<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'plugins.php?page=plugin-hub&action=refresh_cache' ), 'plugin_hub_refresh_cache' ) ); ?>" class="page-title-action"><?php esc_html_e( 'Refresh Open WP Club catalog', 'plugin-hub' ); ?></a>
+		<a href="<?php echo esc_url( wp_nonce_url( page_url( array( 'action' => 'refresh_cache' ) ), 'plugin_hub_refresh_cache' ) ); ?>" class="page-title-action"><?php esc_html_e( 'Refresh Open WP Club catalog', 'plugin-hub' ); ?></a>
 		<hr class="wp-header-end">
 		<p class="plugin-hub-subtitle"><?php esc_html_e( 'Install, update and manage plugins published by Open WP Club.', 'plugin-hub' ); ?></p>
 	</header>
 
-	<?php $search_suffix = '' !== $search ? '&amp;s=' . esc_attr( rawurlencode( $search ) ) : ''; ?>
-	<nav aria-label="<?php esc_attr_e( 'Open WP Club plugin views', 'plugin-hub' ); ?>">
-		<ul class="subsubsub plugin-hub-tabs">
-			<li><a href="?page=plugin-hub&amp;filter=all<?php echo $search_suffix; ?>" <?php echo 'all' === $filter ? 'class="current" aria-current="page"' : ''; ?>><?php esc_html_e( 'All', 'plugin-hub' ); ?> <span class="count">(<?php echo absint( $counts['all'] ); ?>)</span></a> |</li>
-			<li><a href="?page=plugin-hub&amp;filter=active<?php echo $search_suffix; ?>" <?php echo 'active' === $filter ? 'class="current" aria-current="page"' : ''; ?>><?php esc_html_e( 'Active', 'plugin-hub' ); ?> <span class="count">(<?php echo absint( $counts['active'] ); ?>)</span></a> |</li>
-			<li><a href="?page=plugin-hub&amp;filter=inactive<?php echo $search_suffix; ?>" <?php echo 'inactive' === $filter ? 'class="current" aria-current="page"' : ''; ?>><?php esc_html_e( 'Inactive', 'plugin-hub' ); ?> <span class="count">(<?php echo absint( $counts['inactive'] ); ?>)</span></a> |</li>
-			<li><a href="?page=plugin-hub&amp;filter=update<?php echo $search_suffix; ?>" <?php echo 'update' === $filter ? 'class="current" aria-current="page"' : ''; ?>><?php esc_html_e( 'Updates', 'plugin-hub' ); ?> <span class="count">(<?php echo absint( $counts['update'] ); ?>)</span></a> |</li>
-			<li><a href="?page=plugin-hub&amp;filter=beta<?php echo $search_suffix; ?>" <?php echo 'beta' === $filter ? 'class="current" aria-current="page"' : ''; ?>><?php esc_html_e( 'Beta', 'plugin-hub' ); ?> <span class="count">(<?php echo absint( $counts['beta'] ); ?>)</span></a> |</li>
-			<li><a href="?page=plugin-hub&amp;filter=mu" <?php echo 'mu' === $filter ? 'class="current" aria-current="page"' : ''; ?>><?php esc_html_e( 'MU', 'plugin-hub' ); ?> <span class="count">(<?php echo absint( $counts['mu'] ); ?>)</span></a> |</li>
-			<li><a href="?page=plugin-hub&amp;filter=activity" <?php echo 'activity' === $filter ? 'class="current" aria-current="page"' : ''; ?>><?php esc_html_e( 'Activity', 'plugin-hub' ); ?></a></li>
-		</ul>
+	<?php settings_errors( 'plugin_hub_messages' ); ?>
+
+	<nav class="nav-tab-wrapper wp-clearfix plugin-hub-tabs" aria-label="<?php esc_attr_e( 'Plugin Hub sections', 'plugin-hub' ); ?>">
+		<?php foreach ( $plugin_hub_tabs as $plugin_hub_tab_key => $plugin_hub_tab ) : ?>
+			<a href="<?php echo esc_url( page_url( array( 'filter' => $plugin_hub_tab[1] ) ) ); ?>" class="nav-tab<?php echo $plugin_hub_tab_key === $tab ? ' nav-tab-active' : ''; ?>"<?php echo $plugin_hub_tab_key === $tab ? ' aria-current="page"' : ''; ?>><?php echo esc_html( $plugin_hub_tab[0] ); ?></a>
+		<?php endforeach; ?>
 	</nav>
 
 	<div class="plugin-hub-layout">
 		<main class="plugin-hub-main">
 
-				<?php if ( 'activity' === $filter ) : ?>
+			<?php if ( 'settings' === $tab ) : ?>
 
-				<!-- ===== Activity Log ===== -->
-				<div class="plugin-hub-activity">
-					<p class="description"><?php esc_html_e( 'A history of plugin changes made from Plugin Hub.', 'plugin-hub' ); ?></p>
-				<table class="wp-list-table widefat fixed striped">
-					<thead>
-						<tr>
-							<th><?php esc_html_e( 'Date / Time', 'plugin-hub' ); ?></th>
-							<th><?php esc_html_e( 'Action', 'plugin-hub' ); ?></th>
-							<th><?php esc_html_e( 'Plugin', 'plugin-hub' ); ?></th>
-							<th><?php esc_html_e( 'Version', 'plugin-hub' ); ?></th>
-							<th><?php esc_html_e( 'User', 'plugin-hub' ); ?></th>
-						</tr>
-					</thead>
-					<tbody>
-						<?php if ( empty( $activity_log ) ) : ?>
-						<tr>
-							<td colspan="5"><?php esc_html_e( 'No activity recorded yet.', 'plugin-hub' ); ?></td>
-						</tr>
-						<?php else : ?>
-							<?php
-							$action_labels  = array(
-								'install'     => __( 'Install', 'plugin-hub' ),
-								'update'      => __( 'Update', 'plugin-hub' ),
-								'rollback'    => __( 'Rollback', 'plugin-hub' ),
-								'activate'    => __( 'Activate', 'plugin-hub' ),
-								'deactivate'  => __( 'Deactivate', 'plugin-hub' ),
-								'delete'      => __( 'Delete', 'plugin-hub' ),
-								'auto_update' => __( 'Auto-Update', 'plugin-hub' ),
-								'mu_install'     => __( 'MU Install', 'plugin-hub' ),
-								'mu_update'      => __( 'MU Update', 'plugin-hub' ),
-								'mu_rollback'    => __( 'MU Rollback', 'plugin-hub' ),
-								'mu_auto_update' => __( 'MU Auto-Update', 'plugin-hub' ),
-							);
-							$action_classes = array(
-								'install'     => 'activity-install',
-								'update'      => 'activity-update',
-								'rollback'    => 'activity-rollback',
-								'activate'    => 'activity-activate',
-								'deactivate'  => 'activity-deactivate',
-								'delete'      => 'activity-delete',
-								'auto_update' => 'activity-auto-update',
-								'mu_install'     => 'activity-install',
-								'mu_update'      => 'activity-update',
-								'mu_rollback'    => 'activity-rollback',
-								'mu_auto_update' => 'activity-auto-update',
-							);
-							foreach ( $activity_log as $entry ) :
-								$label = isset( $action_labels[ $entry['action'] ] ) ? $action_labels[ $entry['action'] ] : esc_html( $entry['action'] );
-								$class = isset( $action_classes[ $entry['action'] ] ) ? $action_classes[ $entry['action'] ] : '';
-								?>
-							<tr>
-								<td><?php echo esc_html( wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $entry['time'] ) ); ?></td>
-								<td><span class="activity-badge <?php echo esc_attr( $class ); ?>"><?php echo esc_html( $label ); ?></span></td>
-								<td><?php echo esc_html( $entry['plugin'] ); ?></td>
-								<td><?php echo esc_html( $entry['version'] ); ?></td>
-								<td><?php echo esc_html( $entry['user'] ); ?></td>
-							</tr>
-							<?php endforeach; ?>
-						<?php endif; ?>
-					</tbody>
+			<!-- ===== Settings ===== -->
+				<?php
+				$plugin_hub_hours = array();
+				for ( $plugin_hub_hour = 0; $plugin_hub_hour < 24; $plugin_hub_hour++ ) {
+					$plugin_hub_hours[ $plugin_hub_hour ] = sprintf( '%02d:00', $plugin_hub_hour );
+				}
+				$plugin_hub_usage = Backups::usage();
+				?>
+			<form id="plugin-hub-settings-form" class="plugin-hub-settings" method="post">
+				<h2><?php esc_html_e( 'Notifications', 'plugin-hub' ); ?></h2>
+				<table class="form-table" role="presentation">
+					<tr>
+						<th scope="row"><label for="ph-notify-emails"><?php esc_html_e( 'Email recipients', 'plugin-hub' ); ?></label></th>
+						<td>
+							<input type="text" id="ph-notify-emails" class="regular-text" name="settings[notify_emails]" value="<?php echo esc_attr( $settings['notify_emails'] ); ?>" placeholder="<?php echo esc_attr( get_option( 'admin_email' ) ); ?>">
+							<p class="description"><?php esc_html_e( 'Comma-separated. Leave empty to use the site administrator email.', 'plugin-hub' ); ?></p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="ph-notify-mode"><?php esc_html_e( 'Send reports', 'plugin-hub' ); ?></label></th>
+						<td>
+							<select id="ph-notify-mode" name="settings[notify_mode]">
+								<option value="all" <?php selected( $settings['notify_mode'], 'all' ); ?>><?php esc_html_e( 'For every change (updates, available updates, failures)', 'plugin-hub' ); ?></option>
+								<option value="failures" <?php selected( $settings['notify_mode'], 'failures' ); ?>><?php esc_html_e( 'Only when something fails or is rolled back', 'plugin-hub' ); ?></option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="ph-webhook-url"><?php esc_html_e( 'Webhook URL', 'plugin-hub' ); ?></label></th>
+						<td>
+							<input type="url" id="ph-webhook-url" class="regular-text" name="settings[webhook_url]" value="<?php echo esc_attr( $settings['webhook_url'] ); ?>" placeholder="https://hooks.slack.com/services/…">
+							<button type="button" id="plugin-hub-test-notification" class="button"><?php esc_html_e( 'Send test notification', 'plugin-hub' ); ?></button>
+							<p class="description"><?php esc_html_e( 'Slack, Discord or any HTTPS endpoint that accepts JSON. Save the settings before sending a test.', 'plugin-hub' ); ?></p>
+							<span id="plugin-hub-test-status" role="status" aria-live="polite"></span>
+						</td>
+					</tr>
 				</table>
-				</div>
 
-				<?php elseif ( 'mu' === $filter ) : ?>
+				<h2><?php esc_html_e( 'Update schedule', 'plugin-hub' ); ?></h2>
+				<table class="form-table" role="presentation">
+					<tr>
+						<th scope="row"><?php esc_html_e( 'Maintenance window', 'plugin-hub' ); ?></th>
+						<td>
+							<input type="hidden" name="settings[window_enabled]" value="0">
+							<label><input type="checkbox" name="settings[window_enabled]" value="1" <?php checked( $settings['window_enabled'] ); ?>> <?php esc_html_e( 'Only run automatic updates inside this window', 'plugin-hub' ); ?></label>
+							<p>
+								<?php for ( $plugin_hub_day = 0; $plugin_hub_day < 7; $plugin_hub_day++ ) : ?>
+									<label class="plugin-hub-inline-check"><input type="checkbox" name="settings[window_days][]" value="<?php echo (int) $plugin_hub_day; ?>" <?php checked( in_array( $plugin_hub_day, $settings['window_days'], true ) ); ?>> <?php echo esc_html( $wp_locale->get_weekday_abbrev( $wp_locale->get_weekday( $plugin_hub_day ) ) ); ?></label>
+								<?php endfor; ?>
+							</p>
+							<p>
+								<label for="ph-window-start"><?php esc_html_e( 'From', 'plugin-hub' ); ?></label>
+								<select id="ph-window-start" name="settings[window_start]">
+									<?php foreach ( $plugin_hub_hours as $plugin_hub_hour => $plugin_hub_label ) : ?>
+										<option value="<?php echo (int) $plugin_hub_hour; ?>" <?php selected( (int) $settings['window_start'], $plugin_hub_hour ); ?>><?php echo esc_html( $plugin_hub_label ); ?></option>
+									<?php endforeach; ?>
+								</select>
+								<label for="ph-window-end"><?php esc_html_e( 'until', 'plugin-hub' ); ?></label>
+								<select id="ph-window-end" name="settings[window_end]">
+									<?php foreach ( $plugin_hub_hours as $plugin_hub_hour => $plugin_hub_label ) : ?>
+										<option value="<?php echo (int) $plugin_hub_hour; ?>" <?php selected( (int) $settings['window_end'], $plugin_hub_hour ); ?>><?php echo esc_html( $plugin_hub_label ); ?></option>
+									<?php endforeach; ?>
+								</select>
+								<span class="description"><?php esc_html_e( 'Site time.', 'plugin-hub' ); ?></span>
+							</p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="ph-delay"><?php esc_html_e( 'Release delay', 'plugin-hub' ); ?></label></th>
+						<td>
+							<input type="number" id="ph-delay" class="small-text" min="0" max="60" name="settings[update_delay_days]" value="<?php echo (int) $settings['update_delay_days']; ?>">
+							<?php esc_html_e( 'days', 'plugin-hub' ); ?>
+							<p class="description"><?php esc_html_e( 'Automatic updates wait until a release is this old, so a faulty release can be caught first. 0 disables the delay.', 'plugin-hub' ); ?></p>
+						</td>
+					</tr>
+				</table>
 
-				<!-- ===== MU plugins ===== -->
-				<div class="plugin-hub-mu">
-					<p class="description">
+				<h2><?php esc_html_e( 'Safety', 'plugin-hub' ); ?></h2>
+				<table class="form-table" role="presentation">
+					<tr>
+						<th scope="row"><?php esc_html_e( 'Automatic rollback', 'plugin-hub' ); ?></th>
+						<td>
+							<input type="hidden" name="settings[auto_rollback]" value="0">
+							<label><input type="checkbox" name="settings[auto_rollback]" value="1" <?php checked( $settings['auto_rollback'] ); ?>> <?php esc_html_e( 'Check the site after an update and restore the previous version if it fails', 'plugin-hub' ); ?></label>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><?php esc_html_e( 'Package integrity', 'plugin-hub' ); ?></th>
+						<td>
+							<input type="hidden" name="settings[require_checksum]" value="0">
+							<label><input type="checkbox" name="settings[require_checksum]" value="1" <?php checked( $settings['require_checksum'] ); ?>> <?php esc_html_e( 'Refuse installs and updates whose catalog entry has no SHA-256 checksum', 'plugin-hub' ); ?></label>
+							<p class="description"><?php esc_html_e( 'When the catalog publishes a checksum, packages are always verified.', 'plugin-hub' ); ?></p>
+						</td>
+					</tr>
+				</table>
+
+				<h2><?php esc_html_e( 'Backups', 'plugin-hub' ); ?></h2>
+				<table class="form-table" role="presentation">
+					<tr>
+						<th scope="row"><?php esc_html_e( 'Before updates', 'plugin-hub' ); ?></th>
+						<td>
+							<input type="hidden" name="settings[backup_enabled]" value="0">
+							<label><input type="checkbox" name="settings[backup_enabled]" value="1" <?php checked( $settings['backup_enabled'] ); ?>> <?php esc_html_e( 'Back up the plugin folder before every update', 'plugin-hub' ); ?></label>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="ph-backup-keep"><?php esc_html_e( 'Keep', 'plugin-hub' ); ?></label></th>
+						<td>
+							<input type="number" id="ph-backup-keep" class="small-text" min="1" max="20" name="settings[backup_keep]" value="<?php echo (int) $settings['backup_keep']; ?>">
+							<?php esc_html_e( 'backups per plugin, for at most', 'plugin-hub' ); ?>
+							<input type="number" id="ph-backup-days" class="small-text" min="0" max="365" name="settings[backup_days]" value="<?php echo (int) $settings['backup_days']; ?>" aria-label="<?php esc_attr_e( 'Days to keep backups', 'plugin-hub' ); ?>">
+							<?php esc_html_e( 'days (0 = no age limit)', 'plugin-hub' ); ?>
+							<p class="description">
+								<?php
+								printf(
+									/* translators: 1: Number of backups, 2: Disk space used. */
+									esc_html__( 'Currently %1$s backup(s) using %2$s.', 'plugin-hub' ),
+									esc_html( number_format_i18n( (int) $plugin_hub_usage['count'] ) ),
+									esc_html( Backups::format_size( (int) $plugin_hub_usage['total'] ) )
+								);
+								?>
+							</p>
+						</td>
+					</tr>
+				</table>
+
+				<h2><?php esc_html_e( 'Activity log', 'plugin-hub' ); ?></h2>
+				<table class="form-table" role="presentation">
+					<tr>
+						<th scope="row"><label for="ph-log-max"><?php esc_html_e( 'Retention', 'plugin-hub' ); ?></label></th>
+						<td>
+							<?php esc_html_e( 'Keep the last', 'plugin-hub' ); ?>
+							<input type="number" id="ph-log-max" class="small-text" min="50" max="2000" name="settings[log_max]" value="<?php echo (int) $settings['log_max']; ?>">
+							<?php esc_html_e( 'entries, for at most', 'plugin-hub' ); ?>
+							<input type="number" id="ph-log-days" class="small-text" min="0" max="3650" name="settings[log_days]" value="<?php echo (int) $settings['log_days']; ?>" aria-label="<?php esc_attr_e( 'Days to keep log entries', 'plugin-hub' ); ?>">
+							<?php esc_html_e( 'days (0 = no age limit)', 'plugin-hub' ); ?>
+						</td>
+					</tr>
+				</table>
+
+				<p class="submit">
+					<button type="submit" class="button button-primary" id="plugin-hub-save-settings"><?php esc_html_e( 'Save settings', 'plugin-hub' ); ?></button>
+					<span id="plugin-hub-settings-status" role="status" aria-live="polite"></span>
+				</p>
+			</form>
+
+			<h2><?php esc_html_e( 'Export and import', 'plugin-hub' ); ?></h2>
+			<p class="description"><?php esc_html_e( 'Move your Plugin Hub setup to another site: installed plugins, auto-update choices, version pins, MU plugins and settings. The GitHub token is never exported.', 'plugin-hub' ); ?></p>
+			<p>
+				<a class="button" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=plugin_hub_export_config' ), 'plugin_hub_export_config' ) ); ?>"><?php esc_html_e( 'Export configuration', 'plugin-hub' ); ?></a>
+			</p>
+			<p>
+				<label for="plugin-hub-import-file" class="screen-reader-text"><?php esc_html_e( 'Configuration file', 'plugin-hub' ); ?></label>
+				<input type="file" id="plugin-hub-import-file" accept="application/json,.json">
+				<button type="button" id="plugin-hub-import" class="button"><?php esc_html_e( 'Import configuration', 'plugin-hub' ); ?></button>
+			</p>
+			<div id="plugin-hub-import-result" role="status" aria-live="polite"></div>
+
+			<?php elseif ( 'activity' === $tab ) : ?>
+
+			<!-- ===== Activity Log ===== -->
+			<div class="plugin-hub-activity">
+				<p class="description">
+					<?php esc_html_e( 'A history of plugin changes made from Plugin Hub.', 'plugin-hub' ); ?>
+					<?php
+					$plugin_hub_export_args = array(
+						'action'     => 'plugin_hub_export_activity',
+						'log_action' => $table->get_filters()['action'],
+						'log_user'   => $table->get_filters()['user'],
+						's'          => $table->get_filters()['search'],
+						'log_from'   => $table->get_filters()['from'],
+						'log_to'     => $table->get_filters()['to'],
+					);
+					?>
+					<a href="<?php echo esc_url( wp_nonce_url( add_query_arg( array_filter( $plugin_hub_export_args ), admin_url( 'admin-post.php' ) ), 'plugin_hub_export_activity' ) ); ?>"><?php esc_html_e( 'Export as CSV', 'plugin-hub' ); ?></a>
+				</p>
+				<form id="plugin-hub-form" method="get" data-table="activity">
+					<input type="hidden" name="page" value="plugin-hub">
+					<input type="hidden" name="filter" value="activity">
+					<?php
+					$table->search_box( __( 'Search activity', 'plugin-hub' ), 'plugin-hub-activity-search' );
+					$table->display();
+					?>
+				</form>
+			</div>
+
+			<?php elseif ( 'backups' === $tab ) : ?>
+
+			<!-- ===== Backups ===== -->
+			<div class="plugin-hub-backups">
+				<p class="description">
+					<?php
+					printf(
+						/* translators: 1: Number of backups, 2: Plugin backups size, 3: MU backups size, 4: Total size. */
+						esc_html__( '%1$s backup(s) use %4$s in total (plugins: %2$s, MU plugins: %3$s). Retention is configured in Settings.', 'plugin-hub' ),
+						esc_html( number_format_i18n( (int) $backup_usage['count'] ) ),
+						esc_html( Backups::format_size( (int) $backup_usage['plugins'] ) ),
+						esc_html( Backups::format_size( (int) $backup_usage['mu'] ) ),
+						esc_html( Backups::format_size( (int) $backup_usage['total'] ) )
+					);
+					?>
+				</p>
+				<form id="plugin-hub-form" method="get" data-table="backups">
+					<input type="hidden" name="page" value="plugin-hub">
+					<input type="hidden" name="filter" value="backups">
+					<?php
+					$table->search_box( __( 'Search backups', 'plugin-hub' ), 'plugin-hub-backup-search' );
+					$table->display();
+					?>
+				</form>
+			</div>
+
+			<?php elseif ( 'mu' === $tab ) : ?>
+
+			<!-- ===== MU plugins ===== -->
+			<div class="plugin-hub-mu">
+				<p class="description">
+					<?php
+					printf(
+						/* translators: %s: MU plugin directory path. */
+						esc_html__( 'Must-use plugins from the Open WP Club mu-plugin repository, managed in %s. Only files whose name matches a catalog file are updated.', 'plugin-hub' ),
+						'<code>' . esc_html( $mu_data['dir'] ) . '</code>'
+					);
+					?>
+				</p>
+
+				<?php if ( ! $mu_data['file_mods'] ) : ?>
+					<div class="notice notice-warning inline"><p><?php esc_html_e( 'File modifications are disabled on this site, so MU plugins cannot be installed or updated here.', 'plugin-hub' ); ?></p></div>
+				<?php elseif ( 'missing' === $mu_data['dir_state'] ) : ?>
+					<div class="notice notice-warning inline"><p><?php esc_html_e( 'The MU plugin directory does not exist yet. It will be created on the first install if the parent directory is writable.', 'plugin-hub' ); ?></p></div>
+				<?php elseif ( 'unwritable' === $mu_data['dir_state'] ) : ?>
+					<div class="notice notice-error inline"><p><?php esc_html_e( 'The MU plugin directory is not writable. Fix its permissions to install or update MU plugins.', 'plugin-hub' ); ?></p></div>
+				<?php endif; ?>
+
+				<?php if ( ! $mu_data['catalog_ok'] ) : ?>
+					<div class="notice notice-error inline"><p><?php esc_html_e( 'The MU plugin catalog could not be loaded from GitHub. Try again in a few minutes.', 'plugin-hub' ); ?></p></div>
+				<?php endif; ?>
+
+				<?php if ( ! empty( $mu_data['multisite'] ) ) : ?>
+					<div class="notice notice-info inline"><p><?php esc_html_e( 'This is a multisite network: MU plugins are shared by every site, and only network administrators can change them.', 'plugin-hub' ); ?></p></div>
+				<?php endif; ?>
+				<div class="notice notice-warning inline"><p><?php esc_html_e( 'MU plugins load automatically on every request and cannot be deactivated from the admin. Some change core behaviour, for example blocking plugin installs, comments, search or email. Read the description before installing and test on a staging site first.', 'plugin-hub' ); ?></p></div>
+
+				<ul class="subsubsub">
+					<li><a href="<?php echo esc_url( page_url( array( 'filter' => 'mu' ) ) ); ?>" <?php echo 'installed' === $mu_view ? 'class="current" aria-current="page"' : ''; ?>><?php esc_html_e( 'Installed', 'plugin-hub' ); ?> <span class="count">(<?php echo absint( count( $mu_data['installed'] ) ); ?>)</span></a> |</li>
+					<li><a href="
+					<?php
+					echo esc_url(
+						page_url(
+							array(
+								'filter'  => 'mu',
+								'mu_view' => 'available',
+							)
+						)
+					);
+					?>
+									" <?php echo 'available' === $mu_view ? 'class="current" aria-current="page"' : ''; ?>><?php esc_html_e( 'Available', 'plugin-hub' ); ?> <span class="count">(<?php echo absint( count( $mu_data['available'] ) ); ?>)</span></a></li>
+					<?php if ( $mu_data['update_count'] > 0 && 'installed' === $mu_view ) : ?>
+						<li>| <a href="
 						<?php
-						printf(
-							/* translators: %s: MU plugin directory path. */
-							esc_html__( 'Must-use plugins from the Open WP Club mu-plugin repository, managed in %s. Only files whose name matches a catalog file are updated.', 'plugin-hub' ),
-							'<code>' . esc_html( $mu_data['dir'] ) . '</code>'
+						echo esc_url(
+							page_url(
+								array(
+									'filter'    => 'mu',
+									'mu_filter' => 'update',
+								)
+							)
 						);
 						?>
-					</p>
-
-					<?php if ( ! $mu_data['file_mods'] ) : ?>
-						<div class="notice notice-warning inline"><p><?php esc_html_e( 'File modifications are disabled on this site, so MU plugins cannot be installed or updated here.', 'plugin-hub' ); ?></p></div>
-					<?php elseif ( 'missing' === $mu_data['dir_state'] ) : ?>
-						<div class="notice notice-warning inline"><p><?php esc_html_e( 'The MU plugin directory does not exist yet. It will be created on the first install if the parent directory is writable.', 'plugin-hub' ); ?></p></div>
-					<?php elseif ( 'unwritable' === $mu_data['dir_state'] ) : ?>
-						<div class="notice notice-error inline"><p><?php esc_html_e( 'The MU plugin directory is not writable. Fix its permissions to install or update MU plugins.', 'plugin-hub' ); ?></p></div>
+										"><?php esc_html_e( 'Updates', 'plugin-hub' ); ?> <span class="count">(<?php echo absint( $mu_data['update_count'] ); ?>)</span></a></li>
 					<?php endif; ?>
-
-					<?php if ( ! $mu_data['catalog_ok'] ) : ?>
-						<div class="notice notice-error inline"><p><?php esc_html_e( 'The MU plugin catalog could not be loaded from GitHub. Try again in a few minutes.', 'plugin-hub' ); ?></p></div>
-					<?php endif; ?>
-
-					<div class="plugin-hub-mu-toolbar">
-						<h2><?php esc_html_e( 'Installed MU plugins', 'plugin-hub' ); ?></h2>
-						<?php if ( $mu_data['update_count'] > 0 && $mu_data['file_mods'] ) : ?>
-							<button type="button" id="mu-update-all" class="button button-primary"><?php esc_html_e( 'Update all', 'plugin-hub' ); ?> (<?php echo absint( $mu_data['update_count'] ); ?>)</button>
-						<?php endif; ?>
-					</div>
-
-					<table class="wp-list-table widefat fixed striped plugin-hub-mu-table">
-						<thead>
-							<tr>
-								<th><?php esc_html_e( 'MU plugin', 'plugin-hub' ); ?></th>
-								<th><?php esc_html_e( 'Category', 'plugin-hub' ); ?></th>
-								<th><?php esc_html_e( 'Version', 'plugin-hub' ); ?></th>
-								<th><?php esc_html_e( 'New version', 'plugin-hub' ); ?></th>
-								<th><?php esc_html_e( 'Auto-update', 'plugin-hub' ); ?></th>
-								<th><?php esc_html_e( 'Action', 'plugin-hub' ); ?></th>
-							</tr>
-						</thead>
-						<tbody>
-							<?php if ( empty( $mu_data['installed'] ) ) : ?>
-								<tr><td colspan="6"><?php esc_html_e( 'No catalog MU plugins are installed.', 'plugin-hub' ); ?></td></tr>
-							<?php endif; ?>
-							<?php foreach ( $mu_data['installed'] as $mu_row ) : ?>
-								<tr>
-									<td><strong><?php echo esc_html( $mu_row['name'] ); ?></strong><br><code><?php echo esc_html( $mu_row['file'] ); ?></code></td>
-									<td><?php echo esc_html( '' !== $mu_row['category'] ? $mu_row['category'] : __( 'shared', 'plugin-hub' ) ); ?></td>
-									<td><?php echo esc_html( $mu_row['local_version'] ); ?></td>
-									<td><?php echo $mu_row['update'] ? esc_html( $mu_row['remote_version'] ) : '&mdash;'; ?></td>
-									<td>
-										<input type="checkbox" class="mu-autoupdate-toggle" data-file="<?php echo esc_attr( $mu_row['file'] ); ?>" aria-label="<?php esc_attr_e( 'Auto-update', 'plugin-hub' ); ?>" <?php checked( $mu_row['autoupdate'] ); ?>>
-									</td>
-									<td>
-										<?php if ( $mu_row['update'] && $mu_data['file_mods'] ) : ?>
-											<button type="button" class="button mu-update-now" data-file="<?php echo esc_attr( $mu_row['file'] ); ?>"><?php esc_html_e( 'Update', 'plugin-hub' ); ?></button>
-										<?php else : ?>
-											<span class="description"><?php esc_html_e( 'Up to date', 'plugin-hub' ); ?></span>
-										<?php endif; ?>
-										<?php if ( ! empty( $mu_row['has_backup'] ) && $mu_data['file_mods'] ) : ?>
-											<button type="button" class="button mu-rollback-now" data-file="<?php echo esc_attr( $mu_row['file'] ); ?>"><?php esc_html_e( 'Rollback', 'plugin-hub' ); ?></button>
-										<?php endif; ?>
-									</td>
-								</tr>
-							<?php endforeach; ?>
-						</tbody>
-					</table>
-
-					<div class="plugin-hub-mu-toolbar">
-						<h2><?php esc_html_e( 'Available MU plugins', 'plugin-hub' ); ?></h2>
-					</div>
-					<?php if ( ! empty( $mu_data['multisite'] ) ) : ?>
-						<div class="notice notice-info inline"><p><?php esc_html_e( 'This is a multisite network: MU plugins are shared by every site, and only network administrators can change them.', 'plugin-hub' ); ?></p></div>
-					<?php endif; ?>
-					<div class="notice notice-warning inline"><p><?php esc_html_e( 'MU plugins load automatically on every request and cannot be deactivated from the admin. Some change core behaviour, for example blocking plugin installs, comments, search or email. Read the description before installing and test on a staging site first.', 'plugin-hub' ); ?></p></div>
-					<p class="description"><?php esc_html_e( 'Installed flat into the MU directory. Shared helpers (000-helpers.php) are installed automatically when a plugin needs them.', 'plugin-hub' ); ?></p>
-
-					<?php $mu_categories = array_values( array_unique( array_filter( array_column( $mu_data['available'], 'category' ) ) ) ); ?>
-					<?php sort( $mu_categories ); ?>
-					<div class="plugin-hub-mu-filters">
-						<label class="screen-reader-text" for="plugin-hub-mu-category"><?php esc_html_e( 'Filter by category', 'plugin-hub' ); ?></label>
-						<select id="plugin-hub-mu-category">
-							<option value=""><?php esc_html_e( 'All categories', 'plugin-hub' ); ?></option>
-							<?php foreach ( $mu_categories as $mu_category ) : ?>
-								<option value="<?php echo esc_attr( $mu_category ); ?>"><?php echo esc_html( $mu_category ); ?></option>
-							<?php endforeach; ?>
-						</select>
-						<label class="screen-reader-text" for="plugin-hub-mu-search"><?php esc_html_e( 'Search MU plugins', 'plugin-hub' ); ?></label>
-						<input type="search" id="plugin-hub-mu-search" placeholder="<?php esc_attr_e( 'Search MU plugins…', 'plugin-hub' ); ?>">
-					</div>
-
-					<table class="wp-list-table widefat fixed striped plugin-hub-mu-table plugin-hub-mu-available">
-						<thead>
-							<tr>
-								<th><?php esc_html_e( 'MU plugin', 'plugin-hub' ); ?></th>
-								<th><?php esc_html_e( 'Category', 'plugin-hub' ); ?></th>
-								<th><?php esc_html_e( 'Version', 'plugin-hub' ); ?></th>
-								<th><?php esc_html_e( 'Action', 'plugin-hub' ); ?></th>
-							</tr>
-						</thead>
-						<tbody>
-							<?php if ( empty( $mu_data['available'] ) ) : ?>
-								<tr><td colspan="4"><?php esc_html_e( 'Every catalog MU plugin is already installed.', 'plugin-hub' ); ?></td></tr>
-							<?php endif; ?>
-							<tr class="plugin-hub-mu-no-results" hidden><td colspan="4"><?php esc_html_e( 'No MU plugins match your filters.', 'plugin-hub' ); ?></td></tr>
-							<?php foreach ( $mu_data['available'] as $mu_row ) : ?>
-								<tr class="plugin-hub-mu-row" data-category="<?php echo esc_attr( $mu_row['category'] ); ?>">
-									<td><strong><?php echo esc_html( $mu_row['name'] ); ?></strong><?php if ( $mu_row['name'] !== $mu_row['file'] ) : ?><br><code><?php echo esc_html( $mu_row['file'] ); ?></code><?php endif; ?><?php if ( '' !== $mu_row['description'] ) : ?><p class="description plugin-hub-mu-description"><?php echo esc_html( $mu_row['description'] ); ?></p><?php endif; ?></td>
-									<td><?php echo esc_html( $mu_row['category'] ); ?></td>
-									<td>
-										<?php echo esc_html( $mu_row['version'] ); ?>
-										<?php if ( '' !== $mu_row['wp'] || '' !== $mu_row['php'] ) : ?>
-											<br><span class="description"><?php
-											$mu_requirements = array();
-											if ( '' !== $mu_row['wp'] ) {
-												/* translators: %s: WordPress version. */
-												$mu_requirements[] = sprintf( __( 'WP %s', 'plugin-hub' ), $mu_row['wp'] );
-											}
-											if ( '' !== $mu_row['php'] ) {
-												/* translators: %s: PHP version. */
-												$mu_requirements[] = sprintf( __( 'PHP %s', 'plugin-hub' ), $mu_row['php'] );
-											}
-											echo esc_html( implode( ' · ', $mu_requirements ) );
-											?></span>
-										<?php endif; ?>
-									</td>
-									<td>
-										<?php if ( $mu_data['file_mods'] ) : ?>
-											<button type="button" class="button mu-install-now" data-file="<?php echo esc_attr( $mu_row['file'] ); ?>"><?php esc_html_e( 'Install', 'plugin-hub' ); ?></button>
-										<?php endif; ?>
-									</td>
-								</tr>
-							<?php endforeach; ?>
-						</tbody>
-					</table>
-				</div>
-
-				<?php else : ?>
-
-				<!-- ===== Plugin list ===== -->
-				<form method="get" class="search-form search-plugins">
-					<input type="hidden" name="page" value="plugin-hub">
-					<?php if ( 'all' !== $filter ) : ?>
-						<input type="hidden" name="filter" value="<?php echo esc_attr( $filter ); ?>">
-					<?php endif; ?>
-					<p class="search-box">
-						<label class="screen-reader-text" for="plugin-search-input"><?php esc_html_e( 'Search plugins', 'plugin-hub' ); ?></label>
-						<input type="search" id="plugin-search-input" name="s" value="<?php echo esc_attr( $search ); ?>" placeholder="<?php esc_attr_e( 'Search Open WP Club plugins…', 'plugin-hub' ); ?>">
-						<input type="submit" id="search-submit" class="button" value="<?php esc_attr_e( 'Search Plugins', 'plugin-hub' ); ?>">
-					</p>
-				</form>
-
-				<form id="plugin-hub-form" method="post">
-					<?php wp_nonce_field( 'plugin_hub_bulk_action', 'plugin_hub_nonce' ); ?>
-
-					<div class="tablenav top plugin-hub-toolbar">
-						<div class="alignleft actions bulkactions plugin-hub-bulk-actions">
-							<label for="bulk-action-selector-top" class="screen-reader-text"><?php esc_html_e( 'Select bulk action', 'plugin-hub' ); ?></label>
-							<select name="action" id="bulk-action-selector-top">
-								<option value="-1"><?php esc_html_e( 'Bulk Actions', 'plugin-hub' ); ?></option>
-								<option value="activate"><?php esc_html_e( 'Activate', 'plugin-hub' ); ?></option>
-								<option value="deactivate"><?php esc_html_e( 'Deactivate', 'plugin-hub' ); ?></option>
-								<option value="update"><?php esc_html_e( 'Update', 'plugin-hub' ); ?></option>
-								<option value="delete"><?php esc_html_e( 'Delete', 'plugin-hub' ); ?></option>
-							</select>
-							<input type="submit" class="button action" value="<?php esc_attr_e( 'Apply', 'plugin-hub' ); ?>">
-						</div>
-						<?php if ( $total_pages > 1 ) : ?>
-							<div class="alignright">
-								<?php require PLUGIN_HUB_PLUGIN_DIR . 'includes/admin-pagination.php'; ?>
-							</div>
-						<?php endif; ?>
-					</div>
-
-					<?php if ( '' !== $search ) : ?>
-						<p class="plugin-hub-search-results-info">
-							<?php
-							printf(
-								/* translators: %s: Search term. */
-								esc_html__( 'Search results for "%s"', 'plugin-hub' ),
-								'<strong>' . esc_html( $search ) . '</strong>'
-							);
-							?>
-						</p>
-					<?php endif; ?>
-
-					<table class="wp-list-table widefat plugins">
-						<thead>
-							<tr>
-								<td class="manage-column column-cb check-column">
-									<input id="cb-select-all-1" type="checkbox">
-								</td>
-								<th scope="col" class="manage-column column-name column-primary"><?php esc_html_e( 'Plugin', 'plugin-hub' ); ?></th>
-								<th scope="col" class="manage-column column-description"><?php esc_html_e( 'Description', 'plugin-hub' ); ?></th>
-							</tr>
-						</thead>
-
-						<tbody id="the-list">
-							<?php foreach ( $repos as $repo ) : ?>
-								<?php
-								$is_installed      = $api->is_plugin_installed( $repo['name'] );
-								$is_active         = $api->is_plugin_active( $repo['name'] );
-								$installed_version = $api->get_installed_plugin_version( $repo['name'] );
-								$update_available  = $api->is_update_available( $repo, $installed_version );
-								$is_available      = ! empty( $repo['available'] );
-								$is_beta           = $is_available && version_compare( $repo['version'], '1.0.0', '<' );
-								$auto_update_on    = in_array( $repo['name'], $autoupdate_plugins, true );
-								?>
-									<tr class="<?php echo $is_active ? 'active' : 'inactive'; ?>">
-										<td class="check-column">
-											<input type="checkbox" name="checked[]" value="<?php echo esc_attr( $repo['name'] ); ?>">
-										</td>
-										<th scope="row" class="plugin-title column-primary">
-										<strong><?php echo esc_html( $repo['display_name'] ); ?></strong>
-										<div class="row-actions visible">
-										<?php if ( ! $is_installed && $is_available ) : ?>
-											<span class="install">
-												<a href="#" class="install-now" data-repo="<?php echo esc_attr( $repo['name'] ); ?>" data-version="<?php echo esc_attr( $repo['version'] ); ?>"><?php esc_html_e( 'Install now', 'plugin-hub' ); ?></a>
-											</span>
-										<?php elseif ( ! $is_installed ) : ?>
-											<span class="unavailable"><?php esc_html_e( 'No release available', 'plugin-hub' ); ?></span>
-											<?php elseif ( $is_active ) : ?>
-												<span class="deactivate">
-													<a href="#" class="deactivate-now" data-repo="<?php echo esc_attr( $repo['name'] ); ?>"><?php esc_html_e( 'Deactivate', 'plugin-hub' ); ?></a>
-												</span>
-											<?php else : ?>
-												<span class="activate">
-													<a href="#" class="activate-now" data-repo="<?php echo esc_attr( $repo['name'] ); ?>"><?php esc_html_e( 'Activate', 'plugin-hub' ); ?></a>
-												</span>
-												<span class="delete">
-													<a href="#" class="delete-now" data-repo="<?php echo esc_attr( $repo['name'] ); ?>"><?php esc_html_e( 'Delete', 'plugin-hub' ); ?></a>
-												</span>
-											<?php endif; ?>
-											<?php if ( $update_available ) : ?>
-												<span class="update">
-													<a href="#" class="update-now" data-repo="<?php echo esc_attr( $repo['name'] ); ?>" data-version="<?php echo esc_attr( $repo['version'] ); ?>"><?php esc_html_e( 'Update now', 'plugin-hub' ); ?></a>
-												</span>
-												<span class="view-changelog">
-													<a href="#" class="open-changelog"
-														data-repo="<?php echo esc_attr( $repo['name'] ); ?>"
-														data-current-version="<?php echo esc_attr( $installed_version ); ?>"
-														data-new-version="<?php echo esc_attr( $repo['version'] ); ?>"
-													><?php esc_html_e( "What's new?", 'plugin-hub' ); ?></a>
-												</span>
-											<?php endif; ?>
-											<span class="view">
-												<a href="<?php echo esc_url( $repo['repo_url'] ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'View on GitHub', 'plugin-hub' ); ?></a>
-											</span>
-											<?php if ( $is_installed ) : ?>
-												<span class="rollback">
-													<a href="#" class="rollback-toggle" data-repo="<?php echo esc_attr( $repo['name'] ); ?>"><?php esc_html_e( 'Versions', 'plugin-hub' ); ?></a>
-													<span class="rollback-list" style="display:none;"></span>
-												</span>
-											<?php endif; ?>
-										</div>
-										<button type="button" class="toggle-row"><span class="screen-reader-text"><?php esc_html_e( 'Show more details', 'plugin-hub' ); ?></span></button>
-										</th>
-									<td class="column-description desc">
-										<div class="plugin-description">
-											<p><?php echo esc_html( $repo['description'] ); ?></p>
-										</div>
-										<div class="active second plugin-version-author-uri">
-											<?php if ( ! $is_installed ) : ?>
-												<?php if ( ! $is_available ) : ?>
-													<?php esc_html_e( 'No published release', 'plugin-hub' ); ?>
-												<?php elseif ( $is_beta ) : ?>
-													<?php esc_html_e( 'Beta version', 'plugin-hub' ); ?>
-												<?php else : ?>
-													<?php
-													/* translators: %s: Plugin version number */
-													printf( esc_html__( 'Latest version is %s', 'plugin-hub' ), esc_html( $repo['version'] ) );
-													?>
-												<?php endif; ?>
-											<?php else : ?>
-												<?php
-												/* translators: %s: Plugin version number */
-												printf( esc_html__( 'Version %s', 'plugin-hub' ), esc_html( $installed_version ) );
-												?>
-												<?php if ( $update_available ) : ?>
-													<span class="update-message notice inline notice-warning notice-alt">
-														<?php
-														/* translators: %s: New version number */
-														printf( esc_html__( 'Update available (%s)', 'plugin-hub' ), esc_html( $repo['version'] ) );
-														?>
-													</span>
-												<?php endif; ?>
-												<label class="plugin-autoupdate-label">
-													<input
-														type="checkbox"
-														class="autoupdate-toggle"
-														data-repo="<?php echo esc_attr( $repo['name'] ); ?>"
-														<?php checked( $auto_update_on ); ?>
-													>
-													<?php esc_html_e( 'Auto-update', 'plugin-hub' ); ?>
-												</label>
-											<?php endif; ?>
-										</div>
-									</td>
-								</tr>
-							<?php endforeach; ?>
-							<?php if ( 0 === $total_items ) : ?>
-								<tr class="no-items">
-									<td colspan="3"><?php esc_html_e( 'No plugins match the current view. Refresh the catalog or adjust the filter.', 'plugin-hub' ); ?></td>
-								</tr>
-							<?php endif; ?>
-						</tbody>
-
-						<tfoot>
-							<tr>
-								<td class="manage-column column-cb check-column">
-									<input id="cb-select-all-2" type="checkbox">
-								</td>
-								<th scope="col" class="manage-column column-name column-primary"><?php esc_html_e( 'Plugin', 'plugin-hub' ); ?></th>
-								<th scope="col" class="manage-column column-description"><?php esc_html_e( 'Description', 'plugin-hub' ); ?></th>
-							</tr>
-						</tfoot>
-					</table>
-
-					<?php if ( $total_pages > 1 ) : ?>
-						<div class="tablenav bottom plugin-hub-toolbar plugin-hub-toolbar--pagination">
-							<?php require PLUGIN_HUB_PLUGIN_DIR . 'includes/admin-pagination.php'; ?>
-						</div>
-					<?php endif; ?>
-				</form>
-
+				</ul>
+				<?php if ( $mu_data['update_count'] > 0 && $mu_data['file_mods'] ) : ?>
+					<p class="plugin-hub-mu-update-all"><button type="button" id="mu-update-all" class="button button-primary"><?php esc_html_e( 'Update all', 'plugin-hub' ); ?> (<?php echo absint( $mu_data['update_count'] ); ?>)</button></p>
 				<?php endif; ?>
+
+				<form id="plugin-hub-form" method="get" data-table="<?php echo 'available' === $mu_view ? 'mu-available' : 'mu-installed'; ?>">
+					<input type="hidden" name="page" value="plugin-hub">
+					<input type="hidden" name="filter" value="mu">
+					<input type="hidden" name="mu_view" value="<?php echo esc_attr( $mu_view ); ?>">
+					<?php
+					$table->search_box( __( 'Search MU plugins', 'plugin-hub' ), 'plugin-hub-mu-search' );
+					$table->display();
+					?>
+				</form>
+			</div>
+
+			<?php else : ?>
+
+			<!-- ===== Plugin list ===== -->
+				<?php $table->views(); ?>
+			<form id="plugin-hub-form" method="get" data-table="plugins">
+				<input type="hidden" name="page" value="plugin-hub">
+				<input type="hidden" name="filter" value="<?php echo esc_attr( $filter ); ?>">
+				<?php
+				$table->search_box( __( 'Search plugins', 'plugin-hub' ), 'plugin-search-input' );
+				$table->display();
+				?>
+			</form>
+
+			<?php endif; ?>
 		</main>
 
 		<aside class="plugin-hub-sidebar" aria-label="<?php esc_attr_e( 'Plugin Hub settings', 'plugin-hub' ); ?>">
@@ -521,4 +436,5 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<button type="button" id="plugin-hub-modal-close" class="modal-close" aria-label="<?php esc_attr_e( 'Close', 'plugin-hub' ); ?>">&times;</button>
 	</div>
 	<div id="plugin-hub-modal-content"></div>
+	<div id="plugin-hub-modal-footer" hidden></div>
 </div>

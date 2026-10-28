@@ -30,6 +30,12 @@ delete_option( 'plugin_hub_mu_autoupdate' );
 delete_option( 'plugin_hub_mu_last_known' );
 delete_option( 'plugin_hub_mu_versions' );
 delete_option( 'plugin_hub_mu_descriptions' );
+delete_option( 'plugin_hub_settings' );
+delete_option( 'plugin_hub_pins' );
+delete_option( 'plugin_hub_failed_versions' );
+delete_option( 'plugin_hub_last_run' );
+delete_option( 'plugin_hub_db_version' );
+delete_option( 'plugin_hub_mu_update_count' );
 
 /**
  * Delete plugin transients.
@@ -55,10 +61,12 @@ wp_clear_scheduled_hook( 'plugin_hub_daily_update_check' );
 global $wpdb;
 $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Uninstall cleanup for dynamically named options.
 	$wpdb->prepare(
-		"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s OR option_name LIKE %s",
+		"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s OR option_name LIKE %s OR option_name LIKE %s OR option_name LIKE %s",
 		$wpdb->esc_like( 'plugin_hub_disabled_' ) . '%',
 		$wpdb->esc_like( '_transient_plugin_hub_release_' ) . '%',
-		$wpdb->esc_like( '_transient_timeout_plugin_hub_release_' ) . '%'
+		$wpdb->esc_like( '_transient_timeout_plugin_hub_release_' ) . '%',
+		$wpdb->esc_like( '_transient_plugin_hub_relts_' ) . '%',
+		$wpdb->esc_like( '_transient_timeout_plugin_hub_relts_' ) . '%'
 	)
 );
 
@@ -73,5 +81,26 @@ if ( is_array( $plugin_hub_uploads ) && ! empty( $plugin_hub_uploads['basedir'] 
 			wp_delete_file( $plugin_hub_item );
 		}
 		rmdir( $plugin_hub_backups ); // phpcs:ignore WordPress.WP.AlternativeFunctions.rmdir_rmdir -- Remove our own backup folder.
+	}
+}
+
+/**
+ * Remove plugin backups (zip archives of replaced plugin versions).
+ */
+if ( is_array( $plugin_hub_uploads ) && ! empty( $plugin_hub_uploads['basedir'] ) ) {
+	$plugin_hub_zip_dir = $plugin_hub_uploads['basedir'] . '/plugin-hub-backups';
+	if ( is_dir( $plugin_hub_zip_dir ) ) {
+		$plugin_hub_iterator = new RecursiveIteratorIterator(
+			new RecursiveDirectoryIterator( $plugin_hub_zip_dir, FilesystemIterator::SKIP_DOTS ),
+			RecursiveIteratorIterator::CHILD_FIRST
+		);
+		foreach ( $plugin_hub_iterator as $plugin_hub_item ) {
+			if ( $plugin_hub_item->isDir() ) {
+				rmdir( $plugin_hub_item->getPathname() ); // phpcs:ignore WordPress.WP.AlternativeFunctions.rmdir_rmdir -- Remove our own backup folders.
+			} else {
+				wp_delete_file( $plugin_hub_item->getPathname() );
+			}
+		}
+		rmdir( $plugin_hub_zip_dir ); // phpcs:ignore WordPress.WP.AlternativeFunctions.rmdir_rmdir -- Remove our own backup folder.
 	}
 }

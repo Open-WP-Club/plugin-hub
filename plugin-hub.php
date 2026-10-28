@@ -3,7 +3,7 @@
  * Plugin Name:             Plugin Hub
  * Plugin URI:              https://github.com/Open-WP-Club/plugin-hub
  * Description:             Installs, updates, and manages plugins published by Open WP Club through GitHub.
- * Version:                 1.7.0
+ * Version:                 1.8.0
  * Author:                  Open WP Club
  * Author URI:              https://openwpclub.com
  * License:                 GPL-2.0+
@@ -25,7 +25,7 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-define( 'PLUGIN_HUB_VERSION', '1.7.0' );
+define( 'PLUGIN_HUB_VERSION', '1.8.0' );
 define( 'PLUGIN_HUB_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PLUGIN_HUB_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'PLUGIN_HUB_ORGANIZATION', 'Open-WP-Club' );
@@ -68,10 +68,29 @@ require_once PLUGIN_HUB_PLUGIN_DIR . 'includes/main.php';
  */
 function activate_plugin_hub() {
 	if ( ! wp_next_scheduled( 'plugin_hub_daily_update_check' ) ) {
-		wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', 'plugin_hub_daily_update_check' );
+		wp_schedule_event( time() + HOUR_IN_SECONDS, 'hourly', 'plugin_hub_daily_update_check' );
 	}
 }
 register_activation_hook( __FILE__, __NAMESPACE__ . '\activate_plugin_hub' );
+
+/**
+ * Migrate stored state after an update.
+ *
+ * The update check used to run as a daily event. It now runs hourly so the
+ * optional maintenance window can be honoured, and the callback limits the
+ * actual work to once a day.
+ *
+ * @since 1.8.0
+ */
+function maybe_upgrade() {
+	if ( '1.8.0' === get_option( 'plugin_hub_db_version', '' ) ) {
+		return;
+	}
+
+	wp_clear_scheduled_hook( 'plugin_hub_daily_update_check' );
+	wp_schedule_event( time() + HOUR_IN_SECONDS, 'hourly', 'plugin_hub_daily_update_check' );
+	update_option( 'plugin_hub_db_version', '1.8.0', false );
+}
 
 /**
  * Remove the cron event on deactivation.

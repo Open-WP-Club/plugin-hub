@@ -14,6 +14,16 @@ Plugin Hub installs, updates, and manages WordPress plugins published by Open WP
 - Opt selected plugins into daily automatic updates
 - Install and update Open WP Club must-use (MU) plugins from the mu-plugin repository, with descriptions, category filters, rollback and optional automatic updates
 - Review an activity log of plugin-management actions
+- Native WordPress list tables with select-all checkboxes, bulk actions, sorting, search and pagination
+- Pending-update badge in the menu and a dashboard widget
+- Backups before updates, automatic rollback after a failed site health check, and restore from the Backups tab
+- Pin a plugin to its current version, `N.x` or `N.M.x`; see dependency warnings before deactivating or deleting
+- Changelog preview before every update; optional SHA-256 package verification (`sha256` in the catalog)
+- Maintenance window and release-age delay for automatic updates
+- E-mail and Slack/Discord/generic webhook reports, optionally only on failures
+- Export and import configuration; multisite Network Admin page with network activation
+- Activity log filters, CSV export and retention settings
+- WP-CLI: `wp plugin-hub list|install|update|rollback|backups|pin|mu|export|import|settings|run-schedule`
 - Use an optional GitHub token for higher API rate limits
 - Resolve standard versioned release ZIPs directly, without spending GitHub REST API quota
 
