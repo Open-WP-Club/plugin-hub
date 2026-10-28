@@ -51,6 +51,7 @@ jobs:
           --exclude='.phpcs.xml*' \
           --exclude='phpstan.neon*' \
           --exclude='phpstan-bootstrap.php' \
+          --exclude='phpstan-wp-cli-stubs.php' \
           --exclude='webpack.config.js' \
           --exclude='gulpfile.js' \
           --exclude='src' \

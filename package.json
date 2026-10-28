@@ -8,8 +8,8 @@
     "lint:css": "echo 'CSS linting not configured yet'",
     "build": "echo 'Build process not configured yet'",
     "watch": "echo 'Watch process not configured yet'",
-    "test": "node --test tests/js/",
-    "test:js": "node --test tests/js/"
+    "test": "node --test tests/js/*.test.js",
+    "test:js": "node --test tests/js/*.test.js"
   },
   "repository": {
     "type": "git",
