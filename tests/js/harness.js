@@ -119,7 +119,9 @@ async function mount( main, options = {} ) {
 
 	// Run the script; jQuery's ready callbacks fire asynchronously.
 	window.eval( SCRIPT );
-	await new Promise( ( resolve ) => setTimeout( resolve, 20 ) );
+	// jQuery runs ready callbacks in the order they were added, so once ours runs
+	// the script's own handlers are bound. No guessing at a delay.
+	await new Promise( ( resolve ) => $( resolve ) );
 
 	// From here on timers are captured and run by the test.
 	window.setTimeout = ( fn, ms ) => {
