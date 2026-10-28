@@ -18,9 +18,14 @@ on:
     branches: [main]
   workflow_dispatch:
 
+concurrency:
+  group: plugin-check-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   plugin-check:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v7
