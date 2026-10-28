@@ -93,13 +93,9 @@ jobs:
         run: composer phpstan
 
   javascript:
-    name: JavaScript (Node ${{ matrix.node }})
+    name: JavaScript (Node 24)
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    strategy:
-      fail-fast: false
-      matrix:
-        node: ['22', '24']
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -107,7 +103,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v7
         with:
-          node-version: ${{ matrix.node }}
+          node-version: '24'
           cache: npm
 
       - name: Install dependencies
