@@ -2,7 +2,7 @@
 Contributors: gkanev
 Tags: plugins, github, installer, plugin-manager, open-wp-club
 Requires at least: 6.0
-Tested up to: 7.1
+Tested up to: 7.1.4
 Requires PHP: 8.0
 Stable tag: 1.8.0
 License: GPLv2 or later
